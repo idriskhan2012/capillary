@@ -25,6 +25,7 @@ which is preinstalled in the Lambda runtime. That keeps the deployment a plain .
 """
 import json
 import os
+import re
 import time
 import traceback
 import urllib.request
@@ -57,7 +58,14 @@ GEMINI_URL_TMPL = "https://generativelanguage.googleapis.com/v1beta/models/{mode
 # calls MUST run sequentially with this delay between them, never in parallel
 # (no asyncio.gather / thread pool / batch-all-at-once). A full run finishing in
 # 60-90 seconds instead of 5 costs nothing on a daily cron job.
-GEMINI_CALL_DELAY_SECONDS = 3
+GEMINI_CALL_DELAY_SECONDS = int(os.environ.get("GEMINI_CALL_DELAY_SECONDS", "6"))
+# Only classify a few posts per run so a burst of new posts can never blow the free-tier
+# per-minute / per-day request cap. Anything beyond this waits for the next daily run
+# (steady state is ~1-4 new posts/week, far under the cap).
+MAX_CLASSIFY_PER_RUN = int(os.environ.get("MAX_CLASSIFY_PER_RUN", "5"))
+# Truncate post text so each call stays well under the free-tier input-tokens-per-minute
+# cap. The thesis is almost always within the first few thousand characters.
+POST_TEXT_LIMIT = int(os.environ.get("POST_TEXT_LIMIT", "4000"))
 
 # Twelve Data free tier caps 8 requests/minute (and 800/day). Same reasoning as above:
 # pace the per-ticker price calls sequentially. 60/8 = 7.5s, rounded up to 8s.
@@ -196,11 +204,12 @@ def get_post_body(slug):
 
 
 def get_seen_slugs(s3_client):
+    """Returns (seen_slugs_set, file_existed_bool)."""
     try:
         obj = s3_client.get_object(Bucket=S3_BUCKET, Key=SEEN_SLUGS_KEY)
-        return set(json.loads(obj["Body"].read()))
+        return set(json.loads(obj["Body"].read())), True
     except Exception:
-        return set()
+        return set(), False
 
 
 def save_seen_slugs(s3_client, slugs):
@@ -253,7 +262,7 @@ CLASSIFY_SCHEMA = {
 
 def _classify_prompt(post_title, post_text, model_names):
     models_block = "\n".join(f"- {n}" for n in model_names)
-    text = (post_text or "")[:12000]
+    text = (post_text or "")[:POST_TEXT_LIMIT]
     return (
         "You are classifying a stock-analysis blog post from an Indian/US markets "
         "newsletter into a structured tracker entry. Read the post and extract:\n"
@@ -277,6 +286,12 @@ def _classify_prompt(post_title, post_text, model_names):
     )
 
 
+def _retry_delay_seconds(detail):
+    """Pull the suggested retryDelay (e.g. \"25s\") out of a Gemini 429 error body."""
+    m = re.search(r'"retryDelay":\s*"(\d+)s"', detail or "")
+    return int(m.group(1)) if m else None
+
+
 def classify_post_with_gemini(ssm_client, post_title, post_text, model_names):
     """
     Calls the Gemini API (free tier) with the mental-model list embedded and returns
@@ -297,15 +312,28 @@ def classify_post_with_gemini(ssm_client, post_title, post_text, model_names):
         },
     }
     data = json.dumps(body).encode("utf-8")
-    try:
-        resp = fetch_json(url, data=data, headers={"Content-Type": "application/json"}, timeout=40)
-    except urllib.error.HTTPError as e:
-        detail = ""
+
+    def _attempt():
         try:
-            detail = e.read().decode("utf-8")[:300]
-        except Exception:
-            pass
-        raise RuntimeError(f"{e.code} {e.reason} {detail}")
+            return fetch_json(url, data=data, headers={"Content-Type": "application/json"}, timeout=40)
+        except urllib.error.HTTPError as e:
+            detail = ""
+            try:
+                detail = e.read().decode("utf-8")
+            except Exception:
+                pass
+            if e.code == 429:
+                raise RateLimited(f"429 {detail[:300]}", _retry_delay_seconds(detail))
+            raise RuntimeError(f"{e.code} {e.reason} {detail[:300]}")
+
+    try:
+        resp = _attempt()
+    except RateLimited as e:
+        # Honor the API's suggested retry delay once (bounded), then let it propagate so
+        # the caller logs it and this post is retried on the next run.
+        time.sleep(min(e.retry_after or 20, 30))
+        resp = _attempt()
+
     candidates = resp.get("candidates") or []
     if not candidates:
         raise RuntimeError(f"no candidates in Gemini response: {json.dumps(resp)[:300]}")
@@ -326,8 +354,9 @@ def classify_new_posts(s3_client, ssm_client, new_posts, get_post_body_fn, model
 
     Returns a list of draft stock entries for the pending-review queue.
     """
+    batch = new_posts[:MAX_CLASSIFY_PER_RUN]  # cap per run; the rest wait for next run
     drafts = []
-    for i, post in enumerate(new_posts):
+    for i, post in enumerate(batch):
         try:
             body_html = get_post_body_fn(post["slug"])
         except Exception as e:
@@ -360,7 +389,7 @@ def classify_new_posts(s3_client, ssm_client, new_posts, get_post_body_fn, model
             )
             continue
 
-        is_last = (i == len(new_posts) - 1)
+        is_last = (i == len(batch) - 1)
         if not is_last:
             time.sleep(GEMINI_CALL_DELAY_SECONDS)
 
@@ -372,7 +401,11 @@ def classify_new_posts(s3_client, ssm_client, new_posts, get_post_body_fn, model
 # ---------------------------------------------------------------------------
 
 class RateLimited(Exception):
-    """Raised when Twelve Data signals we've hit its free-tier limit (429 / out of credits)."""
+    """Raised on a 429 free-tier limit (Twelve Data credits, or Gemini RPM/TPM/RPD).
+    Carries the API's suggested retry delay in seconds when one was provided."""
+    def __init__(self, message, retry_after=None):
+        super().__init__(message)
+        self.retry_after = retry_after
 
 
 def twelvedata_price(symbol, exch, api_key):
@@ -503,7 +536,7 @@ def lambda_handler(event, context):
 
     # --- 1-3: detect + classify new posts -------------------------------------
     try:
-        seen = get_seen_slugs(s3)
+        seen, seen_existed = get_seen_slugs(s3)
         archive = get_archive()
     except Exception as e:
         log_event(
@@ -511,9 +544,23 @@ def lambda_handler(event, context):
             "Failed to fetch Substack archive — skipping post detection this run",
             {"exception": str(e), "traceback": traceback.format_exc()[-800:]},
         )
-        archive, seen = [], set()
+        archive, seen, seen_existed = [], set(), True
 
     new_posts = [p for p in archive if p["slug"] not in seen]
+
+    # First run ever: everything currently in the archive is already represented in the
+    # curated data.json, so seed seen_slugs and DON'T re-classify the backlog. Gemini
+    # classification only fires for posts published after this point.
+    if not seen_existed and archive:
+        seen.update(p["slug"] for p in archive)
+        try:
+            save_seen_slugs(s3, seen)
+        except Exception as e:
+            log_event(s3, "error", "s3_write", "Failed to seed seen_slugs.json", {"exception": str(e)})
+        log_event(s3, "info", "run_summary",
+                  f"First run: seeded {len(archive)} existing post(s), skipped backlog classification",
+                  {"seeded": len(archive)})
+        new_posts = []
 
     pending_review = []
     if new_posts:
@@ -537,8 +584,12 @@ def lambda_handler(event, context):
             log_event(s3, "error", "s3_write", "Failed to write pending_review.json",
                       {"exception": str(e)})
 
-    if new_posts:
-        seen.update(p["slug"] for p in new_posts)
+    # Mark only successfully-classified posts as seen, so posts that failed (rate limit,
+    # transient error) or weren't reached this run (per-run cap) are retried next run
+    # instead of being silently dropped.
+    classified_slugs = {d.get("_source_slug") for d in pending_review}
+    if classified_slugs:
+        seen.update(classified_slugs)
         try:
             save_seen_slugs(s3, seen)
         except Exception as e:
@@ -564,7 +615,8 @@ def lambda_handler(event, context):
         f"Run complete: {len(new_posts)} new post(s), {len(pending_review)} classified, "
         f"{len(updated)} price(s) updated",
         {"new_posts": len(new_posts), "classified": len(pending_review),
-         "failed": len(new_posts) - len(pending_review), "prices_updated": len(updated)},
+         "remaining_unclassified": max(0, len(new_posts) - len(pending_review)),
+         "prices_updated": len(updated)},
     )
 
     return {
