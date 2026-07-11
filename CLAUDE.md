@@ -125,9 +125,13 @@ a 30-second manual check.
 1. **The actual AWS deploy** — everything is coded and validated locally, but nothing has
    been created in AWS yet (waiting on a dedicated account + its `capillary-deployer` creds
    and the two API keys). Once those exist: `AWS_PROFILE=capillary ./infra/deploy.sh`.
-2. **"Pending review" UI** — the scraper writes auto-classified drafts to
-   `pending_review.json` in S3 (the safety net), but there's no frontend yet to review and
-   promote them into `data.json`. For now, review that file and hand-merge.
+2. **Promoting classified drafts** — the scraper writes auto-classified drafts to
+   `pending_review.json` (the safety net). Promote them with `infra/promote.sh`:
+   `./infra/promote.sh list`, then `./infra/promote.sh approve <slug> [--model "Name"]`.
+   Approve adds the stock, **tags the ticker onto its mental model** (`models[].tickers` —
+   the reverse cross-link the UI needs), adds the `stockPosts` link, drains the queue, and
+   re-uploads `data.json`. A pure-stdlib `infra/promote.py` does the wiring; there's no
+   in-browser review UI (CLI only, by design — it's a personal tool).
 3. **Add-Stock hardening** — the write API is a public (unauthenticated) Function URL with
    open CORS. Fine for a personal tracker; add Cognito / a shared-secret header before it's
    anything more. See the note atop `lambda/addstock.py`.

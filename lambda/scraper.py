@@ -372,6 +372,7 @@ def classify_new_posts(s3_client, ssm_client, new_posts, get_post_body_fn, model
         try:
             draft = classify_post_with_gemini(ssm_client, post["title"], plain_text, model_names)
             draft["_source_slug"] = post["slug"]
+            draft["_source_title"] = post.get("title")
             draft["_classified_at"] = datetime.now(timezone.utc).isoformat()
             draft["custom"] = False
             drafts.append(draft)

@@ -90,6 +90,25 @@ When you intentionally edit curated content (a thesis, a new model), force it:
 FORCE_DATA=1 AWS_PROFILE=capillary ./infra/deploy.sh
 ```
 
+## Promoting a newly-classified post into the tracker
+
+The daily scraper classifies new posts into `pending_review.json` (it never auto-publishes).
+To review and promote:
+
+```bash
+AWS_PROFILE=capillary ./infra/promote.sh list                      # see pending drafts
+AWS_PROFILE=capillary ./infra/promote.sh approve <slug>            # wire it in + go live
+AWS_PROFILE=capillary ./infra/promote.sh approve <slug> --model "The Two-Engine Framework"  # if the model tag needs fixing
+AWS_PROFILE=capillary ./infra/promote.sh reject  <slug>            # discard a draft
+```
+
+`approve` adds the stock to `data.json`, **tags the ticker onto its mental model**
+(`models[].tickers` — the reverse link that drives the model's ticker chips and the stock
+modal's "Mental Models Behind This Call"), adds the `stockPosts` "read the original post"
+link, removes the draft from the queue, re-uploads `data.json`, and invalidates CloudFront.
+If the classifier's model guess doesn't match one of the 20 frameworks, `approve` refuses
+and lists the valid `--model` names.
+
 ## Teardown
 
 ```bash
