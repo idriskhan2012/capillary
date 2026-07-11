@@ -104,10 +104,12 @@ AWS_PROFILE=capillary ./infra/teardown.sh    # asks you to type 'delete' to conf
   tier. The scraper automatically falls back to Yahoo Finance for any ticker Twelve Data
   can't price, and keeps the previous price (never blanks it) if both fail — failures show up
   in the site's **System Diagnostics** panel.
-- **Add-Stock auth:** the write API is a public Function URL (CORS-open, called directly by the
-  site — `deploy.sh` writes its URL into `config.js`) — fine for a personal tracker, but it is
-  *not* authenticated. To harden, put Cognito or a shared-secret header in front of
-  `capillary-addstock`. See the note at the top of [`lambda/addstock.py`](../lambda/addstock.py).
+- **Add-Stock auth:** the write API's Function URL is **AuthType `AWS_IAM`** — not publicly
+  invokable. The site reaches it same-origin via CloudFront's `/api/*` behavior, which
+  SigV4-signs each request through an Origin Access Control (OAC). A direct anonymous call
+  to the Function URL returns 403. `deploy.sh` runs in **two passes**: pass 1 creates the
+  Function URL, pass 2 wires CloudFront to its domain (passed as a plain parameter, which
+  sidesteps a CloudFront early-validation quirk with unresolved origin references).
 - **Region:** defaults to `ap-south-1` (Mumbai). Override with `CAP_REGION=...`. CloudFront is
   global regardless.
 - **Secrets** live only in SSM Parameter Store (SecureString) and your local `secrets.env` —

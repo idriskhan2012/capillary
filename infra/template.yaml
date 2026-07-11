@@ -25,6 +25,17 @@ Parameters:
   GeminiModel:
     Type: String
     Default: gemini-2.0-flash
+  ApiOriginDomain:
+    Type: String
+    Default: ""
+    Description: >
+      Host of the Add-Stock Lambda Function URL (no scheme/slash). Left empty on the
+      first deploy pass; deploy.sh fills it on the second pass so CloudFront can route
+      /api/* to the IAM-signed Function URL. Passing it as a plain string (not a
+      GetAtt/Split of an as-yet-uncreated resource) avoids CloudFront early-validation.
+
+Conditions:
+  HasApi: !Not [!Equals [!Ref ApiOriginDomain, ""]]
 
 Resources:
 
@@ -52,6 +63,18 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
+  # OAC that lets CloudFront SigV4-sign requests to the IAM-protected Function URL,
+  # so the browser reaches the Add-Stock API same-origin via /api/* with no public,
+  # unauthenticated endpoint anywhere.
+  LambdaOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${ProjectName}-lambda-oac"
+        OriginAccessControlOriginType: lambda
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
   Distribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -60,28 +83,57 @@ Resources:
         Comment: !Sub "${ProjectName} research terminal"
         DefaultRootObject: index.html
         PriceClass: PriceClass_200
-        Origins:
-          - Id: s3-origin
-            DomainName: !GetAtt SiteBucket.RegionalDomainName
-            OriginAccessControlId: !Ref OriginAccessControl
-            S3OriginConfig:
-              OriginAccessIdentity: ""
+        Origins: !If
+          - HasApi
+          - - Id: s3-origin
+              DomainName: !GetAtt SiteBucket.RegionalDomainName
+              OriginAccessControlId: !Ref OriginAccessControl
+              S3OriginConfig:
+                OriginAccessIdentity: ""
+            - Id: api-origin
+              DomainName: !Ref ApiOriginDomain
+              OriginAccessControlId: !Ref LambdaOriginAccessControl
+              CustomOriginConfig:
+                OriginProtocolPolicy: https-only
+                OriginSSLProtocols: [TLSv1.2]
+          - - Id: s3-origin
+              DomainName: !GetAtt SiteBucket.RegionalDomainName
+              OriginAccessControlId: !Ref OriginAccessControl
+              S3OriginConfig:
+                OriginAccessIdentity: ""
         DefaultCacheBehavior:
           TargetOriginId: s3-origin
           ViewerProtocolPolicy: redirect-to-https
           AllowedMethods: [GET, HEAD]
           CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6   # Managed-CachingOptimized
-        CacheBehaviors:
-          - PathPattern: /data.json
-            TargetOriginId: s3-origin
-            ViewerProtocolPolicy: redirect-to-https
-            AllowedMethods: [GET, HEAD]
-            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # Managed-CachingDisabled
-          - PathPattern: /logs.json
-            TargetOriginId: s3-origin
-            ViewerProtocolPolicy: redirect-to-https
-            AllowedMethods: [GET, HEAD]
-            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # Managed-CachingDisabled
+        CacheBehaviors: !If
+          - HasApi
+          - - PathPattern: /api/*
+              TargetOriginId: api-origin
+              ViewerProtocolPolicy: redirect-to-https
+              AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad          # Managed-CachingDisabled
+              OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac  # AllViewerExceptHostHeader
+            - PathPattern: /data.json
+              TargetOriginId: s3-origin
+              ViewerProtocolPolicy: redirect-to-https
+              AllowedMethods: [GET, HEAD]
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            - PathPattern: /logs.json
+              TargetOriginId: s3-origin
+              ViewerProtocolPolicy: redirect-to-https
+              AllowedMethods: [GET, HEAD]
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+          - - PathPattern: /data.json
+              TargetOriginId: s3-origin
+              ViewerProtocolPolicy: redirect-to-https
+              AllowedMethods: [GET, HEAD]
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            - PathPattern: /logs.json
+              TargetOriginId: s3-origin
+              ViewerProtocolPolicy: redirect-to-https
+              AllowedMethods: [GET, HEAD]
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
 
   SiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -151,21 +203,24 @@ Resources:
           TABLE_NAME: !Ref CustomStocksTable
           ALLOWED_ORIGIN: "*"
 
-  # No Cors block here on purpose — the handler in addstock.py owns CORS entirely
-  # (returns the headers + handles OPTIONS), which avoids duplicate-header conflicts.
+  # AWS_IAM auth: the URL is NOT publicly invokable. Only CloudFront (via OAC, which
+  # SigV4-signs each request) can reach it — see AddStockUrlPermission below.
   AddStockUrl:
     Type: AWS::Lambda::Url
     Properties:
       TargetFunctionArn: !Ref AddStockFunction
-      AuthType: NONE
+      AuthType: AWS_IAM
 
+  # Grant only CloudFront (this distribution) permission to invoke the IAM-auth URL.
   AddStockUrlPermission:
     Type: AWS::Lambda::Permission
+    Condition: HasApi
     Properties:
       FunctionName: !Ref AddStockFunction
       Action: lambda:InvokeFunctionUrl
-      Principal: "*"
-      FunctionUrlAuthType: NONE
+      Principal: cloudfront.amazonaws.com
+      SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}"
+      FunctionUrlAuthType: AWS_IAM
 
   # --- Scraper (daily cron) ------------------------------------------------
   ScraperRole:

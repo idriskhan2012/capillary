@@ -65,16 +65,28 @@ aws cloudformation package \
   --output-template-file infra/packaged.yaml \
   --region "$REGION" >/dev/null
 
-echo "Deploying stack ${STACK_NAME} (CloudFront can take 5-15 min on first run)..."
-aws cloudformation deploy \
-  --template-file infra/packaged.yaml \
-  --stack-name "$STACK_NAME" \
-  --capabilities CAPABILITY_IAM \
-  --parameter-overrides SiteBucketName="$SITE_BUCKET" ProjectName="$PROJECT" \
-  --region "$REGION"
-
 get_output () { aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$REGION" \
   --query "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue" --output text; }
+
+deploy_stack () {  # $1 = ApiOriginDomain ("" on pass 1)
+  aws cloudformation deploy \
+    --template-file infra/packaged.yaml \
+    --stack-name "$STACK_NAME" \
+    --capabilities CAPABILITY_IAM \
+    --parameter-overrides SiteBucketName="$SITE_BUCKET" ProjectName="$PROJECT" ApiOriginDomain="$1" \
+    --region "$REGION"
+}
+
+# Two-pass deploy: pass 1 creates everything incl. the IAM-auth Function URL; pass 2
+# wires CloudFront's /api/* behavior to that URL's domain (passed as a plain string,
+# which avoids the CloudFront early-validation issue with unresolved GetAtt origins).
+echo "Deploying stack ${STACK_NAME} — pass 1/2 (CloudFront can take 5-15 min on first run)..."
+deploy_stack ""
+
+API_URL="$(get_output AddStockFunctionUrl)"
+API_HOST="${API_URL#https://}"; API_HOST="${API_HOST%/}"
+echo "Deploying stack ${STACK_NAME} — pass 2/2 (wiring /api/* -> ${API_HOST})..."
+deploy_stack "$API_HOST"
 
 BUCKET="$(get_output SiteBucketName)"
 DIST_ID="$(get_output DistributionId)"
@@ -93,12 +105,10 @@ else
   echo "Keeping existing live data.json (set FORCE_DATA=1 to overwrite)."
 fi
 
-# Point the site at the live Add-Stock API (Lambda Function URL). The site calls it
-# directly (cross-origin); CORS is handled inside addstock.py.
-API_URL="$(get_output AddStockFunctionUrl)"
-API_BASE="${API_URL%/}"
-echo "Wiring site to Add-Stock API: ${API_BASE}"
-printf 'window.CAPILLARY_API_BASE=%s;\n' "\"${API_BASE}\"" > /tmp/capillary-config.js
+# The site reaches the Add-Stock API same-origin via CloudFront's /api/* behavior
+# (CloudFront signs to the IAM-auth Function URL). So the API base is just "/api".
+echo "Wiring site to Add-Stock API at same-origin /api ..."
+printf 'window.CAPILLARY_API_BASE=%s;\n' "\"/api\"" > /tmp/capillary-config.js
 aws s3 cp /tmp/capillary-config.js "s3://${BUCKET}/config.js" \
   --content-type application/javascript --cache-control no-cache --region "$REGION"
 

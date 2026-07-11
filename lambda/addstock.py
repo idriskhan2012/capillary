@@ -14,11 +14,10 @@ Routes (the site calls these same-origin via CloudFront's /api/* behavior):
 Table: PK `ticker` (String). Every item carries custom=true so the frontend renders
 the "Yours" badge and delete affordance.
 
-Note on auth: the Function URL is public (AuthType NONE) with CORS locked to the site
-origin, which stops casual browser abuse but is not real authentication — anyone who
-finds the URL could POST to it with curl. That's an accepted tradeoff for a personal
-tracker with a tiny, non-sensitive, capped payload. To harden later, put Cognito or a
-shared-secret header in front; see docs/DEPLOY.md.
+Auth: the Function URL uses AuthType AWS_IAM — it is NOT publicly invokable. The site
+reaches it same-origin through CloudFront, which SigV4-signs each request via an Origin
+Access Control (OAC). A direct anonymous call to the Function URL returns 403. See
+docs/DEPLOY.md. (This handler still emits CORS headers; harmless for the same-origin path.)
 """
 import json
 import os
