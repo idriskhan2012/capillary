@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# AWS / secrets
+.env
+*.pem
+.aws-sam/
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+
+# secrets + build artifacts
+infra/secrets.env
+infra/packaged.yaml

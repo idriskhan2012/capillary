@@ -1,0 +1,254 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  The Capillary Research Terminal — static site (S3 + CloudFront), a daily scraper
+  Lambda (EventBridge cron) that refreshes prices and classifies new posts, and a
+  DynamoDB-backed "Add Stock" API behind a free Lambda Function URL. Designed to sit
+  inside the AWS always-free / 12-month-free tiers. See docs/DEPLOY.md.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: capillary
+  SiteBucketName:
+    Type: String
+    Description: Globally-unique S3 bucket name for the site + data.json + logs.json.
+  ScheduleExpression:
+    Type: String
+    Default: cron(0 21 * * ? *)
+    Description: When the scraper runs (UTC). Default 21:00 UTC = after US + India close.
+  GeminiParamName:
+    Type: String
+    Default: /capillary/gemini-api-key
+  TwelveDataParamName:
+    Type: String
+    Default: /capillary/twelvedata-api-key
+  GeminiModel:
+    Type: String
+    Default: gemini-2.0-flash
+
+Resources:
+
+  # --- Static hosting ------------------------------------------------------
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      BucketName: !Ref SiteBucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${ProjectName}-s3-oac"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub "${ProjectName} research terminal"
+        DefaultRootObject: index.html
+        PriceClass: PriceClass_200
+        Origins:
+          - Id: s3-origin
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            OriginAccessControlId: !Ref OriginAccessControl
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          TargetOriginId: s3-origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6   # Managed-CachingOptimized
+        CacheBehaviors:
+          - PathPattern: /data.json
+            TargetOriginId: s3-origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD]
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # Managed-CachingDisabled
+          - PathPattern: /logs.json
+            TargetOriginId: s3-origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD]
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # Managed-CachingDisabled
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${SiteBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}"
+
+  # --- Add-Stock API (DynamoDB + Function URL) -----------------------------
+  CustomStocksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${ProjectName}-custom-stocks"
+      AttributeDefinitions:
+        - AttributeName: ticker
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ticker
+          KeyType: HASH
+      # Provisioned 5/5 stays inside DynamoDB's always-free 25 RCU + 25 WCU tier.
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  AddStockRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: dynamodb-crud
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:DeleteItem, dynamodb:Scan]
+                Resource: !GetAtt CustomStocksTable.Arn
+
+  AddStockFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-addstock"
+      Runtime: python3.12
+      Handler: addstock.lambda_handler
+      Role: !GetAtt AddStockRole.Arn
+      Timeout: 15
+      MemorySize: 128
+      Code: ../lambda
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref CustomStocksTable
+          ALLOWED_ORIGIN: "*"
+
+  # No Cors block here on purpose — the handler in addstock.py owns CORS entirely
+  # (returns the headers + handles OPTIONS), which avoids duplicate-header conflicts.
+  AddStockUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !Ref AddStockFunction
+      AuthType: NONE
+
+  AddStockUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref AddStockFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: "*"
+      FunctionUrlAuthType: NONE
+
+  # --- Scraper (daily cron) ------------------------------------------------
+  ScraperRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: s3-data-rw
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [s3:GetObject, s3:PutObject]
+                Resource: !Sub "${SiteBucket.Arn}/*"
+        - PolicyName: read-secrets
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: ssm:GetParameter
+                Resource:
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${GeminiParamName}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${TwelveDataParamName}"
+              - Effect: Allow
+                Action: kms:Decrypt
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    kms:ViaService: !Sub "ssm.${AWS::Region}.amazonaws.com"
+
+  ScraperFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-scraper"
+      Runtime: python3.12
+      Handler: scraper.lambda_handler
+      Role: !GetAtt ScraperRole.Arn
+      Timeout: 600
+      MemorySize: 256
+      Code: ../lambda
+      Environment:
+        Variables:
+          DATA_BUCKET: !Ref SiteBucket
+          GEMINI_PARAM: !Ref GeminiParamName
+          TWELVEDATA_PARAM: !Ref TwelveDataParamName
+          GEMINI_MODEL: !Ref GeminiModel
+
+  ScheduleRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${ProjectName}-daily-scrape"
+      ScheduleExpression: !Ref ScheduleExpression
+      State: ENABLED
+      Targets:
+        - Id: scraper
+          Arn: !GetAtt ScraperFunction.Arn
+
+  SchedulePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ScraperFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ScheduleRule.Arn
+
+Outputs:
+  SiteURL:
+    Description: Public HTTPS URL of the tracker.
+    Value: !Sub "https://${Distribution.DomainName}"
+  DistributionId:
+    Description: CloudFront distribution id (for cache invalidations).
+    Value: !Ref Distribution
+  SiteBucketName:
+    Value: !Ref SiteBucket
+  ScraperFunctionName:
+    Value: !Ref ScraperFunction
+  AddStockFunctionUrl:
+    Description: Direct Function URL (the site normally reaches it via /api/*).
+    Value: !GetAtt AddStockUrl.FunctionUrl

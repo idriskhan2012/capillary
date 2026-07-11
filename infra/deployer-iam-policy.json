@@ -1,0 +1,67 @@
+{
+  "Version": "2012-10-17",
+  "Comment": "Permissions for the 'capillary-deployer' IAM user to deploy the whole stack via infra/deploy.sh. Scoped to the services this project uses. In a dedicated project account you may instead just attach the AWS-managed 'AdministratorAccess' policy for least friction.",
+  "Statement": [
+    {
+      "Sid": "CoreServices",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:*",
+        "s3:*",
+        "cloudfront:*",
+        "lambda:*",
+        "dynamodb:*",
+        "events:*",
+        "logs:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Secrets",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:PutParameter",
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "ssm:DeleteParameter",
+        "ssm:AddTagsToResource"
+      ],
+      "Resource": "arn:aws:ssm:*:*:parameter/capillary/*"
+    },
+    {
+      "Sid": "SecretsKms",
+      "Effect": "Allow",
+      "Action": ["kms:Encrypt", "kms:Decrypt", "kms:DescribeKey"],
+      "Resource": "*",
+      "Condition": { "StringLike": { "kms:ViaService": "ssm.*.amazonaws.com" } }
+    },
+    {
+      "Sid": "IamForLambdaRoles",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:PassRole",
+        "iam:TagRole",
+        "iam:UntagRole",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRoleTags",
+        "iam:UpdateAssumeRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::*:role/capillary-*"
+    },
+    {
+      "Sid": "WhoAmI",
+      "Effect": "Allow",
+      "Action": ["sts:GetCallerIdentity"],
+      "Resource": "*"
+    }
+  ]
+}

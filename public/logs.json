@@ -1,0 +1,23 @@
+[
+  {
+    "timestamp": "2026-07-10T18:02:11+00:00",
+    "level": "info",
+    "source": "run_summary",
+    "message": "Run complete: 1 new post(s), 1 classified successfully",
+    "context": { "new_posts": 1, "classified": 1, "failed": 0 }
+  },
+  {
+    "timestamp": "2026-07-09T18:01:47+00:00",
+    "level": "error",
+    "source": "gemini_classify",
+    "message": "Classification failed for 'kalyan-vs-titan-a-10x-ticker-gap' (rate limited — check GEMINI_CALL_DELAY_SECONDS pacing)",
+    "context": { "slug": "kalyan-vs-titan-a-10x-ticker-gap", "rate_limited": true, "exception": "429 RESOURCE_EXHAUSTED" }
+  },
+  {
+    "timestamp": "2026-07-09T18:01:40+00:00",
+    "level": "warning",
+    "source": "price_refresh",
+    "message": "Ticker lookup returned no data, kept previous known price",
+    "context": { "ticker": "AIRFLOA.BO", "exception": "empty result set" }
+  }
+]

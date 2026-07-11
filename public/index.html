@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Capillary — Research Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#FAFAF7; --surface:#FFFFFF; --surface2:#F5F4EF; --line:#E4E2D9; --line-strong:#CFCDC1;
+    --text:#1E1D1A; --text-secondary:#46443E; --muted:#75726A; --accent:#C9541A;
+    --bull:#1E7A52; --bull-dim:#E3F3EB;
+    --bear:#B7362F; --bear-dim:#FAEAE8;
+    --neutral:#9C6B0B; --neutral-dim:#FAF0DB;
+    --c1:#1E7A52; --c2:#2E67A8; --c3:#B7362F; --c4:#9C6B0B; --c5:#7A4FA3;
+    --shadow:0 1px 2px rgba(30,29,26,.04), 0 4px 12px rgba(30,29,26,.05);
+    --shadow-hover:0 2px 4px rgba(30,29,26,.06), 0 8px 20px rgba(30,29,26,.08);
+  }
+  [data-theme="dark"]{
+    --ink:#0E1116; --surface:#161B22; --surface2:#1D232C; --line:#2A313C; --line-strong:#3a4351;
+    --text:#EDEAE2; --text-secondary:#B7BEC9; --muted:#8B93A1; --accent:#FF6719;
+    --bull:#4FB783; --bull-dim:#1F3D31;
+    --bear:#E5605A; --bear-dim:#3F2523;
+    --neutral:#D9A441; --neutral-dim:#3A2E17;
+    --c1:#4FB783; --c2:#6FA8DC; --c3:#E5605A; --c4:#D9A441; --c5:#B98CE0;
+    --shadow:none;
+    --shadow-hover:none;
+  }
+  *{box-sizing:border-box;}
+  html{background:var(--ink);}
+  body{margin:0;background:var(--ink);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .15s ease,color .15s ease;}
+  .wrap{max-width:1180px;margin:0 auto;padding:36px 24px 80px;}
+
+  header{position:relative;padding:32px 0 24px;border-bottom:1px solid var(--line);margin-bottom:6px;overflow:hidden;}
+  .vein-bg{position:absolute;inset:0;pointer-events:none;opacity:.32;}
+  header h1{font-family:'Source Serif 4',serif;font-weight:600;font-size:40px;letter-spacing:-.3px;margin:0 0 10px;position:relative;}
+  header h1 span{color:var(--accent);}
+  header p{color:var(--text-secondary);font-size:16px;max-width:680px;line-height:1.65;margin:0;position:relative;}
+
+  .tabbar{display:flex;gap:6px;position:relative;}
+  .tab-btn{
+    font-family:'Inter',sans-serif;font-size:14px;font-weight:500;padding:10px 18px;
+    background:none;border:none;color:var(--muted);cursor:pointer;
+    border-bottom:2px solid transparent;margin-bottom:-1px;letter-spacing:.3px;
+  }
+  .tab-btn:hover{color:var(--text);}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
+  .tab-count{opacity:.6;font-size:11px;}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .meta-row{display:flex;gap:26px;margin:20px 0 4px;flex-wrap:wrap;}
+  .meta-item{font-family:'Inter',sans-serif;font-size:12.5px;color:var(--muted);}
+  .meta-item b{color:var(--text);font-size:19px;display:block;font-weight:600;}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 4px;}
+  .filter-btn{
+    font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:7px 14px;border-radius:20px;
+    border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s ease;
+  }
+  .filter-btn:hover{border-color:var(--accent);color:var(--text);}
+  .filter-btn.active{background:var(--accent);color:#161005;border-color:var(--accent);font-weight:600;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:16px;}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 18px 16px;
+    display:flex;flex-direction:column;gap:10px;transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;cursor:pointer;box-shadow:var(--shadow);
+  }
+  .card:hover{border-color:var(--line-strong);transform:translateY(-2px);box-shadow:var(--shadow-hover);}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+  .ticker-block .ticker{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;letter-spacing:.5px;}
+  .ticker-block .name{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .badge{font-family:'Inter',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.4px;padding:4px 9px;border-radius:20px;white-space:nowrap;font-weight:600;}
+  .badge.bull{background:var(--bull-dim);color:var(--bull);}
+  .badge.bear{background:var(--bear-dim);color:var(--bear);}
+  .badge.neutral{background:var(--neutral-dim);color:var(--neutral);}
+  .price-row{display:flex;justify-content:space-between;align-items:baseline;margin-top:2px;}
+  .price-block{font-family:'IBM Plex Mono',monospace;}
+  .price-block .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+  .price-block .val{font-size:17px;font-weight:600;}
+  .change{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;}
+  .change.up{color:var(--bull);}
+  .change.down{color:var(--bear);}
+  .model-tag{
+    font-size:11.5px;color:var(--accent);background:rgba(255,103,25,.08);border:1px solid rgba(255,103,25,.25);
+    padding:4px 8px;border-radius:5px;display:inline-block;width:fit-content;
+  }
+  .thesis{font-size:13.5px;color:var(--text-secondary);line-height:1.55;}
+
+  .cat-nav{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 4px;}
+  .cat-btn{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:7px 14px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;}
+  .cat-btn:hover{color:var(--text);}
+  .cat-block{margin-top:36px;}
+  .cat-title{font-family:'Source Serif 4',serif;font-size:22px;font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+  .cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .cat-desc{color:var(--muted);font-size:13.5px;margin:0 0 16px;max-width:720px;line-height:1.5;}
+  .m-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+  .m-card{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:16px 18px;cursor:pointer;transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;box-shadow:var(--shadow);}
+  .m-card:hover{transform:translateY(-2px);border-color:var(--line-strong);box-shadow:var(--shadow-hover);}
+  .m-name{font-family:'Source Serif 4',serif;font-weight:600;font-size:17.5px;margin-bottom:6px;}
+  .m-oneliner{font-size:13.5px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;}
+  .m-tickers{display:flex;gap:6px;flex-wrap:wrap;}
+  .tick-chip{
+    font-family:'Inter',sans-serif;font-size:12px;font-weight:500;background:rgba(255,255,255,.05);
+    border:1px solid var(--line);padding:3px 8px;border-radius:12px;color:var(--muted);cursor:pointer;transition:all .12s ease;
+  }
+  .tick-chip:hover{border-color:var(--accent);color:var(--accent);}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(6,7,9,.78);backdrop-filter:blur(2px);display:none;align-items:flex-start;justify-content:center;padding:56px 20px;z-index:50;overflow-y:auto;}
+  .modal-bg.open{display:flex;}
+  .modal{background:var(--surface2);border:1px solid var(--line);border-radius:14px;max-width:680px;width:100%;padding:30px 32px 26px;position:relative;box-shadow:0 8px 40px rgba(30,29,26,.12);}
+  .modal-close{position:absolute;top:18px;right:18px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;}
+  .modal-close:hover{color:var(--text);}
+  .modal .eyebrow{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);margin-bottom:8px;}
+  .modal h2{font-family:'Source Serif 4',serif;font-size:27px;margin:0 0 4px;padding-right:30px;line-height:1.25;}
+  .modal .sub{color:var(--muted);font-size:13px;margin-bottom:14px;}
+  .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+  .modal-stat{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;}
+  .modal-stat .lbl{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+  .modal-stat .val{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;margin-top:3px;}
+  .modal-section{margin-top:16px;}
+  .modal-section .h{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:6px;}
+  .modal-section p{font-size:15px;line-height:1.68;color:var(--text-secondary);margin:0;}
+  .modal-section.analogy{background:rgba(255,103,25,.06);border:1px solid rgba(255,103,25,.2);border-radius:8px;padding:14px 16px;}
+  .modal-section.analogy .h{color:var(--accent);}
+  .chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+  .form-field{display:flex;flex-direction:column;gap:4px;}
+  .form-field.full{grid-column:1/-1;}
+  .form-field label{font-family:'Inter',sans-serif;font-size:11.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+  .form-field input, .form-field select, .form-field textarea{
+    background:var(--surface);border:1px solid var(--line);border-radius:6px;color:var(--text);
+    padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;
+  }
+  .form-field textarea{resize:vertical;min-height:60px;}
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus{outline:none;border-color:var(--accent);}
+  .form-actions{display:flex;gap:10px;margin-top:18px;}
+  .btn-primary{
+    font-family:'Inter',sans-serif;font-size:14px;padding:10px 18px;border-radius:8px;border:none;
+    background:var(--accent);color:#161005;font-weight:600;cursor:pointer;
+  }
+  .btn-secondary{
+    font-family:'Inter',sans-serif;font-size:14px;padding:10px 18px;border-radius:8px;
+    border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;
+  }
+  .custom-badge{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;color:var(--accent);border:1px solid var(--accent);padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.3px;}
+  .delete-x{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:2px 6px;}
+  .delete-x:hover{color:var(--bear);}
+
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.6;}
+  a{color:var(--accent);}
+  @media (max-width:560px){
+    header h1{font-size:28px;}
+    .modal{padding:24px 20px;}
+    .modal-grid{grid-template-columns:1fr;}
+    .tab-btn{padding:9px 12px;font-size:12px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <svg class="vein-bg" viewBox="0 0 1180 140" preserveAspectRatio="none">
+      <path d="M0,110 C150,80 220,140 340,100 C460,60 500,120 620,80 C740,40 800,100 920,70 C1040,40 1100,80 1180,50"
+        fill="none" stroke="#FF6719" stroke-width="1.2" opacity="0.5"/>
+      <path d="M0,125 C120,115 200,80 320,120 C440,155 540,100 660,125 C780,155 860,110 980,125 C1080,138 1130,118 1180,125"
+        fill="none" stroke="#FF6719" stroke-width="1" opacity="0.3"/>
+    </svg>
+    <h1>The <span>Capillary</span> — Research Terminal</h1>
+    <p>Every stock mentioned across all 16 posts, plus the 20 mental models behind those calls — cross-linked both ways. Open a stock to see exactly which frameworks drove the call; open a model to see every stock it was tested on.</p>
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-top:26px;border-bottom:1px solid var(--line);padding-bottom:0;">
+      <div class="tabbar">
+        <button class="tab-btn active" data-tab="stocks">Stock Tracker <span class="tab-count">· 18</span></button>
+        <button class="tab-btn" data-tab="models">Mental Models Guide <span class="tab-count">· 20</span></button>
+      </div>
+      <button id="themeToggleBtn" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:8px 16px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;margin-bottom:8px;">Dark mode</button>
+    </div>
+  </header>
+
+  <div class="panel active" id="panel-stocks">
+    <div class="meta-row">
+      <div class="meta-item"><b>16</b>posts read</div>
+      <div class="meta-item" id="trackedCount"><b>18</b>stocks tracked</div>
+      <div class="meta-item"><b>10</b>bullish calls</div>
+      <div class="meta-item"><b>7</b>bearish / avoid</div>
+      <div class="meta-item"><b>Jul 11, 2026</b>prices as of</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+      <div class="filters" id="stockFilters"></div>
+      <button id="addStockBtn" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:8px 16px;border-radius:20px;border:1px solid var(--accent);background:rgba(255,103,25,.1);color:var(--accent);cursor:pointer;">+ Add Stock</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="panel" id="panel-models">
+    <p style="color:var(--muted);font-size:13.5px;max-width:720px;line-height:1.6;margin:18px 0 4px;">
+      Grouped by what job each model does. Ticker chips are clickable — they jump straight to that stock's full card.
+    </p>
+    <div class="cat-nav" id="catNav"></div>
+    <div id="catContainer"></div>
+  </div>
+
+  <footer>
+    Prices pulled live at build time from public market data. Author entry prices, post-date prices, and model explanations are taken directly from the newsletter's text (paraphrased in plain language where noted). Original deep-dive links in the posts point to a private/unindexed subreddit not reachable here — this guide is built entirely from what the author explains inline before applying each model. Reading companion, not financial advice.
+    <span style="opacity:.55;"> · <a href="#" id="diagLink" onclick="event.preventDefault();openLogsModal();" style="color:var(--muted);text-decoration:underline;">System diagnostics</a></span>
+  </footer>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modalBody"></div></div>
+
+<script src="./config.js"></script>
+<script>
+let stocks=[], categories=[], models=[], stockPosts={}, modelPost={};
+
+
+
+
+
+let customStocks = [];
+
+let apiAvailable = false;
+const API_BASE = (window.CAPILLARY_API_BASE || '/api');
+const CUSTOM_KEY = 'capillary_custom_stocks';
+
+// Custom stocks live in the DynamoDB-backed API when the cloud backend is deployed
+// (cross-device). When there's no API reachable (local dev, or before deploy), we
+// fall back to this browser's localStorage so the feature still works offline.
+async function loadCustomStocks(){
+  try{
+    const res = await fetch(API_BASE + '/stocks', {cache:'no-store'});
+    if(res.ok){
+      customStocks = await res.json();
+      apiAvailable = true;
+      renderStocks(currentFilter);
+      updateTrackedCount();
+      return;
+    }
+  }catch(e){ /* no API reachable — use localStorage */ }
+  apiAvailable = false;
+  try{
+    const raw = localStorage.getItem(CUSTOM_KEY);
+    customStocks = raw ? JSON.parse(raw) : [];
+  }catch(e){ customStocks = []; }
+  renderStocks(currentFilter);
+  updateTrackedCount();
+}
+function persistLocal(){
+  try{ localStorage.setItem(CUSTOM_KEY, JSON.stringify(customStocks)); }catch(e){ console.error('Storage save failed', e); }
+}
+function updateTrackedCount(){
+  document.getElementById('trackedCount').innerHTML = `<b>${stocks.length + customStocks.length}</b>stocks tracked`;
+}
+
+let currentFilter = 'all';
+
+function fmtPrice(v, exch){
+  if(v===null||v===undefined) return '—';
+  const cur = (exch==='NASDAQ'||exch==='NYSE') ? '$' : '₹';
+  return cur + v.toLocaleString(undefined,{maximumFractionDigits:2});
+}
+
+const SUBSTACK_BASE = 'https://thecapillary.substack.com/p/';
+
+
+
+
+
+function postLinksHtml(ticker){
+  const posts = stockPosts[ticker];
+  if(!posts || !posts.length) return '<p style="font-size:13px;color:var(--muted);">No linked post — this is your own addition.</p>';
+  return posts.map(p=>`<a href="${SUBSTACK_BASE}${p.slug}" target="_blank" rel="noopener" style="display:block;font-size:13px;color:var(--accent);text-decoration:none;padding:8px 0;border-bottom:1px solid var(--line);">${p.title} <span style="color:var(--muted);">↗</span></a>`).join('');
+}
+function modelPostLinkHtml(name){
+  const p = modelPost[name];
+  if(!p) return '';
+  return `<a href="${SUBSTACK_BASE}${p.slug}" target="_blank" rel="noopener" style="display:block;font-size:13px;color:var(--accent);text-decoration:none;padding:8px 0;">${p.title} <span style="color:var(--muted);">↗</span></a>`;
+}
+function pct(post, cur){
+  if(post===null || post===undefined) return null;
+  return ((cur-post)/post*100);
+}
+function modelsForTicker(ticker){
+  return models.filter(m=>m.tickers.includes(ticker));
+}
+function tickerChips(list, clickable){
+  return list.map(t=>{
+    const s = stocks.find(x=>x.ticker===t);
+    const label = s ? s.ticker : t;
+    return clickable
+      ? `<span class="tick-chip" onclick="event.stopPropagation();openStockModal('${t}')">${label}</span>`
+      : `<span class="tick-chip">${label}</span>`;
+  }).join('');
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  };
+});
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+tab));
+}
+
+const grid = document.getElementById('grid');
+const stockFiltersEl = document.getElementById('stockFilters');
+function renderStocks(filter){
+  currentFilter = filter;
+  grid.innerHTML = '';
+  const all = [...stocks, ...customStocks];
+  all.forEach(s=>{
+    if(filter!=='all' && s.sentiment!==filter) return;
+    const change = pct(s.postPrice, s.current);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.position = 'relative';
+    card.onclick = ()=>openStockModal(s.ticker, s.custom);
+    card.innerHTML = `
+      ${s.custom ? `<button class="delete-x" onclick="event.stopPropagation();deleteCustomStock('${s.ticker}')">✕</button>` : ''}
+      <div class="card-top">
+        <div class="ticker-block">
+          <div class="ticker">${s.ticker} <span style="color:var(--muted);font-weight:400;font-size:11px;">${s.exch}</span> ${s.custom ? '<span class="custom-badge">Yours</span>' : ''}</div>
+          <div class="name">${s.name}</div>
+        </div>
+        <div class="badge ${s.sentiment}">${s.sentiment==='bull'?'Bullish':s.sentiment==='bear'?'Bearish':'Neutral'}</div>
+      </div>
+      <div class="model-tag">${s.modelShort||'—'}</div>
+      <div class="price-row">
+        <div class="price-block"><div class="lbl">At post</div><div class="val">${fmtPrice(s.postPrice, s.exch)}</div></div>
+        <div class="price-block" style="text-align:right;"><div class="lbl">Current</div><div class="val">${fmtPrice(s.current, s.exch)}</div></div>
+      </div>
+      ${change!==null ? `<div class="change ${change>=0?'up':'down'}">${change>=0?'▲':'▼'} ${Math.abs(change).toFixed(1)}% since post</div>` : `<div class="change" style="color:var(--muted);">no post-day price stated</div>`}
+      <div class="thesis">${(s.thesis||'').slice(0,120)}…</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+function buildFilters(){
+  const bull = stocks.filter(s=>s.sentiment==='bull').length;
+  const bear = stocks.filter(s=>s.sentiment==='bear').length;
+  const neu  = stocks.filter(s=>s.sentiment==='neutral').length;
+  const defs = [
+    {key:'all', label:'All ('+stocks.length+')'},
+    {key:'bull', label:'Bullish ('+bull+')'},
+    {key:'bear', label:'Bearish / Avoid ('+bear+')'},
+    {key:'neutral', label:'Neutral ('+neu+')'}
+  ];
+  stockFiltersEl.innerHTML = '';
+  defs.forEach(f=>{
+    const b = document.createElement('button');
+    b.className = 'filter-btn' + (f.key==='all'?' active':'');
+    b.textContent = f.label;
+    b.onclick = ()=>{
+      document.querySelectorAll('#stockFilters .filter-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      renderStocks(f.key);
+    };
+    stockFiltersEl.appendChild(b);
+  });
+}
+
+const catContainer = document.getElementById('catContainer');
+const catNav = document.getElementById('catNav');
+function renderModels(){
+  catContainer.innerHTML = '';
+  categories.forEach(c=>{
+    const ms = models.filter(m=>m.cat===c.key);
+    const block = document.createElement('div');
+    block.className = 'cat-block';
+    block.id = 'cat-'+c.key;
+    block.innerHTML = `
+      <div class="cat-title"><span class="cat-dot" style="background:${c.color}"></span>${c.title}</div>
+      <p class="cat-desc">${c.desc}</p>
+      <div class="m-grid">
+        ${ms.map(m=>`
+          <div class="m-card" style="border-left-color:${c.color}" onclick="openModelModal('${m.name.replace(/'/g,"\\'")}')">
+            <div class="m-name">${m.name}</div>
+            <div class="m-oneliner">${m.oneliner}</div>
+            <div class="m-tickers">${tickerChips(m.tickers, true)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    catContainer.appendChild(block);
+  });
+}
+function buildCatNav(){
+  catNav.innerHTML = '';
+  categories.forEach(c=>{
+    const b = document.createElement('button');
+    b.className = 'cat-btn';
+    b.style.borderColor = c.color;
+    b.textContent = c.title;
+    b.onclick = ()=>{ document.getElementById('cat-'+c.key).scrollIntoView({behavior:'smooth', block:'start'}); };
+    catNav.appendChild(b);
+  });
+}
+
+function openStockModal(ticker, isCustom){
+  switchTab('stocks');
+  const s = isCustom ? customStocks.find(x=>x.ticker===ticker) : stocks.find(x=>x.ticker===ticker);
+  const change = pct(s.postPrice, s.current);
+  const related = isCustom ? [] : modelsForTicker(s.ticker);
+  const modal = document.getElementById('modalBody');
+  modal.innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="eyebrow">${s.sector||''} ${s.custom ? '· <span style="color:var(--accent);">Your addition</span>' : ''}</div>
+    <h2>${s.name}</h2>
+    <div class="sub">${s.ticker} · ${s.exch}</div>
+    <div class="badge ${s.sentiment}" style="margin-bottom:4px;">${s.sentiment==='bull'?'Bullish':s.sentiment==='bear'?'Bearish / Avoid':'Neutral'}</div>
+    <div class="modal-grid">
+      <div class="modal-stat"><div class="lbl">Price at post (${s.postDate||'—'})</div><div class="val">${fmtPrice(s.postPrice, s.exch)}</div></div>
+      <div class="modal-stat"><div class="lbl">Current price</div><div class="val">${fmtPrice(s.current, s.exch)}</div></div>
+      <div class="modal-stat"><div class="lbl">Change since post</div><div class="val" style="color:${change===null?'var(--muted)':change>=0?'var(--bull)':'var(--bear)'}">${change===null?'n/a':(change>=0?'+':'')+change.toFixed(1)+'%'}</div></div>
+      <div class="modal-stat"><div class="lbl">Entry / context</div><div class="val" style="font-size:12px;font-weight:400;line-height:1.4;">${s.entryNote||'—'}</div></div>
+    </div>
+    <div class="modal-section">
+      <div class="h">The Thesis</div>
+      <p>${s.thesis||'No notes added yet.'}</p>
+    </div>
+    <div class="modal-section">
+      <div class="h">Current Outlook</div>
+      <p>${s.outlook||'—'}</p>
+    </div>
+    ${related.length ? `
+    <div class="modal-section">
+      <div class="h">Mental Models Behind This Call</div>
+      <div class="chip-row">
+        ${related.map(m=>`<span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:11.5px;" onclick="openModelModal('${m.name.replace(/'/g,"\\'")}')">${m.name}</span>`).join('')}
+      </div>
+    </div>` : ''}
+    ${!isCustom ? `
+    <div class="modal-section">
+      <div class="h">Read The Original Post(s)</div>
+      ${postLinksHtml(s.ticker)}
+    </div>` : ''}
+  `;
+  document.getElementById('modalBg').classList.add('open');
+  document.getElementById('modalBg').scrollTop = 0;
+}
+
+function openModelModal(name){
+  switchTab('models');
+  const m = models.find(x=>x.name===name);
+  const cat = categories.find(c=>c.key===m.cat);
+  const modal = document.getElementById('modalBody');
+  modal.innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="eyebrow" style="color:${cat.color}">${cat.title}</div>
+    <h2>${m.name}</h2>
+    <div class="modal-section">
+      <div class="h">In Plain Terms</div>
+      <p>${m.full}</p>
+    </div>
+    <div class="modal-section analogy">
+      <div class="h">The Analogy</div>
+      <p>${m.analogy}</p>
+    </div>
+    <div class="modal-section">
+      <div class="h">Where It Was Used</div>
+      <p>${m.stockNote}</p>
+      <div class="chip-row">${tickerChips(m.tickers, true)}</div>
+    </div>
+    <div class="modal-section">
+      <div class="h">Read Where This Was Introduced</div>
+      ${modelPostLinkHtml(m.name)}
+    </div>
+  `;
+  document.getElementById('modalBg').classList.add('open');
+  document.getElementById('modalBg').scrollTop = 0;
+}
+
+function openAddStockForm(){
+  const modal = document.getElementById('modalBody');
+  modal.innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="eyebrow">Your Addition</div>
+    <h2>Add a Stock</h2>
+    <div class="sub">Saved to your tracker. Syncs across devices when the cloud backend is deployed; otherwise saved to this browser.</div>
+    <div class="form-grid">
+      <div class="form-field"><label>Ticker *</label><input id="f-ticker" placeholder="e.g. DMART" /></div>
+      <div class="form-field"><label>Exchange</label><input id="f-exch" placeholder="NSE / NASDAQ / BSE" /></div>
+      <div class="form-field full"><label>Company Name *</label><input id="f-name" placeholder="Full company name" /></div>
+      <div class="form-field"><label>Sector</label><input id="f-sector" placeholder="e.g. India · Retail" /></div>
+      <div class="form-field">
+        <label>Sentiment</label>
+        <select id="f-sentiment">
+          <option value="bull">Bullish</option>
+          <option value="bear">Bearish / Avoid</option>
+          <option value="neutral">Neutral</option>
+        </select>
+      </div>
+      <div class="form-field"><label>Price at post/entry</label><input id="f-postprice" type="number" step="any" placeholder="e.g. 435" /></div>
+      <div class="form-field"><label>Current price</label><input id="f-current" type="number" step="any" placeholder="e.g. 476" /></div>
+      <div class="form-field full"><label>Mental model tag</label><input id="f-model" placeholder="e.g. Two-Engine Framework" /></div>
+      <div class="form-field full"><label>Thesis / notes</label><textarea id="f-thesis" placeholder="Why bullish/bearish, key numbers, what you read..."></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" onclick="submitCustomStock()">Save Stock</button>
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  `;
+  document.getElementById('modalBg').classList.add('open');
+  document.getElementById('modalBg').scrollTop = 0;
+}
+
+async function submitCustomStock(){
+  const ticker = document.getElementById('f-ticker').value.trim().toUpperCase();
+  const name = document.getElementById('f-name').value.trim();
+  if(!ticker || !name){ alert('Ticker and company name are required.'); return; }
+  const entry = {
+    ticker, custom:true,
+    exch: document.getElementById('f-exch').value.trim() || '—',
+    name,
+    sector: document.getElementById('f-sector').value.trim() || '—',
+    sentiment: document.getElementById('f-sentiment').value,
+    modelShort: document.getElementById('f-model').value.trim() || 'Your own note',
+    postDate: 'You added this',
+    postPrice: parseFloat(document.getElementById('f-postprice').value) || null,
+    current: parseFloat(document.getElementById('f-current').value) || null,
+    entryNote: 'Manually added',
+    thesis: document.getElementById('f-thesis').value.trim(),
+    outlook: 'Personal watchlist addition — update anytime by deleting and re-adding.'
+  };
+  if(apiAvailable){
+    try{
+      const res = await fetch(API_BASE + '/stocks', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(entry)});
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+    }catch(e){ alert('Could not save to server: ' + e.message); return; }
+    closeModal();
+    await loadCustomStocks();
+    return;
+  }
+  customStocks = customStocks.filter(s=>s.ticker!==ticker);
+  customStocks.push(entry);
+  persistLocal();
+  updateTrackedCount();
+  closeModal();
+  renderStocks(currentFilter);
+}
+
+async function deleteCustomStock(ticker){
+  if(apiAvailable){
+    try{
+      const res = await fetch(API_BASE + '/stocks/' + encodeURIComponent(ticker), {method:'DELETE'});
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+    }catch(e){ alert('Could not delete on server: ' + e.message); return; }
+    await loadCustomStocks();
+    return;
+  }
+  customStocks = customStocks.filter(s=>s.ticker!==ticker);
+  persistLocal();
+  updateTrackedCount();
+  renderStocks(currentFilter);
+}
+
+document.getElementById('addStockBtn').addEventListener('click', openAddStockForm);
+
+function closeModal(){document.getElementById('modalBg').classList.remove('open');}
+document.getElementById('modalBg').addEventListener('click', e=>{ if(e.target.id==='modalBg') closeModal(); });
+
+const THEME_KEY = 'capillary_theme';
+
+async function getStoredTheme(){
+  try{
+    if(window.storage){
+      const r = await window.storage.get(THEME_KEY, false);
+      if(r) return r.value;
+    }
+  }catch(e){}
+  try{ return localStorage.getItem(THEME_KEY); }catch(e){ return null; }
+}
+async function setStoredTheme(theme){
+  try{
+    if(window.storage){ await window.storage.set(THEME_KEY, theme, false); return; }
+  }catch(e){}
+  try{ localStorage.setItem(THEME_KEY, theme); }catch(e){}
+}
+function applyTheme(theme){
+  if(theme === 'dark'){
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+  document.getElementById('themeToggleBtn').textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+}
+async function initTheme(){
+  const stored = await getStoredTheme();
+  applyTheme(stored || 'light');
+}
+document.getElementById('themeToggleBtn').addEventListener('click', async ()=>{
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  applyTheme(next);
+  await setStoredTheme(next);
+});
+
+let allLogs = [];
+let logsFilter = 'all';
+
+async function openLogsModal(){
+  const modal = document.getElementById('modalBody');
+  modal.innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="eyebrow">Diagnostics</div>
+    <h2>System Logs</h2>
+    <div class="sub">Errors and warnings from the live scraper — Substack fetch failures, Gemini rate limits, price lookup failures. Populates once the AWS pipeline has run at least once.</div>
+    <div class="filters" id="logFilters" style="margin:14px 0 10px;"></div>
+    <div id="logList"></div>
+  `;
+  document.getElementById('modalBg').classList.add('open');
+  document.getElementById('modalBg').scrollTop = 0;
+
+  const filterDefs = [
+    {key:'all', label:'All'},
+    {key:'error', label:'Errors'},
+    {key:'warning', label:'Warnings'},
+    {key:'info', label:'Info'}
+  ];
+  const filtersEl = document.getElementById('logFilters');
+  filtersEl.innerHTML = '';
+  filterDefs.forEach(f=>{
+    const b = document.createElement('button');
+    b.className = 'filter-btn' + (f.key==='all' ? ' active' : '');
+    b.textContent = f.label;
+    b.onclick = ()=>{
+      document.querySelectorAll('#logFilters .filter-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      logsFilter = f.key;
+      renderLogList();
+    };
+    filtersEl.appendChild(b);
+  });
+
+  document.getElementById('logList').innerHTML = '<p style="font-size:13px;color:var(--muted);padding:12px 0;">Loading…</p>';
+  try{
+    const res = await fetch('./logs.json', {cache:'no-store'});
+    if(res.ok){ allLogs = await res.json(); }
+  }catch(e){
+    // Expected in this preview, or before the scraper Lambda has ever run —
+    // logs.json won't exist yet. renderLogList() shows the right empty state below.
+  }
+  renderLogList();
+}
+
+function renderLogList(){
+  const el = document.getElementById('logList');
+  if(!el) return;
+  const filtered = logsFilter==='all' ? allLogs : allLogs.filter(l=>l.level===logsFilter);
+  const sorted = [...filtered].sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
+
+  if(sorted.length === 0){
+    el.innerHTML = `<p style="font-size:13px;color:var(--muted);padding:20px 0;line-height:1.6;">No log entries${logsFilter!=='all' ? ` at level "${logsFilter}"` : ''} yet. This populates once the scraper Lambda has run at least once — see <code>docs/ARCHITECTURE.md</code>, "Logging" section.</p>`;
+    return;
+  }
+
+  el.innerHTML = sorted.map(l=>{
+    const badgeClass = l.level==='error' ? 'bear' : l.level==='warning' ? 'neutral' : 'bull';
+    const ctx = l.context && Object.keys(l.context).length
+      ? `<pre style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:6px;white-space:pre-wrap;word-break:break-word;color:var(--text-secondary);">${JSON.stringify(l.context, null, 2)}</pre>`
+      : '';
+    return `
+      <div style="border-bottom:1px solid var(--line);padding:12px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="badge ${badgeClass}">${l.level}</span>
+            <span style="font-size:12.5px;color:var(--muted);">${l.source}</span>
+          </div>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);">${new Date(l.timestamp).toLocaleString()}</span>
+        </div>
+        <div style="font-size:13.5px;margin-top:6px;">${l.message}</div>
+        ${ctx}
+      </div>
+    `;
+  }).join('');
+}
+
+function updateHeaderCounts(){
+  const bull = stocks.filter(s=>s.sentiment==='bull').length;
+  const bear = stocks.filter(s=>s.sentiment==='bear').length;
+  const bs = document.querySelectorAll('#panel-stocks .meta-item b');
+  if(bs[0] && window.__postsRead!=null) bs[0].textContent = window.__postsRead;
+  if(bs[2]) bs[2].textContent = bull;
+  if(bs[3]) bs[3].textContent = bear;
+  if(bs[4] && window.__pricesAsOf) bs[4].textContent = window.__pricesAsOf;
+  const tcS = document.querySelector('.tab-btn[data-tab="stocks"] .tab-count');
+  if(tcS) tcS.textContent = '· ' + stocks.length;
+  const tcM = document.querySelector('.tab-btn[data-tab="models"] .tab-count');
+  if(tcM) tcM.textContent = '· ' + models.length;
+}
+
+async function bootstrap(){
+  try{
+    const res = await fetch('./data.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    stocks = data.stocks || [];
+    categories = data.categories || [];
+    models = data.models || [];
+    stockPosts = data.stockPosts || {};
+    modelPost = data.modelPost || {};
+    window.__pricesAsOf = data.pricesAsOf || null;
+    window.__postsRead = (typeof data.postsRead === 'number') ? data.postsRead : null;
+  }catch(e){
+    document.getElementById('grid').innerHTML =
+      '<p style="color:var(--bear);padding:20px 0;line-height:1.6;">Could not load <code>data.json</code> ('+e.message+'). If you opened this file directly, serve it over http instead — e.g. <code>cd public &amp;&amp; python3 -m http.server 8000</code>.</p>';
+    return;
+  }
+  buildFilters();
+  buildCatNav();
+  renderModels();
+  updateHeaderCounts();
+  renderStocks('all');
+  loadCustomStocks();
+}
+
+initTheme();
+bootstrap();
+</script>
+</body>
+</html>

@@ -1,0 +1,739 @@
+{
+  "generatedFrom": "public/index.html hardcoded arrays",
+  "pricesAsOf": "Jul 11, 2026",
+  "postsRead": 16,
+  "stocks": [
+    {
+      "ticker": "CAPLIPOINT",
+      "exch": "NSE",
+      "name": "Caplin Point Laboratories",
+      "sector": "India · Pharma",
+      "sentiment": "bull",
+      "modelShort": "Phoenix Forge / Dragon Flight",
+      "postDate": "Jun 19, 2026",
+      "postPrice": 2450,
+      "entryNote": "Original thesis accumulated ₹1,600–1,700",
+      "current": 2583.6,
+      "thesis": "Core long-term compounder. LatAm cash engine funding a US generics ramp (ANDAs 34→59 in FY26); front-loaded capex depresses reported PAT while cash (CFO +21%, EBITDA +18%) keeps compounding. ~18% of market cap sits in cash, real ex-cash PE ~20x. Zero debt, founder hasn't taken a salary in 35 years.",
+      "outlook": "Bullish, unchanged. Stock confirmed the 'Dragon Tier 2' breakout above ₹2,409 — treated as a hold-forever compounder, not a trade."
+    },
+    {
+      "ticker": "KOVAI",
+      "exch": "NSE",
+      "name": "Kovai Medical Center & Hospital",
+      "sector": "India · Healthcare",
+      "sentiment": "bull",
+      "modelShort": "Plateau Framework",
+      "postDate": "Jun 23, 2026",
+      "postPrice": 5450,
+      "entryNote": "Reader-prompted brainstorm, not a formal thesis",
+      "current": 5989.5,
+      "thesis": "FY26 PAT +17%, EPS ₹223, 10Y PAT CAGR 20%. Margin dip this quarter is transient (new Neuro/OPD block depreciation + tax spike), not structural. Trades near 24-25x versus hospital peers near double that — called a ~50% sector discount. FY28 EPS projected ~₹300 even with zero re-rating.",
+      "outlook": "Bullish, patience-based. Expects the 'plateau' (flat multiple, rising EPS) to resolve upward in FY27-28 as new verticals scale."
+    },
+    {
+      "ticker": "KALYANKJIL",
+      "exch": "NSE",
+      "name": "Kalyan Jewellers",
+      "sector": "India · Jewellery Retail",
+      "sentiment": "bull",
+      "modelShort": "Two-Engine Framework",
+      "postDate": "Jul 9, 2026",
+      "postPrice": 435,
+      "entryNote": "Fresh capital being deployed here over Titan",
+      "current": 476.15,
+      "thesis": "38% revenue growth despite an Adhik Maas headwind quarter. Pledge being deliberately reduced, COCO→FOCO transition trades short-term pain for ROCE. Market cap gap vs Titan (~10x) far exceeds the actual business gap (~2-2.5x operating profit) — called a mispricing that must converge.",
+      "outlook": "Bullish and actively adding. Sees Kalyan as the only credible long-term challenger to Titan, better forward return profile from here."
+    },
+    {
+      "ticker": "TITAN",
+      "exch": "NSE",
+      "name": "Titan Company",
+      "sector": "India · Jewellery Retail",
+      "sentiment": "neutral",
+      "modelShort": "Two-Engine Framework",
+      "postDate": "Jul 9, 2026",
+      "postPrice": null,
+      "entryNote": "Held since 2017 (settled family-account position)",
+      "current": 4584.4,
+      "thesis": "Still the category gorilla, but ~70-80x earnings with growth moderating means the 'multiple engine' no longer helps. Author is not adding fresh capital here, redirecting new money to Kalyan instead, purely on forward-return math.",
+      "outlook": "Neutral / hold-only. Not a sell call on the legacy position, but explicitly not where new capital is going."
+    },
+    {
+      "ticker": "TRENT",
+      "exch": "NSE",
+      "name": "Trent Ltd",
+      "sector": "India · Fashion Retail",
+      "sentiment": "bear",
+      "modelShort": "Foreshock Model",
+      "postDate": "Jul 8, 2026",
+      "postPrice": null,
+      "entryNote": "Down 45% from highs, still ~90x earnings",
+      "current": 2902.8,
+      "thesis": "Unchanged bear thesis held for 10+ months. Fashion/retail flagged as structurally low-moat businesses. This is the '6th or 7th slowdown', not the first — the mental model says never buy after the first crack. DIIs (fed by retail SIP flows) are absorbing FII selling at what the author calls unjustifiable multiples.",
+      "outlook": "Bearish, still avoiding even after the 45% drawdown. Sees same-store growth deteriorating further as new-store optics fade."
+    },
+    {
+      "ticker": "KPITTECH",
+      "exch": "NSE",
+      "name": "KPIT Technologies",
+      "sector": "India · Auto ER&D / IT",
+      "sentiment": "bear",
+      "modelShort": "Two-Engine Trap / Foreshock",
+      "postDate": "Jul 1, 2026",
+      "postPrice": 563,
+      "entryNote": "Crashed 16% in a single session, from a ₹1,865 high",
+      "current": 561.75,
+      "thesis": "Bought at peak multiple (85-100x) and peak earnings — both the multiple and earnings engines are now compressing simultaneously ('the worst combination'). European auto R&D spend cuts (BMW, VW) are the trigger. Needs a 3x just to break even from the high.",
+      "outlook": "Still bearish even after the crash. Doesn't like the business quality enough to buy the dip yet; flagged as a possible value trap versus a real re-rating opportunity."
+    },
+    {
+      "ticker": "TATAELXSI",
+      "exch": "NSE",
+      "name": "Tata Elxsi",
+      "sector": "India · Auto ER&D / IT",
+      "sentiment": "neutral",
+      "modelShort": "Two-Engine Framework (case study)",
+      "postDate": "Jul 1, 2026",
+      "postPrice": 3590,
+      "entryNote": "Cited as comparison, not a stated position",
+      "current": 3690.3,
+      "thesis": "Used as the contrast case to KPIT: was similarly 'ridiculously priced' at 110x in 2022, has since de-rated hard (₹10,238 → ₹3,590, now ~32x). Framed as a 'window opening' example of good business, bad old price — versus KPIT's genuinely weakening fundamentals.",
+      "outlook": "No explicit buy/sell call — used purely to illustrate that a de-rating sector can contain both value traps and real opportunities."
+    },
+    {
+      "ticker": "HDFCBANK",
+      "exch": "NSE",
+      "name": "HDFC Bank",
+      "sector": "India · Banking",
+      "sentiment": "neutral",
+      "modelShort": "Two-Engine Framework",
+      "postDate": "Jun 1, 2026",
+      "postPrice": 735,
+      "entryNote": "Implied from EPS 49 × 15x trailing PE",
+      "current": 824.95,
+      "thesis": "Post-merger NIM compression (4.1%→3.38%) from absorbing HDFC Ltd's high-cost book is the real drag, not a broken franchise. No ICICI-style 'spring uncoiling' available since the book is already clean — re-rating has to come from slow, mechanical margin repair as high-cost borrowings roll off (FY27-28 catalyst).",
+      "outlook": "Constructive for patient, multi-year capital. Modeled at 16.5-19% CAGR over 5 years even on modest 10-12% EPS growth assumptions, if multiple reverts toward 20x."
+    },
+    {
+      "ticker": "AIRFLOA",
+      "exch": "BSE",
+      "name": "Airfloa Rail Technology",
+      "sector": "India · Rail/Defence IPO",
+      "sentiment": "bear",
+      "modelShort": "Trap Detection Framework",
+      "postDate": "May 22, 2026",
+      "postPrice": null,
+      "entryNote": "Recent IPO (Sept 2025), no position",
+      "current": 304.05,
+      "thesis": "Pre-IPO rename (Air Flow Equipments → 'Airfloa Rail Technology'), profit up 18-20x on margin expansion that isn't structural, negative operating and free cash flow despite reported profit, 242-day receivables, IPO proceeds used mostly to fund a working-capital hole. FIIs cut stake from 2.77% to 0.09% in two quarters while retail bought in.",
+      "outlook": "Clear avoid. Flagged as a textbook IPO/narrative trap (Vande Bharat + defence story) with almost no cash-flow substance behind it."
+    },
+    {
+      "ticker": "IGIL",
+      "exch": "NSE",
+      "name": "International Gemological Institute (India)",
+      "sector": "India · Diamond Certification IPO",
+      "sentiment": "bear",
+      "modelShort": "Dealmaker / Shrinking Host / Pond / Incentive",
+      "postDate": "Jun 25, 2026",
+      "postPrice": 505,
+      "entryNote": "IPO priced ₹417, listed ₹505",
+      "current": 346.9,
+      "thesis": "Blackstone bought IGI for $569.7M in 2023 and IPO'd India alone at an implied ~$2.1B (~5x in 20 months) — a near-complete cash-out, with IPO proceeds partly round-tripped to buy Blackstone's own European IGI arms. Fee is pinned to carat weight, not stone value, so it becomes an unbearable % cost as lab-grown diamond prices collapse. Branded retailers (Tanishq, Kalyan) are internalizing certification, cutting IGI out.",
+      "outlook": "Clear skip. Structure was built for the PE owner's exit, not for compounding shareholder value; ~77% Blackstone overhang remains unlocked."
+    },
+    {
+      "ticker": "SAGILITY",
+      "exch": "NSE",
+      "name": "Sagility India",
+      "sector": "India · Healthcare BPO",
+      "sentiment": "bear",
+      "modelShort": "Caged Bird / Maginot Line",
+      "postDate": "Jun 4, 2026",
+      "postPrice": null,
+      "entryNote": "No position",
+      "current": 42.53,
+      "thesis": "Bull case rests on 18-year client stickiness measured only in a pre-AI world with no alternative — 'devotion' that was never actually tested (Caged Bird). Management itself guides 150-200bps of AI-driven cost takeouts now, rising to 4-5%, and admits it. Growth is ~38-40% acquisition-bought; explosive PAT is financial engineering (LBO deleveraging + amortization rolloff) that mechanically can't repeat.",
+      "outlook": "Bearish. Sees the labour-arbitrage moat converting into a liability as AI commoditizes the exact 'effort' the company sells."
+    },
+    {
+      "ticker": "PANW",
+      "exch": "NASDAQ",
+      "name": "Palo Alto Networks",
+      "sector": "US · Cybersecurity",
+      "sentiment": "bull",
+      "modelShort": "Bottleneck Strategy",
+      "postDate": "May 26, 2026",
+      "postPrice": 62,
+      "entryNote": "Split-adjusted entry, ~4-year hold",
+      "current": 325.91,
+      "thesis": "One of only two public pure-plays left on 'machine identity' after Palo Alto itself bought CyberArk (Venafi) for $25B and Alphabet bought Wiz for $32B — the bottleneck was absorbed by platforms before most retail investors noticed it existed.",
+      "outlook": "Bullish, core long-term holding. Up roughly 5x since the author's cost basis."
+    },
+    {
+      "ticker": "CRWD",
+      "exch": "NASDAQ",
+      "name": "CrowdStrike",
+      "sector": "US · Cybersecurity",
+      "sentiment": "bull",
+      "modelShort": "Bottleneck Strategy",
+      "postDate": "May 26, 2026",
+      "postPrice": 90,
+      "entryNote": "$360 pre-split; CRWD did a 4-for-1 split on Jul 2, 2026 — shown split-adjusted",
+      "current": 187.18,
+      "thesis": "Second position add in 3 years. Sits on two bottlenecks at once: 'AI Runtime Inspection' (Charlotte AI watching what agents do after login) and 'Unified Security Telemetry' (Falcon Next-Gen SIEM as the data layer other AI security agents plug into).",
+      "outlook": "Bullish, core position. Roughly +108% since the split-adjusted add price."
+    },
+    {
+      "ticker": "RBRK",
+      "exch": "NYSE",
+      "name": "Rubrik",
+      "sector": "US · Cybersecurity",
+      "sentiment": "bull",
+      "modelShort": "Bottleneck Strategy",
+      "postDate": "May 26, 2026",
+      "postPrice": 48,
+      "entryNote": "Bought during a market crash",
+      "current": 84.38,
+      "thesis": "Backup/immutable-recovery architecture built for the ransomware era turns out to be the right foundation for 'agentic attestation' — verifiable rollback of AI agent actions (Agent Rewind). Best-positioned public name in a bottleneck category the author says barely exists yet.",
+      "outlook": "Bullish. Up roughly 76% from the author's entry."
+    },
+    {
+      "ticker": "NET",
+      "exch": "NYSE",
+      "name": "Cloudflare",
+      "sector": "US · Cybersecurity / Infra",
+      "sentiment": "bull",
+      "modelShort": "Bottleneck Strategy — \"the road\"",
+      "postDate": "May 26, 2026",
+      "postPrice": 168,
+      "entryNote": "Current holding",
+      "current": 268.4,
+      "thesis": "Reframed mid-post: not a toll-booth bet but a 'road' bet. Already the default host for remote MCP servers as Anthropic/OpenAI/Google converge on the MCP protocol for agent-to-tool connections — the thesis is that road owners eventually capture the toll booths built on top, the way AWS and Bloomberg did.",
+      "outlook": "Bullish. Up roughly 60% since the stated holding price."
+    },
+    {
+      "ticker": "ZS",
+      "exch": "NASDAQ",
+      "name": "Zscaler",
+      "sector": "US · Cybersecurity",
+      "sentiment": "bull",
+      "modelShort": "Bottleneck Strategy (lower conviction)",
+      "postDate": "May 26, 2026",
+      "postPrice": 130,
+      "entryNote": "Added \"with conviction\" per the disclosure, but text flags real uncertainty",
+      "current": 139.27,
+      "thesis": "Added based partly on community/Reddit input. Author explicitly says he hasn't \"placed Zscaler cleanly\" yet — unsure how its SASE (network security) foundation translates into AI-era platform economics versus CrowdStrike/Palo Alto/Wiz.",
+      "outlook": "Bullish but the lowest-conviction name in the cybersecurity basket; openly flagged as unresolved thinking."
+    },
+    {
+      "ticker": "VRNS",
+      "exch": "NASDAQ",
+      "name": "Varonis Systems",
+      "sector": "US · Cybersecurity / Data",
+      "sentiment": "bear",
+      "modelShort": "Bottleneck Strategy — removed",
+      "postDate": "May 26, 2026 (updated same post)",
+      "postPrice": null,
+      "entryNote": "No position was ever taken",
+      "current": 44.53,
+      "thesis": "Originally the cleanest specialist on the 'data-layer' bottleneck. In a same-post update, the author reversed course: private-market competitor Cyera, Microsoft Purview's bundling, and platform absorption by CrowdStrike/Palo Alto are converging against Varonis — an \"anti-Lollapalooza.\"",
+      "outlook": "Removed from the watchlist. Treated as a broken thesis, not a stock to own — despite being the category's cleanest specialist on paper."
+    },
+    {
+      "ticker": "SYM",
+      "exch": "NASDAQ",
+      "name": "Symbotic",
+      "sector": "US · Warehouse Automation",
+      "sentiment": "bull",
+      "modelShort": "Snowball Method / 100-Bagger",
+      "postDate": "May 16, 2026",
+      "postPrice": 14,
+      "entryNote": "Original buy $14, added again at $24 on strength",
+      "current": 43.64,
+      "thesis": "Founder-led thesis: Rick Cohen (3rd-generation warehouse operator) built the system to solve his own distribution problem before commercializing it. Backlog is legally-binding RPO (~$47B in economic value once the recurring-revenue tail is counted), moat compounds via a cross-facility data flywheel, and switching costs are near-total once a $500M system is deployed.",
+      "outlook": "Strongly bullish, actively 'snowballing' — adding every time the business proves out a new layer (new verticals, new customers), independent of price moves."
+    }
+  ],
+  "categories": [
+    {
+      "key": "philosophy",
+      "title": "The Master Idea",
+      "color": "var(--c1)",
+      "desc": "Everything else is a tool built on top of this one distinction. Get this wrong and every other model misfires."
+    },
+    {
+      "key": "engines",
+      "title": "How Returns Are Actually Made",
+      "color": "var(--c2)",
+      "desc": "Frameworks for decomposing \"why did the stock move\" into its real, separable components."
+    },
+    {
+      "key": "moat",
+      "title": "Testing Whether a Moat Is Real",
+      "color": "var(--c3)",
+      "desc": "Ways to stress-test a company's competitive advantage before you trust it with your money."
+    },
+    {
+      "key": "ownership",
+      "title": "IPO & Ownership Forensics",
+      "color": "var(--c4)",
+      "desc": "Tools for reading who actually built a deal, who is exiting through it, and what red flags stack together."
+    },
+    {
+      "key": "growth",
+      "title": "Growth, Allocation & Conviction",
+      "color": "var(--c5)",
+      "desc": "How to size up, when to add, and how to judge whether management deploys capital well."
+    }
+  ],
+  "models": [
+    {
+      "cat": "philosophy",
+      "name": "Business State vs. Ticker State",
+      "tickers": [
+        "CAPLIPOINT",
+        "KOVAI",
+        "KPITTECH",
+        "KALYANKJIL"
+      ],
+      "oneliner": "The price on your screen and the actual health of the company are two different things — most investors only ever look at the first one.",
+      "full": "This is the umbrella idea everything else sits under. \"Ticker state\" is the number moving on your screen — it reacts to sentiment, panic, FOMO, headlines. \"Business state\" is what's actually happening inside the company — margins, cash flow, new capacity coming online, competitive position. The two are connected, but with a lag, and sometimes a long one. His entire method is: ignore the ticker, read the business, and trust that price eventually has no choice but to catch up to whatever the business is actually doing.",
+      "analogy": "Think of a pot with a plant in it. The price tag on the pot doesn't move for months. But underneath the soil, roots can be growing stronger every week, completely invisible until the plant suddenly shoots up. If you only watch the pot's price tag, you'll miss the growth happening out of sight.",
+      "stockNote": "Used explicitly on <b>Kovai</b> (\"the business state has actually moved significantly... the price just has not caught up yet\") and <b>KPIT</b> (\"stop positioning on the ticker and the screener number. Position on the business state\"). It's also the whole point of the <b>Kalyan vs Titan</b> post — the stock cracked 9-10% on results that actually showed the business improving on every metric."
+    },
+    {
+      "cat": "engines",
+      "name": "The Two-Engine Framework",
+      "tickers": [
+        "HDFCBANK",
+        "KPITTECH",
+        "KALYANKJIL",
+        "TITAN",
+        "CAPLIPOINT",
+        "TATAELXSI"
+      ],
+      "oneliner": "Your return = earnings growth × the multiple the market is willing to pay. Both can work for you, against you, or cancel each other out.",
+      "full": "Every stock return can be split into two separate, multiplying engines: (1) the earnings engine — how fast profit/EPS actually grows, and (2) the multiple engine — whether the market is willing to pay more or less per rupee of that profit (P/E expanding or compressing). A stock can have genuinely great earnings growth and still lose you money if the multiple collapses hard enough at the same time. This is exactly what happened to KPIT: both engines reversed together (peak multiple + slowing earnings), which he calls the worst possible combination, worse than either problem alone.",
+      "analogy": "Imagine your paycheck (earnings) multiplied by how confident and generous you feel with money (the multiple). Even if your paycheck goes up 10%, if your confidence craters at the same time, you might still end up spending — and feeling — poorer than before.",
+      "stockNote": "Central to <b>HDFC Bank</b> (EPS grew 188% since the merger but the stock barely moved, because the multiple compressed from ~30x to ~15x over the same period). Also the basis for preferring <b>Kalyan</b> (both engines turning favorable) over <b>Titan</b> (multiple engine \"has no room left\" at 70-80x), and the contrast between <b>KPIT</b> (both engines against you) and <b>Tata Elxsi</b> (already de-rated, engines potentially aligning again)."
+    },
+    {
+      "cat": "engines",
+      "name": "The Plateau Framework",
+      "tickers": [
+        "KOVAI"
+      ],
+      "oneliner": "A great business's stock can go sideways for years — not because it's stalling, but because the multiple is quietly compressing exactly as fast as earnings are growing.",
+      "full": "When EPS growth and multiple compression happen at almost the same rate, they cancel out on the ticker — the stock looks \"dead\" for years even though the underlying business has been compounding the entire time. Once the multiple compression runs its course (bottoms out), the stock has nowhere to go but up, because the earnings have kept growing underneath the flat price the whole time.",
+      "analogy": "Like water building up behind a dam wall — the surface (price) looks completely calm and unchanging, but pressure (earnings growth) is building the entire time. Once the compression stops, the price has to \"release\" all at once.",
+      "stockNote": "Used directly on <b>Kovai Medical</b>: EPS more than doubled from ₹106 (FY23) to ₹223 (now), while the P/E sat flat at ~24-25x the whole time — so the stock only \"doubled\" instead of doing much more, purely because the multiple never re-rated up alongside the growth."
+    },
+    {
+      "cat": "engines",
+      "name": "Law of Large Numbers (Size Ceiling)",
+      "tickers": [
+        "KPITTECH",
+        "TRENT"
+      ],
+      "oneliner": "The bigger a company already is, the harder it becomes to keep growing at the same fast percentage — because the absolute rupee amount needed gets enormous.",
+      "full": "A ₹100 crore profit growing by ₹30 crore is \"30% growth.\" Once profit is ₹1,000 crore, growing by the same ₹30 crore is only \"3% growth\" — the market will punish that deceleration hard if you paid a high growth multiple assuming the old percentage would continue forever. This is why paying 90-100x on an already-huge (lakh-crore+) company is a very different risk than paying the same multiple on a small, early-stage one.",
+      "analogy": "It's much easier for a small pond to double in size after one heavy rain than for an entire ocean to double — the ocean needs an almost unimaginable amount of extra water to move the same percentage.",
+      "stockNote": "Applied to <b>KPIT</b> and <b>Trent</b> directly — both got hit hard partly because investors paid large-cap prices for growth rates that were mathematically unsustainable once the company got big enough."
+    },
+    {
+      "cat": "moat",
+      "name": "The Caged Bird Model",
+      "tickers": [
+        "SAGILITY"
+      ],
+      "oneliner": "A company's \"loyal\" customers only look loyal because they never had another option — real loyalty is only proven once an alternative shows up.",
+      "full": "Bulls often point to long client relationships (10, 15, 18 years) as proof of a durable moat. But if there was genuinely no alternative during all those years, that \"stickiness\" data tells you nothing about real loyalty — it only tells you the cage door was locked. The actual test only begins the day a real alternative appears (AI, a new competitor, a new technology). Whether the customer stays now is the only data point that matters.",
+      "analogy": "A bird that never flies away doesn't prove it loves its cage — it just never had an open door. A dog, on the other hand, is genuinely called loyal because it will stay even when it's free to leave. (Author's own analogy — he extends it to 60 years of Congress dominance in India before BJP emerged, and to kirana stores surviving organized retail but not quick commerce.)",
+      "stockNote": "Used to dismantle the bull case for <b>Sagility</b>: its \"18-year average client relationship, 95% stickiness\" stat was measured entirely in a world with no AI alternative to Indian labour-arbitrage outsourcing — meaning it measured the cage, not the bird."
+    },
+    {
+      "cat": "moat",
+      "name": "The Maginot Line Model",
+      "tickers": [
+        "SAGILITY"
+      ],
+      "oneliner": "A moat can be completely real against the old form of competition, and still get made irrelevant when a competitor attacks from a totally different direction.",
+      "full": "The moat isn't \"beaten\" in the sense of being broken through — it's bypassed entirely, so all the strength it had stops mattering. This is different from a moat failing; the moat can remain perfectly intact and still be useless.",
+      "analogy": "France built one of the most fortified defensive lines in history along the German border — validated by WWI experience. Germany just went around it through Belgium's Ardennes forest in WWII. The line was never breached; it just stopped being relevant. Same with BlackBerry: its enterprise security and BBM moat was completely real, but Apple's iPhone attacked from an entirely different angle (consumer experience), and the moat simply stopped mattering.",
+      "stockNote": "Paired with the Caged Bird model on <b>Sagility</b>: its client-relationship moat was built to defend against other human outsourcing competitors, not against AI making the underlying \"effort\" it sells worthless."
+    },
+    {
+      "cat": "ownership",
+      "name": "The Dealmaker Model",
+      "tickers": [
+        "IGIL",
+        "AIRFLOA"
+      ],
+      "oneliner": "Every company trades in two markets — the public ticker, and the private \"control market\" where dealmakers actually buy and sell whole businesses. Follow the private trail before trusting the public story.",
+      "full": "Borrowed from Chris Mayer's \"Invest Like a Dealmaker.\" Before buying an IPO or a hyped story, trace the ownership chain: who bought this business privately, at what price, and how soon after are they selling it to the public? If a private equity owner is cashing out almost the entire value within months of buying it, that tells you what they actually think the fair value is — and it's a strong signal the IPO wasn't built to create value for you.",
+      "analogy": "Imagine buying a used car from a dealer who bought it from the original owner for $2,000 last month, and is now asking you $10,000 for it. Before paying that, you'd want to know why the original owner sold so cheap, and why the dealer is in such a hurry to flip it back to the public.",
+      "stockNote": "The whole engine behind skipping <b>IGI</b>: Blackstone paid ~$393M for IGI India in 2023 and the IPO valued it near $2.1B just 20 months later — a ~5x private-to-public flip funded almost entirely by public money, not fresh capital into the business."
+    },
+    {
+      "cat": "ownership",
+      "name": "The Shrinking Host Model",
+      "tickers": [
+        "IGIL"
+      ],
+      "oneliner": "When a company's fee is attached to an asset whose real value is collapsing, the fee eventually becomes an unbearable cost — and the whole revenue model dies with the asset it depends on.",
+      "full": "Some businesses earn a fee pinned to a fixed unit (like weight or count) rather than to the actual market value of the thing being measured. If that underlying market value collapses while the fee stays flat, the fee-to-value ratio explodes — what used to be \"cheap insurance\" becomes \"not worth paying for\" at the margin, and customers start walking away, starting with the smallest, cheapest items first.",
+      "analogy": "Like a parasite that feeds on a host organism — comfortable and sustainable while the host is healthy, but as the host shrinks, the parasite's bite becomes proportionally larger and larger, until eventually the host can't support it and both collapse.",
+      "stockNote": "Applied to <b>IGI</b>'s diamond-certification model: its fee is pinned to a stone's carat weight, not its market price. As lab-grown diamond prices crash 80-90%, the flat certification fee becomes 10%+ of the stone's value instead of ~1% — already causing smaller stones to skip certification entirely."
+    },
+    {
+      "cat": "ownership",
+      "name": "The Pond Theory",
+      "tickers": [
+        "IGIL"
+      ],
+      "oneliner": "Fragmented, unorganized industries are shallow ponds full of tiny players — when a new technology or scale threshold raises the survival bar, the pond consolidates fast into a few big, trusted \"gorillas.\"",
+      "full": "As an industry consolidates around organized, branded players, trust itself migrates — away from independent third-party verifiers and toward the brand names people already trust. Anyone whose entire business model depends on being the trusted middleman needs to ask whether the \"gorillas\" emerging in their industry are about to internalize that trust function themselves.",
+      "analogy": "A shallow pond full of countless small fish gets swallowed fast once a few big fish evolve the ability to eat at scale — the small fish don't individually fail, the whole ecosystem just re-sorts around the big players.",
+      "stockNote": "Applied to <b>IGI</b>: as Tata's Tanishq and Kalyan build in-house verification and trust directly into their brand (rather than routing through a third-party certificate), the entire reason IGI exists — as a trusted middleman — starts to erode."
+    },
+    {
+      "cat": "ownership",
+      "name": "The Incentive Model",
+      "tickers": [
+        "IGIL",
+        "AIRFLOA"
+      ],
+      "oneliner": "Before trusting any company's story, ask a blunt question: what is the person or structure in control actually being paid to do?",
+      "full": "This is his most general-purpose tool — usable on companies, colleagues, or relationships. Strip away the narrative and look only at what behavior the incentives actually reward. A management team, or a PE owner, will act exactly the way their incentives point, regardless of what the investor presentation says.",
+      "analogy": "A landlord about to sell a property doesn't truly renovate it — he does just enough cosmetic work to make the listing photos look good and inflate the sale price. That's not fraud, it's just incentives working exactly as designed. (Author's own analogy, applied directly to how PE firms run a company into an IPO.)",
+      "stockNote": "The closing argument on <b>IGI</b> (76.55% still owned by Blackstone with no lock-in left) and implicit throughout the <b>Airfloa</b> teardown (raise public money, quietly use it to plug a working-capital hole)."
+    },
+    {
+      "cat": "ownership",
+      "name": "Trap Detection Framework (\"Lollapalooza in Reverse\")",
+      "tickers": [
+        "AIRFLOA"
+      ],
+      "oneliner": "Munger's \"Lollapalooza effect\" is multiple good forces stacking into an outsized win. This is the mirror version — multiple red flags stacking together into an outsized trap.",
+      "full": "Individually, a pre-IPO rebrand, a big margin jump, negative cash flow, and a single dominant customer might each be explainable on their own. When several of them show up together in the same company at the same time, treat that as a compounding warning rather than a coincidence — each additional red flag makes the whole pattern more, not less, dangerous.",
+      "analogy": "Like several small cracks appearing in a dam at different spots at once — any single crack might be survivable, but multiple cracks appearing together usually means the whole structure is about to give way.",
+      "stockNote": "Built the entire <b>Airfloa Rail Technology</b> teardown: pre-IPO rename, 18-20x profit jump right before listing, negative operating and free cash flow despite reported profit, 242-day receivables, a single dominant buyer (Indian Railways) with no pricing power, and IPO proceeds used to fund a working-capital hole — six separate red flags, all pointing the same direction."
+    },
+    {
+      "cat": "ownership",
+      "name": "Percentage-of-Completion (POC) Accounting Trap",
+      "tickers": [
+        "AIRFLOA"
+      ],
+      "oneliner": "Some companies book revenue today based on their own internal guess of how \"complete\" a long project is — even before the customer approves it or pays a rupee.",
+      "full": "A four-step pattern to watch for in infra/EPC-style companies: (1) shift revenue mix into turnkey, multi-year contracts, (2) recognize that revenue using management's own \"percent complete\" estimate, (3) front-load revenue before the client has approved the work or paid anything, (4) watch receivables and negative cash flow explode as the gap between \"booked on paper\" and \"actually collected\" grows.",
+      "analogy": "A contractor tells you your kitchen renovation is \"70% done\" and asks to be paid for that 70% today — except you never agreed it was 70% done, and you haven't paid a cent of it yet.",
+      "stockNote": "The specific accounting mechanism behind <b>Airfloa</b>'s exploding receivables (₹127 crore against ₹192 crore revenue) and negative free cash flow despite reported 18-20x profit growth."
+    },
+    {
+      "cat": "growth",
+      "name": "Phoenix Forge & Dragon Flight Framework",
+      "tickers": [
+        "CAPLIPOINT"
+      ],
+      "oneliner": "A pre-planned map of price zones for buying more as a stock falls (Phoenix Forge) and adding more as it breaks to new highs (Dragon Flight) — so you're not deciding emotionally in the moment.",
+      "full": "The critical test before using either ladder: is the falling price a \"Forge\" (business getting stronger while price sleeps — a gift) or a \"Pyre\" (business actually deteriorating — a trap)? The chart alone never tells you which one you're looking at; only tracking the actual fundamentals does. Once confirmed as a Forge, tiers are pre-set (e.g., 20-30% of capital at the first zone, 50-60% at the highest-conviction middle zone, a small reserve for a black-swan low) — removing the temptation to either panic-sell or chase with FOMO.",
+      "analogy": "Think of stocking up on winter coats before a cold snap you're confident is coming (a Forge) — every price drop is a bargain, because you know demand and value are both about to rise. Buying discounted coats at a store that's actually going out of business (a Pyre) is the opposite: cheap, but for a reason that will burn you.",
+      "stockNote": "Applied stage by stage to <b>Caplin Point</b>: original accumulation zones ₹1,350–2,050 (Phoenix), then new \"Dragon\" tiers ₹2,020–2,971 as the stock broke out to new highs after a 57% rally off its low."
+    },
+    {
+      "cat": "growth",
+      "name": "The Depreciation Model / \"Hidden Law of Great Compounders\"",
+      "tickers": [
+        "CAPLIPOINT"
+      ],
+      "oneliner": "When a company is investing heavily in new capacity, the accounting cost hits profit immediately — while the revenue from that investment only shows up years later.",
+      "full": "Depreciation is a non-cash charge, so it can make PAT growth look like it's decelerating (e.g., from 27% to 21%) purely because of heavy, front-loaded capex — even while cash flow from operations and EBITDA keep growing strongly. Most investors see the slowing profit-growth number and assume the business is \"maturing.\" The fix: check operating cash flow and EBITDA, not just the bottom-line PAT number, whenever a company is mid-way through a big capex cycle.",
+      "analogy": "A farmer who just planted a new orchard pays for the digging, planting, and irrigation right now — those costs hit this year's books immediately. But the harvest (the revenue) doesn't arrive for another two or three years. Anyone judging the farm purely on \"this year's profit\" would wrongly conclude the farm is struggling, right before its best years.",
+      "stockNote": "Explains why <b>Caplin Point</b>'s PAT growth \"decelerated\" from 27% to 21% even as CFO grew 21% and EBITDA grew 18% — the front-loaded ₹870 crore capex over 5 years is depressing reported profit today, ahead of the revenue that capex will generate through FY27-28."
+    },
+    {
+      "cat": "growth",
+      "name": "The Foreshock Model",
+      "tickers": [
+        "KPITTECH",
+        "TRENT"
+      ],
+      "oneliner": "A company's first profit warning or growth slowdown is almost never the last one — it's a warning tremor before more come.",
+      "full": "Rule of thumb: never buy immediately after the first crack in a company's growth story, because the odds strongly favor more bad news following, not stabilization. Wait for 3-4 quarters of confirmed settling before treating a beaten-down \"quality\" name as a genuine opportunity rather than a falling knife.",
+      "analogy": "Earthquakes almost always have small foreshocks before the big one — the first tremor is a warning, not the event itself. (This is the author's own direct analogy, used by name.)",
+      "stockNote": "Used to justify staying away from <b>KPIT</b> right after its 16% single-day crash (calling it a fresh \"Q1 warning,\" not a bottom), and to explain why he still avoids <b>Trent</b> even after a 45% drawdown — he counts it as the sixth or seventh slowdown since late 2024, not the first."
+    },
+    {
+      "cat": "growth",
+      "name": "The Snowball Method",
+      "tickers": [
+        "SYM"
+      ],
+      "oneliner": "Add to a position when the business keeps proving new reasons to own it — new customers, a wider moat, stronger execution — never simply because the price moved up or down.",
+      "full": "Each year of genuine execution should stack a new, independent reason onto the original thesis. If, on revisiting a stock, every variable that mattered at the original purchase is still getting stronger, that's the signal to add — regardless of whether the price is higher, lower, or unchanged from the last purchase.",
+      "analogy": "A snowball rolling downhill doesn't get bigger because of the shape of the hill — it gets bigger because it keeps picking up new layers of snow. The terrain (price path) barely matters if the snowball keeps collecting real material.",
+      "stockNote": "The explicit method behind <b>Symbotic</b>: bought at $14, added again at $24 after the moat, customer list (Walmart → Albertsons, Target, Medline), and backlog value had all independently strengthened — not because the price had dropped."
+    },
+    {
+      "cat": "growth",
+      "name": "The 100-Bagger Framework (Thomas Phelps)",
+      "tickers": [
+        "SYM"
+      ],
+      "oneliner": "The biggest stock winners tend to be small, overlooked companies that meaningfully cut a customer's cost, time, or constraint — with switching costs so high that leaving becomes brutal.",
+      "full": "Four forces to look for stacking together: the technology reduces the customer's constraint, reduces their cost, improves their time, and creates a high replacement/switching cost. When all four align in one business, conditions for an outsized, multi-decade compounder are in place. Phelps' other point: finding the company is only half the job — you also need the vision to see the thesis early, the courage to hold through short-term noise, and the patience to let it run the full climb.",
+      "analogy": "Author's own comparison: Mastercard became a huge compounder by reducing transaction time and friction for an entire economy — the same four-force pattern he's watching for in payments infrastructure, warehouse robotics, and (he suggests) stablecoins.",
+      "stockNote": "Framed <b>Symbotic</b> explicitly this way: it cuts labor cost and time for retailers, and once a $500 million warehouse system + years of accumulated data are deployed, ripping it out to switch to a cheaper competitor becomes close to unthinkable."
+    },
+    {
+      "cat": "growth",
+      "name": "Capital Allocator Quality (ROCE vs. ROIIC)",
+      "tickers": [
+        "KALYANKJIL"
+      ],
+      "oneliner": "Debt, cash-hoarding, and pledges aren't automatically good or bad — the real question is whether management is deploying capital in a way that actually creates value.",
+      "full": "ROCE tells you the structural quality of the existing business; ROIIC (return on incremental invested capital) tells you whether new capital being deployed right now is being used well. A company can safely run high debt if the returns on what that debt funds are high and durable (used as a teaching example, not a position, on companies like TransDigm and ServiceNow). A promoter pledge is not inherently a red flag either — it depends on the business's lifecycle stage and whether there's a visible, tracked path to reducing it.",
+      "analogy": "A wealthy person taking a very cheap loan instead of paying cash isn't being reckless if the loan's interest rate is lower than what they'd otherwise earn by keeping that cash invested elsewhere — it's optimization, not desperation. Red flag version: debt or pledges rising while the returns on that capital are actually falling.",
+      "stockNote": "Used to reframe <b>Kalyan Jewellers</b>'s promoter share pledge as \"bridge capital\" for store expansion — being paid down on a visible schedule (targeted zero by 2027) using operating cash flow, rather than a distress signal."
+    },
+    {
+      "cat": "growth",
+      "name": "The Linguistic Mental Model",
+      "tickers": [
+        "KALYANKJIL",
+        "CAPLIPOINT"
+      ],
+      "oneliner": "How a founder or CEO actually talks on earnings calls — the specific words, hedges, and repeated phrases — often reveals what's really happening before the numbers catch up.",
+      "full": "Confident operators tend to use concrete numbers and firm timelines. Nervous or promotional management tends to hide behind vague, hedged language and repeated \"storytelling\" framing. A shift over several quarters from marketing-style language toward blunt, numbers-first language is often a sign of a management team that has stopped trying to manage perception and started just running the business transparently.",
+      "analogy": "Like noticing a friend who used to talk about big exciting plans switch to only discussing small, concrete next steps — often a sign they've become more serious and realistic, not less ambitious.",
+      "stockNote": "Applied directly to <b>Kalyan Jewellers</b>: promoter Ramesh refusing twice to engage with a frustrated investor's share-price question on a concall (\"not under our control\"), and repeating \"it cannot be done overnight\" across three different topics — read as honest operator language rather than spin. Flagged as an upcoming dedicated post for <b>Caplin Point</b> as well."
+    },
+    {
+      "cat": "growth",
+      "name": "The Bottleneck Strategy (\"Road vs. Toll Booth\")",
+      "tickers": [
+        "PANW",
+        "CRWD",
+        "RBRK",
+        "NET",
+        "ZS",
+        "VRNS"
+      ],
+      "oneliner": "When a major technology shift happens, find the actual physical choke point all the new activity must pass through — rather than betting on whichever company in the \"obvious\" category looks best.",
+      "full": "Applied to the human-to-AI-agent transition in enterprise software: instead of betting on legacy security categories (firewalls, antivirus) built for human-speed usage, he mapped five brand-new bottlenecks the AI-agent era actually needs (machine identity, AI runtime inspection, data access brokerage, unified telemetry, continuous attestation). Refinement made mid-thesis: some companies aren't just a toll booth sitting on someone else's road — they're building the road itself. Road owners tend to eventually absorb the toll booths built on top of them too, the way AWS or Bloomberg did.",
+      "analogy": "Instead of betting on which trucking company will dominate a new trade route, buy the company that owns the only bridge every truck has to cross to get there.",
+      "stockNote": "Built the entire cybersecurity basket: <b>Palo Alto</b> (machine identity), <b>CrowdStrike</b> (AI runtime inspection + unified telemetry), <b>Rubrik</b> (continuous attestation), <b>Zscaler</b> (runtime inspection, lower conviction), and <b>Cloudflare</b> (reframed as \"the road\" — hosting the MCP infrastructure agents connect through). <b>Varonis</b> was dropped from the list mid-post once competitive analysis showed its bottleneck being absorbed by Microsoft Purview and private competitor Cyera."
+    }
+  ],
+  "stockPosts": {
+    "CAPLIPOINT": [
+      {
+        "title": "Caplin Point Q4 FY26: The Boring 50x Compounder",
+        "slug": "caplin-point-q4-fy26-the-boring-50x"
+      },
+      {
+        "title": "A Boring Compounding Machine Is Up 57% — The Phoenix Forge Framework",
+        "slug": "a-boring-compounding-machine-is-up"
+      },
+      {
+        "title": "Caplin Point Breaches ₹2,409 — The Boring Compounder Keeps Compounding",
+        "slug": "caplin-point-breaches-2409-the-boring"
+      }
+    ],
+    "KOVAI": [
+      {
+        "title": "One Of The Cleanest Hospital Compounders In India",
+        "slug": "the-cleanest-hospital-compounder"
+      },
+      {
+        "title": "The Cleanest Hospital Compounder — Revisited",
+        "slug": "the-cleanest-hospital-compounder-1d9"
+      }
+    ],
+    "KALYANKJIL": [
+      {
+        "title": "Converging Businesses, Diverging Prices",
+        "slug": "converging-businesses-diverging-prices"
+      },
+      {
+        "title": "Kalyan vs Titan: A 10x Ticker Gap",
+        "slug": "kalyan-vs-titan-a-10x-ticker-gap"
+      }
+    ],
+    "TITAN": [
+      {
+        "title": "Kalyan vs Titan: A 10x Ticker Gap",
+        "slug": "kalyan-vs-titan-a-10x-ticker-gap"
+      }
+    ],
+    "TRENT": [
+      {
+        "title": "Trent Is Down 45% — The Real Story Is...",
+        "slug": "trent-is-down-45-the-real-story-is"
+      }
+    ],
+    "KPITTECH": [
+      {
+        "title": "KPIT Technologies Crash: How The Two Engines Reversed Together",
+        "slug": "kpit-technologies-crash-how-the-two"
+      }
+    ],
+    "TATAELXSI": [
+      {
+        "title": "KPIT Technologies Crash (Tata Elxsi comparison)",
+        "slug": "kpit-technologies-crash-how-the-two"
+      }
+    ],
+    "HDFCBANK": [
+      {
+        "title": "When The Multiple Eats The Engine",
+        "slug": "when-the-multiple-eats-the-engine"
+      }
+    ],
+    "AIRFLOA": [
+      {
+        "title": "Your Favorite Railway/Defence Multibagger",
+        "slug": "your-favorite-railway-defence-multibagger"
+      }
+    ],
+    "IGIL": [
+      {
+        "title": "The IGI Trap: 4 Mental Models To Decode It",
+        "slug": "the-igi-trap-4-mental-models-to-decode"
+      }
+    ],
+    "SAGILITY": [
+      {
+        "title": "Two Mental Models To Survive An AI World",
+        "slug": "two-mental-models-to-survive-an-ai"
+      }
+    ],
+    "PANW": [
+      {
+        "title": "5 Bottlenecks Where AI-Era Cybersecurity Value Will Accrue",
+        "slug": "5-bottlenecks-where-ai-era-cybersecurity"
+      }
+    ],
+    "CRWD": [
+      {
+        "title": "5 Bottlenecks Where AI-Era Cybersecurity Value Will Accrue",
+        "slug": "5-bottlenecks-where-ai-era-cybersecurity"
+      }
+    ],
+    "RBRK": [
+      {
+        "title": "5 Bottlenecks Where AI-Era Cybersecurity Value Will Accrue",
+        "slug": "5-bottlenecks-where-ai-era-cybersecurity"
+      }
+    ],
+    "NET": [
+      {
+        "title": "5 Bottlenecks Where AI-Era Cybersecurity Value Will Accrue",
+        "slug": "5-bottlenecks-where-ai-era-cybersecurity"
+      }
+    ],
+    "ZS": [
+      {
+        "title": "5 Bottlenecks Where AI-Era Cybersecurity Value Will Accrue",
+        "slug": "5-bottlenecks-where-ai-era-cybersecurity"
+      }
+    ],
+    "VRNS": [
+      {
+        "title": "5 Bottlenecks Where AI-Era Cybersecurity Value Will Accrue",
+        "slug": "5-bottlenecks-where-ai-era-cybersecurity"
+      }
+    ],
+    "SYM": [
+      {
+        "title": "The Quiet Math That Separates Great Compounders",
+        "slug": "the-quiet-math-that-separates-great"
+      }
+    ]
+  },
+  "modelPost": {
+    "Business State vs. Ticker State": {
+      "title": "KPIT Technologies Crash: How The Two Engines Reversed Together",
+      "slug": "kpit-technologies-crash-how-the-two"
+    },
+    "The Two-Engine Framework": {
+      "title": "When The Multiple Eats The Engine",
+      "slug": "when-the-multiple-eats-the-engine"
+    },
+    "The Plateau Framework": {
+      "title": "The Cleanest Hospital Compounder — Revisited",
+      "slug": "the-cleanest-hospital-compounder-1d9"
+    },
+    "Law of Large Numbers (Size Ceiling)": {
+      "title": "KPIT Technologies Crash: How The Two Engines Reversed Together",
+      "slug": "kpit-technologies-crash-how-the-two"
+    },
+    "The Caged Bird Model": {
+      "title": "Two Mental Models To Survive An AI World",
+      "slug": "two-mental-models-to-survive-an-ai"
+    },
+    "The Maginot Line Model": {
+      "title": "Two Mental Models To Survive An AI World",
+      "slug": "two-mental-models-to-survive-an-ai"
+    },
+    "The Dealmaker Model": {
+      "title": "The IGI Trap: 4 Mental Models To Decode It",
+      "slug": "the-igi-trap-4-mental-models-to-decode"
+    },
+    "The Shrinking Host Model": {
+      "title": "The IGI Trap: 4 Mental Models To Decode It",
+      "slug": "the-igi-trap-4-mental-models-to-decode"
+    },
+    "The Pond Theory": {
+      "title": "The IGI Trap: 4 Mental Models To Decode It",
+      "slug": "the-igi-trap-4-mental-models-to-decode"
+    },
+    "The Incentive Model": {
+      "title": "The IGI Trap: 4 Mental Models To Decode It",
+      "slug": "the-igi-trap-4-mental-models-to-decode"
+    },
+    "Trap Detection Framework (\"Lollapalooza in Reverse\")": {
+      "title": "Your Favorite Railway/Defence Multibagger",
+      "slug": "your-favorite-railway-defence-multibagger"
+    },
+    "Percentage-of-Completion (POC) Accounting Trap": {
+      "title": "Your Favorite Railway/Defence Multibagger",
+      "slug": "your-favorite-railway-defence-multibagger"
+    },
+    "Phoenix Forge & Dragon Flight Framework": {
+      "title": "Caplin Point Q4 FY26: The Boring 50x Compounder",
+      "slug": "caplin-point-q4-fy26-the-boring-50x"
+    },
+    "The Depreciation Model / \"Hidden Law of Great Compounders\"": {
+      "title": "Caplin Point Q4 FY26: The Boring 50x Compounder",
+      "slug": "caplin-point-q4-fy26-the-boring-50x"
+    },
+    "The Foreshock Model": {
+      "title": "KPIT Technologies Crash: How The Two Engines Reversed Together",
+      "slug": "kpit-technologies-crash-how-the-two"
+    },
+    "The Snowball Method": {
+      "title": "The Quiet Math That Separates Great Compounders",
+      "slug": "the-quiet-math-that-separates-great"
+    },
+    "The 100-Bagger Framework (Thomas Phelps)": {
+      "title": "The Quiet Math That Separates Great Compounders",
+      "slug": "the-quiet-math-that-separates-great"
+    },
+    "Capital Allocator Quality (ROCE vs. ROIIC)": {
+      "title": "The Architecture of Capital Allocation",
+      "slug": "the-architecture-of-capital-allocation"
+    },
+    "The Linguistic Mental Model": {
+      "title": "Converging Businesses, Diverging Prices",
+      "slug": "converging-businesses-diverging-prices"
+    },
+    "The Bottleneck Strategy (\"Road vs. Toll Booth\")": {
+      "title": "5 Bottlenecks Where AI-Era Cybersecurity Value Will Accrue",
+      "slug": "5-bottlenecks-where-ai-era-cybersecurity"
+    }
+  }
+}
