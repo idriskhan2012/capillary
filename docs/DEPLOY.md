@@ -11,12 +11,11 @@ staying inside the free tiers. The whole thing is one CloudFormation stack + a d
 | CloudFront distribution | HTTPS + CDN in front of S3 | free 12 mo (1 TB/mo out) |
 | Lambda `capillary-scraper` | daily: refresh prices + classify new posts → `data.json` | always-free (1M req/mo) |
 | EventBridge rule | daily cron trigger for the scraper | free |
-| Lambda `capillary-addstock` + Function URL | the "Add Stock" write API | always-free |
-| DynamoDB `capillary-custom-stocks` | stores custom stocks (5/5 provisioned) | **always-free** (≤25/25) |
 | SSM Parameter Store (SecureString ×2) | holds the Gemini + Twelve Data keys | free (Standard tier) |
 
-**Add-Stock is $0 forever** (DynamoDB + Lambda + Function URLs are always-free — no API Gateway).
 Hosting (S3 + CloudFront) is free for 12 months, then ~1–5¢/month for a site this small.
+The scraper Lambda + EventBridge are always-free. The tracker is read-only (no write API,
+no DynamoDB) — content comes from the scraper + the promote step.
 
 ---
 
@@ -123,12 +122,11 @@ AWS_PROFILE=capillary ./infra/teardown.sh    # asks you to type 'delete' to conf
   tier. The scraper automatically falls back to Yahoo Finance for any ticker Twelve Data
   can't price, and keeps the previous price (never blanks it) if both fail — failures show up
   in the site's **System Diagnostics** panel.
-- **Add-Stock auth:** the write API's Function URL is **AuthType `AWS_IAM`** — not publicly
-  invokable. The site reaches it same-origin via CloudFront's `/api/*` behavior, which
-  SigV4-signs each request through an Origin Access Control (OAC). A direct anonymous call
-  to the Function URL returns 403. `deploy.sh` runs in **two passes**: pass 1 creates the
-  Function URL, pass 2 wires CloudFront to its domain (passed as a plain parameter, which
-  sidesteps a CloudFront early-validation quirk with unresolved origin references).
+- **Read-only tracker:** there is no user-write API. Content is populated by the scraper +
+  `infra/promote.sh`. (A manual Add-Stock feature backed by DynamoDB + a Lambda Function URL
+  was built then removed — the CloudFront→Function-URL OAC path never authorized in this
+  account despite correct config, and it was redundant with the scraper. If cross-device
+  custom stocks are ever wanted, put an API Gateway HTTP API in front of a Lambda.)
 - **Region:** defaults to `ap-south-1` (Mumbai). Override with `CAP_REGION=...`. CloudFront is
   global regardless.
 - **Secrets** live only in SSM Parameter Store (SecureString) and your local `secrets.env` —

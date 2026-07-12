@@ -245,10 +245,7 @@
       <div class="meta-item"><b>7</b>bearish / avoid</div>
       <div class="meta-item"><b>Jul 11, 2026</b>prices as of</div>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-      <div class="filters" id="stockFilters"></div>
-      <button id="addStockBtn" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:8px 16px;border-radius:20px;border:1px solid var(--accent);background:rgba(255,103,25,.1);color:var(--accent);cursor:pointer;">+ Add Stock</button>
-    </div>
+    <div class="filters" id="stockFilters"></div>
     <div class="grid" id="grid"></div>
   </div>
 
@@ -477,7 +474,6 @@
 
 <div class="modal-bg" id="modalBg"><div class="modal" id="modalBody"></div></div>
 
-<script src="./config.js"></script>
 <script>
 let stocks=[], categories=[], models=[], stockPosts={}, modelPost={};
 
@@ -485,39 +481,8 @@ let stocks=[], categories=[], models=[], stockPosts={}, modelPost={};
 
 
 
-let customStocks = [];
-
-let apiAvailable = false;
-const API_BASE = (window.CAPILLARY_API_BASE || '/api');
-const CUSTOM_KEY = 'capillary_custom_stocks';
-
-// Custom stocks live in the DynamoDB-backed API when the cloud backend is deployed
-// (cross-device). When there's no API reachable (local dev, or before deploy), we
-// fall back to this browser's localStorage so the feature still works offline.
-async function loadCustomStocks(){
-  try{
-    const res = await fetch(API_BASE + '/stocks', {cache:'no-store'});
-    if(res.ok){
-      customStocks = await res.json();
-      apiAvailable = true;
-      renderStocks(currentFilter);
-      updateTrackedCount();
-      return;
-    }
-  }catch(e){ /* no API reachable — use localStorage */ }
-  apiAvailable = false;
-  try{
-    const raw = localStorage.getItem(CUSTOM_KEY);
-    customStocks = raw ? JSON.parse(raw) : [];
-  }catch(e){ customStocks = []; }
-  renderStocks(currentFilter);
-  updateTrackedCount();
-}
-function persistLocal(){
-  try{ localStorage.setItem(CUSTOM_KEY, JSON.stringify(customStocks)); }catch(e){ console.error('Storage save failed', e); }
-}
 function updateTrackedCount(){
-  document.getElementById('trackedCount').innerHTML = `<b>${stocks.length + customStocks.length}</b>stocks tracked`;
+  document.getElementById('trackedCount').innerHTML = `<b>${stocks.length}</b>stocks tracked`;
 }
 
 let currentFilter = 'all';
@@ -579,19 +544,18 @@ const stockFiltersEl = document.getElementById('stockFilters');
 function renderStocks(filter){
   currentFilter = filter;
   grid.innerHTML = '';
-  const all = [...stocks, ...customStocks];
+  const all = stocks;
   all.forEach(s=>{
     if(filter!=='all' && s.sentiment!==filter) return;
     const change = pct(s.postPrice, s.current);
     const card = document.createElement('div');
     card.className = 'card';
     card.style.position = 'relative';
-    card.onclick = ()=>openStockModal(s.ticker, s.custom);
+    card.onclick = ()=>openStockModal(s.ticker);
     card.innerHTML = `
-      ${s.custom ? `<button class="delete-x" onclick="event.stopPropagation();deleteCustomStock('${s.ticker}')">✕</button>` : ''}
       <div class="card-top">
         <div class="ticker-block">
-          <div class="ticker">${s.ticker} <span style="color:var(--muted);font-weight:400;font-size:11px;">${s.exch}</span> ${s.custom ? '<span class="custom-badge">Yours</span>' : ''}</div>
+          <div class="ticker">${s.ticker} <span style="color:var(--muted);font-weight:400;font-size:11px;">${s.exch}</span></div>
           <div class="name">${s.name}</div>
         </div>
         <div class="badge ${s.sentiment}">${s.sentiment==='bull'?'Bullish':s.sentiment==='bear'?'Bearish':'Neutral'}</div>
@@ -668,15 +632,15 @@ function buildCatNav(){
   });
 }
 
-function openStockModal(ticker, isCustom){
+function openStockModal(ticker){
   switchTab('stocks');
-  const s = isCustom ? customStocks.find(x=>x.ticker===ticker) : stocks.find(x=>x.ticker===ticker);
+  const s = stocks.find(x=>x.ticker===ticker);
   const change = pct(s.postPrice, s.current);
-  const related = isCustom ? [] : modelsForTicker(s.ticker);
+  const related = modelsForTicker(s.ticker);
   const modal = document.getElementById('modalBody');
   modal.innerHTML = `
     <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="eyebrow">${s.sector||''} ${s.custom ? '· <span style="color:var(--accent);">Your addition</span>' : ''}</div>
+    <div class="eyebrow">${s.sector||''}</div>
     <h2>${s.name}</h2>
     <div class="sub">${s.ticker} · ${s.exch}</div>
     <div class="badge ${s.sentiment}" style="margin-bottom:4px;">${s.sentiment==='bull'?'Bullish':s.sentiment==='bear'?'Bearish / Avoid':'Neutral'}</div>
@@ -701,11 +665,10 @@ function openStockModal(ticker, isCustom){
         ${related.map(m=>`<span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:11.5px;" onclick="openModelModal('${m.name.replace(/'/g,"\\'")}')">${m.name}</span>`).join('')}
       </div>
     </div>` : ''}
-    ${!isCustom ? `
     <div class="modal-section">
       <div class="h">Read The Original Post(s)</div>
       ${postLinksHtml(s.ticker)}
-    </div>` : ''}
+    </div>
   `;
   document.getElementById('modalBg').classList.add('open');
   document.getElementById('modalBg').scrollTop = 0;
@@ -742,91 +705,7 @@ function openModelModal(name){
   document.getElementById('modalBg').scrollTop = 0;
 }
 
-function openAddStockForm(){
-  const modal = document.getElementById('modalBody');
-  modal.innerHTML = `
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="eyebrow">Your Addition</div>
-    <h2>Add a Stock</h2>
-    <div class="sub">Saved to your tracker. Syncs across devices when the cloud backend is deployed; otherwise saved to this browser.</div>
-    <div class="form-grid">
-      <div class="form-field"><label>Ticker *</label><input id="f-ticker" placeholder="e.g. DMART" /></div>
-      <div class="form-field"><label>Exchange</label><input id="f-exch" placeholder="NSE / NASDAQ / BSE" /></div>
-      <div class="form-field full"><label>Company Name *</label><input id="f-name" placeholder="Full company name" /></div>
-      <div class="form-field"><label>Sector</label><input id="f-sector" placeholder="e.g. India · Retail" /></div>
-      <div class="form-field">
-        <label>Sentiment</label>
-        <select id="f-sentiment">
-          <option value="bull">Bullish</option>
-          <option value="bear">Bearish / Avoid</option>
-          <option value="neutral">Neutral</option>
-        </select>
-      </div>
-      <div class="form-field"><label>Price at post/entry</label><input id="f-postprice" type="number" step="any" placeholder="e.g. 435" /></div>
-      <div class="form-field"><label>Current price</label><input id="f-current" type="number" step="any" placeholder="e.g. 476" /></div>
-      <div class="form-field full"><label>Mental model tag</label><input id="f-model" placeholder="e.g. Two-Engine Framework" /></div>
-      <div class="form-field full"><label>Thesis / notes</label><textarea id="f-thesis" placeholder="Why bullish/bearish, key numbers, what you read..."></textarea></div>
-    </div>
-    <div class="form-actions">
-      <button class="btn-primary" onclick="submitCustomStock()">Save Stock</button>
-      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
-    </div>
-  `;
-  document.getElementById('modalBg').classList.add('open');
-  document.getElementById('modalBg').scrollTop = 0;
-}
 
-async function submitCustomStock(){
-  const ticker = document.getElementById('f-ticker').value.trim().toUpperCase();
-  const name = document.getElementById('f-name').value.trim();
-  if(!ticker || !name){ alert('Ticker and company name are required.'); return; }
-  const entry = {
-    ticker, custom:true,
-    exch: document.getElementById('f-exch').value.trim() || '—',
-    name,
-    sector: document.getElementById('f-sector').value.trim() || '—',
-    sentiment: document.getElementById('f-sentiment').value,
-    modelShort: document.getElementById('f-model').value.trim() || 'Your own note',
-    postDate: 'You added this',
-    postPrice: parseFloat(document.getElementById('f-postprice').value) || null,
-    current: parseFloat(document.getElementById('f-current').value) || null,
-    entryNote: 'Manually added',
-    thesis: document.getElementById('f-thesis').value.trim(),
-    outlook: 'Personal watchlist addition — update anytime by deleting and re-adding.'
-  };
-  if(apiAvailable){
-    try{
-      const res = await fetch(API_BASE + '/stocks', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(entry)});
-      if(!res.ok) throw new Error('HTTP ' + res.status);
-    }catch(e){ alert('Could not save to server: ' + e.message); return; }
-    closeModal();
-    await loadCustomStocks();
-    return;
-  }
-  customStocks = customStocks.filter(s=>s.ticker!==ticker);
-  customStocks.push(entry);
-  persistLocal();
-  updateTrackedCount();
-  closeModal();
-  renderStocks(currentFilter);
-}
-
-async function deleteCustomStock(ticker){
-  if(apiAvailable){
-    try{
-      const res = await fetch(API_BASE + '/stocks/' + encodeURIComponent(ticker), {method:'DELETE'});
-      if(!res.ok) throw new Error('HTTP ' + res.status);
-    }catch(e){ alert('Could not delete on server: ' + e.message); return; }
-    await loadCustomStocks();
-    return;
-  }
-  customStocks = customStocks.filter(s=>s.ticker!==ticker);
-  persistLocal();
-  updateTrackedCount();
-  renderStocks(currentFilter);
-}
-
-document.getElementById('addStockBtn').addEventListener('click', openAddStockForm);
 
 function scrollToStage(id){
   switchTab('framework');
@@ -991,7 +870,7 @@ async function bootstrap(){
   renderModels();
   updateHeaderCounts();
   renderStocks('all');
-  loadCustomStocks();
+  updateTrackedCount();
 }
 
 initTheme();

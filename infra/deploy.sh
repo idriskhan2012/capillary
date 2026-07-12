@@ -68,25 +68,13 @@ aws cloudformation package \
 get_output () { aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$REGION" \
   --query "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue" --output text; }
 
-deploy_stack () {  # $1 = ApiOriginDomain ("" on pass 1)
-  aws cloudformation deploy \
-    --template-file infra/packaged.yaml \
-    --stack-name "$STACK_NAME" \
-    --capabilities CAPABILITY_IAM \
-    --parameter-overrides SiteBucketName="$SITE_BUCKET" ProjectName="$PROJECT" ApiOriginDomain="$1" \
-    --region "$REGION"
-}
-
-# Two-pass deploy: pass 1 creates everything incl. the IAM-auth Function URL; pass 2
-# wires CloudFront's /api/* behavior to that URL's domain (passed as a plain string,
-# which avoids the CloudFront early-validation issue with unresolved GetAtt origins).
-echo "Deploying stack ${STACK_NAME} — pass 1/2 (CloudFront can take 5-15 min on first run)..."
-deploy_stack ""
-
-API_URL="$(get_output AddStockFunctionUrl)"
-API_HOST="${API_URL#https://}"; API_HOST="${API_HOST%/}"
-echo "Deploying stack ${STACK_NAME} — pass 2/2 (wiring /api/* -> ${API_HOST})..."
-deploy_stack "$API_HOST"
+echo "Deploying stack ${STACK_NAME} (CloudFront can take 5-15 min on first run)..."
+aws cloudformation deploy \
+  --template-file infra/packaged.yaml \
+  --stack-name "$STACK_NAME" \
+  --capabilities CAPABILITY_IAM \
+  --parameter-overrides SiteBucketName="$SITE_BUCKET" ProjectName="$PROJECT" \
+  --region "$REGION"
 
 BUCKET="$(get_output SiteBucketName)"
 DIST_ID="$(get_output DistributionId)"
@@ -95,7 +83,7 @@ SITE_URL="$(get_output SiteURL)"
 # --- 4. upload site ------------------------------------------------------
 echo "Uploading site content to s3://${BUCKET}..."
 # Push everything except the live data/log files so we never clobber scraper output.
-# no-cache so browsers always revalidate index.html/config.js (cheap 304s via ETag) —
+# no-cache so browsers always revalidate index.html (cheap 304s via ETag) —
 # otherwise a stale cached index.html hides new UI until the browser cache expires.
 aws s3 sync public/ "s3://${BUCKET}/" --exclude "data.json" --exclude "logs.json" \
   --cache-control "no-cache" --region "$REGION"
@@ -107,13 +95,6 @@ if [[ "${FORCE_DATA:-0}" == "1" ]] || ! aws s3api head-object --bucket "$BUCKET"
 else
   echo "Keeping existing live data.json (set FORCE_DATA=1 to overwrite)."
 fi
-
-# The site reaches the Add-Stock API same-origin via CloudFront's /api/* behavior
-# (CloudFront signs to the IAM-auth Function URL). So the API base is just "/api".
-echo "Wiring site to Add-Stock API at same-origin /api ..."
-printf 'window.CAPILLARY_API_BASE=%s;\n' "\"/api\"" > /tmp/capillary-config.js
-aws s3 cp /tmp/capillary-config.js "s3://${BUCKET}/config.js" \
-  --content-type application/javascript --cache-control no-cache --region "$REGION"
 
 # --- 5. invalidate CloudFront -------------------------------------------
 echo "Invalidating CloudFront cache..."

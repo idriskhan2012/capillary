@@ -33,23 +33,28 @@ is authored static HTML (synthesized content the scraper never touches).
   `stockPosts`, `modelPost`) lives in `public/data.json`; `index.html` `fetch()`es it on
   load. Header/filter counts are computed from the data. Regenerate `data.json` from a
   legacy inline copy with the extractor pattern in git history if ever needed.
-- The "+ Add Stock" feature is **API-first with a localStorage fallback**: it calls
-  `/api/stocks` (a DynamoDB-backed Lambda Function URL, cross-device) when the backend is
-  deployed, and falls back to this browser's `localStorage` when there's no API (local dev,
-  or pre-deploy). No more `window.storage` in the data path (theme still uses it with a
-  localStorage fallback — harmless).
-- **Backend is written and ready to deploy** (not yet deployed — waiting on a dedicated AWS
-  account). `lambda/scraper.py` implements the archive-diff, HTML-strip, Gemini
-  classification, and Twelve-Data-with-Yahoo-fallback price refresh, writing `data.json`
-  back to S3. `lambda/addstock.py` is the DynamoDB CRUD handler. `infra/template.yaml` is
-  the full CloudFormation stack; `infra/deploy.sh` is one-command deploy. See `docs/DEPLOY.md`.
+- **The tracker is read-only** — there is no user-write feature. Content is populated by
+  the scraper + the promote step (`infra/promote.sh`). A manual "+ Add Stock" button used
+  to exist (localStorage / a DynamoDB+Lambda-URL backend) but was removed: since the
+  scraper already covers every stock from the posts, it was redundant, and dropping it
+  removed a whole class of cross-device/auth complexity. If you ever want a personal
+  watchlist of non-Capillary stocks back, that's the feature to re-add.
+- **Deployed and live.** `lambda/scraper.py` implements the archive-diff, HTML-strip,
+  Gemini classification, and Twelve-Data-with-Yahoo-fallback price refresh, writing
+  `data.json` back to S3. `infra/template.yaml` is the CloudFormation stack (S3 + CloudFront
+  + scraper Lambda + daily EventBridge); `infra/deploy.sh` is one-command deploy. See
+  `docs/DEPLOY.md`.
 
 ## Chosen implementation decisions (July 2026)
 
 - **Prices:** Twelve Data (free tier) primary, Yahoo Finance fallback for tickers Twelve
   Data's free tier can't resolve (notably some NSE/BSE names).
-- **Add-Stock backend:** DynamoDB + a **Lambda Function URL** (NOT API Gateway) so it stays
-  in the always-free tier forever — API Gateway's free tier expires after 12 months.
+- **No user-write backend:** the manual Add-Stock feature (and its DynamoDB + Lambda
+  Function URL + CloudFront `/api` OAC path) was built, then removed as redundant — the
+  CloudFront→Function-URL OAC path never authorized in this account despite correct config
+  (only direct IAM SigV4 worked; likely an AWS-side edge case), and the scraper already
+  covers every posted stock. If cross-device custom stocks are ever wanted, API Gateway
+  HTTP API in front of a Lambda is the reliable path (free 12 mo, then pennies).
 - **Classification:** implemented now (not deferred), Gemini via REST, sequential pacing kept.
 - **Secrets:** SSM Parameter Store SecureString, set by `deploy.sh` from `infra/secrets.env`.
   Never in the template, git, or Lambda env vars.
@@ -125,24 +130,22 @@ you can glance at the auto-classified ticker/sentiment/model before it goes live
 ticker guess or mis-tagged model sitting in a tracker used for real decisions is worse than
 a 30-second manual check.
 
-## What's NOT built yet (the actual next steps)
+## Status & how to operate it
 
-1. **The actual AWS deploy** — everything is coded and validated locally, but nothing has
-   been created in AWS yet (waiting on a dedicated account + its `capillary-deployer` creds
-   and the two API keys). Once those exist: `AWS_PROFILE=capillary ./infra/deploy.sh`.
-2. **Promoting classified drafts** — the scraper writes auto-classified drafts to
-   `pending_review.json` (the safety net). Promote them with `infra/promote.sh`:
-   `./infra/promote.sh list`, then `./infra/promote.sh approve <slug> [--model "Name"]`.
-   Approve adds the stock, **tags the ticker onto its mental model** (`models[].tickers` —
-   the reverse cross-link the UI needs), adds the `stockPosts` link, drains the queue, and
-   re-uploads `data.json`. A pure-stdlib `infra/promote.py` does the wiring; there's no
-   in-browser review UI (CLI only, by design — it's a personal tool).
-3. **Add-Stock hardening** — the write API is a public (unauthenticated) Function URL with
-   open CORS. Fine for a personal tracker; add Cognito / a shared-secret header before it's
-   anything more. See the note atop `lambda/addstock.py`.
+**Deployed and live** in the dedicated AWS account (region `ap-south-1`) — S3 + CloudFront
+host the site; a daily EventBridge cron runs the scraper. Redeploy any change with
+`AWS_PROFILE=capillary ./infra/deploy.sh`.
 
-Done since the original handoff: scraper implementation (1,2 old), `infra/` CloudFormation +
-deploy scripts (3 old), `data.json` fetch refactor (4 old), Add-Stock backend (5 old).
+**Promoting classified drafts** — the scraper writes auto-classified drafts to
+`pending_review.json` (the safety net), never straight to the live tracker. Promote with:
+`./infra/promote.sh list`, then `./infra/promote.sh approve <slug> [--model "Name"]`.
+Approve adds the stock, **tags the ticker onto its mental model** (`models[].tickers` — the
+reverse cross-link the UI needs), adds the `stockPosts` link, drains the queue, and
+re-uploads `data.json`. Pure-stdlib `infra/promote.py` does the wiring; CLI only, by design.
+
+**Possible future work:** a personal watchlist of non-Capillary stocks (the removed
+Add-Stock feature) — would need a write path; API Gateway HTTP API in front of a Lambda is
+the reliable option if revisited.
 
 ## Style/design notes (so a rebuild doesn't drift)
 
