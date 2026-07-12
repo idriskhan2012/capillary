@@ -31,7 +31,7 @@
   body{margin:0;background:var(--ink);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .15s ease,color .15s ease;}
   .wrap{max-width:1180px;margin:0 auto;padding:36px 24px 80px;}
 
-  header{position:relative;padding:32px 0 24px;border-bottom:1px solid var(--line);margin-bottom:6px;overflow:hidden;}
+  header{position:relative;padding:32px 0 24px;margin-bottom:6px;overflow:hidden;}
   .vein-bg{position:absolute;inset:0;pointer-events:none;opacity:.32;}
   header h1{font-family:'Source Serif 4',serif;font-weight:600;font-size:40px;letter-spacing:-.3px;margin:0 0 10px;position:relative;}
   header h1 span{color:var(--accent);}
@@ -157,6 +157,61 @@
     .modal-grid{grid-template-columns:1fr;}
     .tab-btn{padding:9px 12px;font-size:12px;}
   }
+  .framework-intro{color:var(--text-secondary);font-size:14.5px;line-height:1.65;max-width:760px;margin:18px 0 22px;}
+
+  .stage-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:20px 22px;box-shadow:var(--shadow);scroll-margin-top:20px;
+  }
+  .stage-card h3{font-family:'Source Serif 4',serif;font-size:18px;font-weight:600;margin:0 0 10px;line-height:1.35;}
+  .stage-card p{font-size:14px;line-height:1.62;color:var(--text-secondary);margin:0 0 12px;}
+  .stage-worked{
+    background:rgba(201,84,26,.06);border:1px solid rgba(201,84,26,.2);border-radius:8px;padding:13px 15px;
+  }
+  .stage-worked .h{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);margin-bottom:7px;}
+  .stage-worked p{color:var(--text-secondary);font-size:13px;line-height:1.58;}
+
+  .tl-checkpoint{
+    background:var(--surface2);border:1px dashed var(--line-strong);border-radius:8px;
+    padding:13px 15px;margin-bottom:4px;
+  }
+  .tl-checkpoint .h{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);margin-bottom:6px;}
+  .tl-checkpoint .q{font-family:'Source Serif 4',serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:10px;}
+  .tl-outcome-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:12.8px;line-height:1.5;color:var(--text-secondary);}
+  .tl-outcome-row:last-child{margin-bottom:0;}
+  .tl-outcome-row .badge{flex-shrink:0;margin-top:1px;}
+
+  .tl-wrap{position:relative;padding:6px 0 10px;}
+  .tl-wrap::before{content:'';position:absolute;left:21px;top:4px;bottom:52px;width:2px;background:var(--line);}
+  .tl-phase-label{position:relative;margin:6px 0 22px 0;z-index:1;padding-left:44px;}
+  .tl-phase-label:first-child{margin-top:0;}
+  .tl-phase-label span{
+    display:inline-block;background:var(--ink);padding:5px 16px;font-family:'Inter',sans-serif;font-size:11px;
+    font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;
+  }
+  .tl-row{position:relative;display:grid;grid-template-columns:44px 1fr;column-gap:18px;align-items:start;margin-bottom:18px;}
+  .tl-node{
+    grid-column:1;width:36px;height:36px;border-radius:50%;
+    background:var(--surface);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px;color:var(--accent);
+    margin-top:8px;z-index:1;cursor:pointer;transition:transform .15s ease;
+  }
+  .tl-node:hover{transform:scale(1.08);}
+  .tl-card-wrap{grid-column:2;max-width:800px;width:100%;}
+  .tl-loop-note{
+    position:relative;padding-top:8px;padding-left:62px;
+    display:flex;flex-direction:column;align-items:flex-start;gap:10px;
+  }
+  .tl-loop-note p{max-width:520px;color:var(--muted);font-size:12.5px;line-height:1.6;margin:0;}
+
+  @media (max-width:640px){
+    .tl-wrap::before{left:17px;}
+    .tl-row{grid-template-columns:34px 1fr;column-gap:12px;}
+    .tl-node{width:32px;height:32px;font-size:12px;}
+    .tl-phase-label{padding-left:38px;}
+    .tl-loop-note{padding-left:0;}
+  }
 </style>
 </head>
 <body>
@@ -176,6 +231,7 @@
       <div class="tabbar">
         <button class="tab-btn active" data-tab="stocks">Stock Tracker <span class="tab-count">· 18</span></button>
         <button class="tab-btn" data-tab="models">Mental Models Guide <span class="tab-count">· 20</span></button>
+        <button class="tab-btn" data-tab="framework">Decision Framework <span class="tab-count">· 11 stages</span></button>
       </div>
       <button id="themeToggleBtn" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:8px 16px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;margin-bottom:8px;">Dark mode</button>
     </div>
@@ -202,6 +258,215 @@
     </p>
     <div class="cat-nav" id="catNav"></div>
     <div id="catContainer"></div>
+  </div>
+
+<div class="panel" id="panel-framework">
+    <p class="framework-intro">This is a synthesis, not a post he wrote directly &mdash; it's the 20 mental models from the guide, ordered into the sequence they actually seem to get applied in across all 16 posts, as one continuous process rather than a list of unrelated ideas. Every stage below is also a real card &mdash; click any model or ticker chip to see it in full detail in the other tabs.</p>
+    
+    <div class="cat-nav" id="frameworkPhaseNav">
+      <button class="cat-btn" style="border-color:var(--accent);" onclick="document.getElementById('phase-screen').scrollIntoView({behavior:'smooth',block:'start'})">Phase 1 · Screen</button>
+      <button class="cat-btn" style="border-color:var(--accent);" onclick="document.getElementById('phase-analyze').scrollIntoView({behavior:'smooth',block:'start'})">Phase 2 · Analyze</button>
+      <button class="cat-btn" style="border-color:var(--accent);" onclick="document.getElementById('phase-size').scrollIntoView({behavior:'smooth',block:'start'})">Phase 3 · Size &amp; Time</button>
+      <button class="cat-btn" style="border-color:var(--accent);" onclick="document.getElementById('phase-maintain').scrollIntoView({behavior:'smooth',block:'start'})">Phase 4 · Maintain</button>
+    </div>
+    <div class="tl-wrap">
+      <div class="tl-phase-label" id="phase-screen"><span>Phase 1 — Screen</span></div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-1')">01</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-1" style="cursor:default;">
+      <h3>Read The Business, Not The Ticker</h3>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Business State vs. Ticker State')">Business State vs. Ticker State</span></div>
+      <p>This is the lens every other stage sits inside, not a one-time checkbox. Before anything else, separate what the price is doing from what the business is doing. A stock can sit dead flat, crash, or spike for reasons that have nothing to do with the underlying company &mdash; and the entire method only works if this gap is checked first, before valuation, before a moat test, before anything.</p>
+      
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;"><b>Kovai Medical</b> looked "boring" on a price chart for years while EPS quietly doubled underneath &mdash; the business state had moved enormously; the ticker just hadn't caught up. <b>KPIT</b> is the inverse warning: a screener showing "cheap after a crash" isn't automatically a bargain if the business state is also genuinely deteriorating underneath the falling ticker.</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('KOVAI')">KOVAI</span><span class="tick-chip" onclick="openStockModal('KPITTECH')">KPITTECH</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-2')">02</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-2" style="cursor:default;">
+      <h3>New Listing, IPO, or PE-Backed Story? — Ownership Screen</h3>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Dealmaker Model')">The Dealmaker Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Shrinking Host Model')">The Shrinking Host Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Pond Theory')">The Pond Theory</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Incentive Model')">The Incentive Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Trap Detection Framework ("Lollapalooza in Reverse")')">Trap Detection Framework ("Lollapalooza in Reverse")</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Percentage-of-Completion (POC) Accounting Trap')">Percentage-of-Completion (POC) Accounting Trap</span></div>
+      <p>Only triggers for recent IPOs or a story built around a private-equity-owned company &mdash; but when it applies, it comes before valuation, because a structurally broken deal is broken at any price. Trace who owned this privately, at what price, and how fast they're selling to the public. Check whether the revenue model is pinned to a shrinking underlying asset. Check whether an unorganized industry is consolidating in a way that cuts this business out. Ask bluntly what the people in control are actually incentivized to do. Watch for revenue recognized before cash or customer approval exists.</p>
+      
+        <div class="tl-checkpoint">
+          <div class="h">Checkpoint</div>
+          <div class="q">2+ ownership red flags stacking at once?</div>
+          <div class="tl-outcome-row"><span class="badge bear" style="cursor:default;">SKIP</span> Ownership forensics failed — treat as a compounding red flag, not independent noise</div><div class="tl-outcome-row"><span class="badge bull" style="cursor:default;">CONTINUE</span> Clean ownership chain, or only one minor flag</div>
+        </div>
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;"><b>IGI</b> failed on nearly every one of these at once (Blackstone's ~5x private-to-public flip in 20 months, a fee pinned to shrinking lab-grown-diamond values, certification trust migrating to brands). <b>Airfloa</b> failed the accounting and incentive tests specifically (POC-driven profit spike, negative free cash flow, IPO proceeds plugging a working-capital hole).</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('IGIL')">IGIL</span><span class="tick-chip" onclick="openStockModal('AIRFLOA')">AIRFLOA</span></div>
+      </div>
+    </div>
+  </div>
+</div><div class="tl-phase-label" id="phase-analyze"><span>Phase 2 — Analyze</span></div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-3')">03</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-3" style="cursor:default;">
+      <h3>Decompose The Return</h3>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Two-Engine Framework')">The Two-Engine Framework</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Law of Large Numbers (Size Ceiling)')">Law of Large Numbers (Size Ceiling)</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Plateau Framework')">The Plateau Framework</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Depreciation Model / "Hidden Law of Great Compounders"')">The Depreciation Model / "Hidden Law of Great Compounders"</span></div>
+      <p>Once ownership clears, understand <i>why</i> the price is where it is. Split return into the earnings engine and the multiple engine &mdash; a stock can have real earnings growth and still be a bad investment if the multiple is simultaneously collapsing. Check whether the growth rate being paid for is even mathematically sustainable at the company's current size. If a good business looks "dead" on the chart for years, check whether earnings growth and multiple compression have simply been canceling out. And if reported profit growth looks like it's decelerating, check whether that's just front-loaded capex depreciation rather than a real slowdown.</p>
+      
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;"><b>HDFC Bank's</b> EPS tripled while the stock barely moved &mdash; multiple compression ate the earnings engine. <b>KPIT</b> got hit by both engines reversing at once at an already-large market cap. <b>Caplin Point's</b> "decelerating" PAT growth was actually front-loaded capex depreciation, not a real slowdown.</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('HDFCBANK')">HDFCBANK</span><span class="tick-chip" onclick="openStockModal('KPITTECH')">KPITTECH</span><span class="tick-chip" onclick="openStockModal('CAPLIPOINT')">CAPLIPOINT</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-4')">04</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-4" style="cursor:default;">
+      <h3>Stress-Test The Moat</h3>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Caged Bird Model')">The Caged Bird Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Maginot Line Model')">The Maginot Line Model</span></div>
+      <p>Before trusting any "durable moat" narrative, run two separate tests. First: was this loyalty or stickiness ever actually tested against a real alternative? Second: is the moat being attacked from the exact direction it was built to defend, or is a competitor bypassing it entirely from an angle it was never designed to face? A moat can be completely real and still become irrelevant.</p>
+      
+        <div class="tl-checkpoint">
+          <div class="h">Checkpoint</div>
+          <div class="q">Does the moat survive the real attack?</div>
+          <div class="tl-outcome-row"><span class="badge bear" style="cursor:default;">RE-UNDERWRITE</span> Bypassed, not beaten — the old moat doesn't face the new threat</div><div class="tl-outcome-row"><span class="badge bull" style="cursor:default;">CONTINUE</span> Moat holds under genuine stress-testing</div>
+        </div>
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;"><b>Sagility's</b> 18-year client stickiness was measured entirely in a pre-AI world with no alternative (fails the first test), and its relationship-based moat was built to defend against other outsourcing firms, not against AI making the underlying labor obsolete (fails the second) &mdash; both models pointed the same direction independently.</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('SAGILITY')">SAGILITY</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-5')">05</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-5" style="cursor:default;">
+      <h3>Check For Fresh Cracks</h3>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Foreshock Model')">The Foreshock Model</span></div>
+      <p>If the stock just had a profit warning, a guidance cut, or a sudden crash, don't treat that single data point as either "priced in" or "the bottom." The base rate strongly favors more bad news following a first crack, not stabilization. This stage is about timing discipline on top of the analysis already done in Stages 3 and 4, not new analysis of its own.</p>
+      
+        <div class="tl-checkpoint">
+          <div class="h">Checkpoint</div>
+          <div class="q">Is this the first tremor, or confirmed stable?</div>
+          <div class="tl-outcome-row"><span class="badge neutral" style="cursor:default;">WAIT</span> 3-4 quarters needed before treating this as a real opportunity</div><div class="tl-outcome-row"><span class="badge bull" style="cursor:default;">CONTINUE</span> Stabilization already confirmed over several quarters</div>
+        </div>
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;"><b>KPIT's</b> 16% single-day crash was treated as a fresh warning, not a bottom, right after it happened. <b>Trent</b> is the sharper case &mdash; down 45% is read as the sixth or seventh slowdown in a pattern stretching back over a year, not "the crack" itself.</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('KPITTECH')">KPITTECH</span><span class="tick-chip" onclick="openStockModal('TRENT')">TRENT</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-6')">06</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-6" style="cursor:default;">
+      <h3>Read Management & Capital Allocation</h3>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Linguistic Mental Model')">The Linguistic Mental Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Capital Allocator Quality (ROCE vs. ROIIC)')">Capital Allocator Quality (ROCE vs. ROIIC)</span></div>
+      <p>Two checks on the people actually running the business. First, listen to how they literally talk on earnings calls &mdash; concrete numbers and firm timelines read differently than vague, hedged, storytelling language. Second, judge whether the incremental capital being deployed right now is actually earning good returns, and whether structures like a promoter pledge have a visible, tracked path down.</p>
+      
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;"><b>Kalyan Jewellers'</b> promoter refusing to engage with a share-price question on a concall, paired with a pledge being paid down on a tracked schedule using operating cash flow, reframes what could look like two red flags into one honest operator being deliberately blunt about both.</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('KALYANKJIL')">KALYANKJIL</span></div>
+      </div>
+    </div>
+  </div>
+</div><div class="tl-phase-label" id="phase-size"><span>Phase 3 — Size &amp; Time</span></div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-7')">07</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-7" style="cursor:default;">
+      <h3>Paradigm-Shift Overlay</h3>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Bottleneck Strategy ("Road vs. Toll Booth")')">The Bottleneck Strategy ("Road vs. Toll Booth")</span></div>
+      <p>Only activates when the entire sector is being re-architected by a technological shift &mdash; it doesn't apply to a stable, mature industry. When it does apply, map where the new, unavoidable chokepoint actually sits, and check whether a candidate owns that chokepoint or just operates near it. Some companies aren't a toll booth on someone else's road, they're building the road itself.</p>
+      
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;">The entire cybersecurity basket was built by mapping five specific AI-era bottlenecks rather than picking the biggest legacy vendor. <b>Cloudflare</b> was reframed mid-thesis from "a toll booth" to "the road." <b>Varonis</b> was removed once its bottleneck was absorbed by larger platforms &mdash; proof this stage needs ongoing re-checking, not a one-time map.</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('PANW')">PANW</span><span class="tick-chip" onclick="openStockModal('CRWD')">CRWD</span><span class="tick-chip" onclick="openStockModal('RBRK')">RBRK</span><span class="tick-chip" onclick="openStockModal('ZS')">ZS</span><span class="tick-chip" onclick="openStockModal('NET')">NET</span><span class="tick-chip" onclick="openStockModal('VRNS')">VRNS</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-8')">08</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-8" style="cursor:default;">
+      <h3>Size The Conviction</h3>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The 100-Bagger Framework (Thomas Phelps)')">The 100-Bagger Framework (Thomas Phelps)</span></div>
+      <p>Before deciding how much conviction a name deserves, check whether four specific forces stack together: does it cut a customer's cost, their time, and a structural constraint, and does adopting it create switching costs high enough that leaving becomes genuinely painful? This stage is about position sizing, not a buy/skip decision on its own.</p>
+      
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;"><b>Symbotic</b> was sized with real conviction specifically because all four forces stacked &mdash; labor cost reduction, time reduction, and a switching cost that becomes close to unthinkable once a $500 million warehouse system is deployed.</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('SYM')">SYM</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-9')">09</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-9" style="cursor:default;">
+      <h3>Plan The Entry</h3>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Phoenix Forge & Dragon Flight Framework')">Phoenix Forge & Dragon Flight Framework</span></div>
+      <p>Once a name clears Stages 1-8, the entry should be pre-planned, not decided emotionally. Is a falling price a "Forge" (business strengthening while the ticker sleeps) or a "Pyre" (business deteriorating &mdash; a trap dressed as a discount)? Once confirmed as a Forge, pre-commit to price zones for adding on the way down, and separate tiers for adding on the way to new highs.</p>
+      
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;"><b>Caplin Point's</b> accumulation zones (roughly &#8377;1,350-2,050 on the way down) and later "Dragon" tiers (&#8377;2,020-2,971 on the way up) were both mapped out ahead of time, because Stages 1-6 had already confirmed a strengthening business.</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('CAPLIPOINT')">CAPLIPOINT</span></div>
+      </div>
+    </div>
+  </div>
+</div><div class="tl-phase-label" id="phase-maintain"><span>Phase 4 — Maintain</span></div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-10')">10</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-10" style="cursor:default;">
+      <h3>Add Over Time, Not On Price</h3>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Snowball Method')">The Snowball Method</span></div>
+      <p>For positions already held, the rule for adding more is explicitly not about price &mdash; it's about whether the business keeps proving new, independent reasons to own it. If every variable that mattered at the original purchase is still getting stronger, that's the signal to add, regardless of price.</p>
+      
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;"><b>Symbotic</b> was added to at $14 and again at $24 specifically because the customer list, backlog value, and moat evidence had each independently strengthened &mdash; not because of where the price happened to be sitting.</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('SYM')">SYM</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tl-row">
+  <div class="tl-node" onclick="scrollToStage('stage-11')">11</div>
+  <div class="tl-card-wrap">
+    <div class="stage-card" id="stage-11" style="cursor:default;">
+      <h3>Loop — Re-Run Stage 1 Continuously</h3>
+      
+      <p>This isn't a separate model, it's the reminder that the whole framework is a loop, not a one-time checklist. The business state keeps moving whether or not anyone is watching it &mdash; a name that cleared every stage six months ago needs Stage 1 run again today.</p>
+      
+      <div class="stage-worked" style="margin-top:14px;">
+        <div class="h">Worked Example From The Tracker</div>
+        <p style="margin:0;">This is the same discipline that let the framework catch <b>Varonis's</b> thesis breaking mid-post (Stage 7 re-checked) and <b>Kovai's</b> plateau resolving upward (Stage 1 and 3 re-checked) &mdash; the loop, not any single stage, is what the method actually is.</p>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('VRNS')">VRNS</span><span class="tick-chip" onclick="openStockModal('KOVAI')">KOVAI</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="tl-loop-note">
+        <span class="badge bull" style="cursor:default;">&#8635; loop</span>
+        <p>This isn't a checklist you finish once &mdash; Stage 1 runs again on every name you hold, continuously, for as long as you hold it.</p>
+      </div>
+    </div>
   </div>
 
   <footer>
@@ -562,6 +827,14 @@ async function deleteCustomStock(ticker){
 }
 
 document.getElementById('addStockBtn').addEventListener('click', openAddStockForm);
+
+function scrollToStage(id){
+  switchTab('framework');
+  const el = document.getElementById(id);
+  if(el){
+    setTimeout(()=>el.scrollIntoView({behavior:'smooth', block:'start'}), 30);
+  }
+}
 
 function closeModal(){document.getElementById('modalBg').classList.remove('open');}
 document.getElementById('modalBg').addEventListener('click', e=>{ if(e.target.id==='modalBg') closeModal(); });

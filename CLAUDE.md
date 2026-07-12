@@ -6,7 +6,7 @@ original chat conversation. Read this fully before making changes.
 ## What this project is
 
 A personal research tool tracking every stock call made by "The Capillary"
-(https://thecapillary.substack.com/), a stock-focused Substack. It has two parts:
+(https://thecapillary.substack.com/), a stock-focused Substack. It has three parts:
 
 1. **A tracker** — every stock the author has discussed, his sentiment (bullish/bearish/
    neutral), the price when he posted vs. the live current price, his thesis, and a link
@@ -14,16 +14,21 @@ A personal research tool tracking every stock call made by "The Capillary"
 2. **A mental models field guide** — the ~20 recurring frameworks he uses to make these
    calls (Two-Engine Framework, Bottleneck Strategy, Caged Bird Model, etc.), each
    explained in plain language with an analogy, cross-linked to which stocks it was used on.
+3. **A Decision Framework** — a synthesized 11-stage process (not something the author
+   wrote directly) chaining all 20 mental models into one ordered sequence (Screen →
+   Analyze → Size & Time → Maintain), shown as a vertical timeline with checkpoints and
+   worked examples, cross-linked to the other two tabs.
 
-Both live in one file: `public/index.html` — a single-page HTML/CSS/JS app (no build step,
-no framework). It currently runs as a static, self-contained artifact with hardcoded data
-arrays for 18 stocks and 20 models, plus a "+ Add Stock" feature.
+All live in one file: `public/index.html` — a single-page HTML/CSS/JS app (no build step,
+no framework). The tracker/models data is loaded from `data.json`; the Decision Framework
+is authored static HTML (synthesized content the scraper never touches).
 
 ## Current state
 
-- `public/index.html` is fully built and working: two tabs (Stock Tracker / Mental Models
-  Guide), filters, cross-linked modals, links to original Substack posts, a light/dark
-  theme toggle, and a hidden "System Diagnostics" panel (footer link) that reads `logs.json`.
+- `public/index.html` is fully built and working: three tabs (Stock Tracker / Mental Models
+  Guide / Decision Framework), filters, cross-linked modals, links to original Substack
+  posts, a light/dark theme toggle, and a hidden "System Diagnostics" panel (footer link)
+  that reads `logs.json`.
 - **Data is no longer hardcoded.** The curated content (`stocks`, `models`, `categories`,
   `stockPosts`, `modelPost`) lives in `public/data.json`; `index.html` `fetch()`es it on
   load. Header/filter counts are computed from the data. Regenerate `data.json` from a
@@ -141,7 +146,19 @@ deploy scripts (3 old), `data.json` fetch refactor (4 old), Add-Stock backend (5
 
 ## Style/design notes (so a rebuild doesn't drift)
 
-Dark theme, ink navy background (`#0E1116`), orange accent (`#FF6719` — this matches The
-Capillary's actual Substack brand color, deliberately). Fonts: Fraunces (serif, headings),
-IBM Plex Mono (data/tickers), Inter (body). Keep this if extending — it's meant to feel like
-a companion tool to the newsletter itself, not a generic dashboard.
+- **Light theme is the default** (warm off-white `#FAFAF7`, near-black text, deepened orange
+  accent `#C9541A` for contrast on white). Dark mode is fully supported via
+  `[data-theme="dark"]` on `<html>` (ink `#0E1116`, accent `#FF6719` — the actual Substack
+  brand color). Add new colors as CSS custom properties with BOTH a light and dark value in
+  `:root` / `[data-theme="dark"]`; never hardcode hex in a component.
+- **Fonts:** Source Serif 4 (headings), Inter (all UI text — tabs, buttons, badges, labels,
+  body), IBM Plex Mono reserved **strictly for numeric/ticker data** (prices, tickers, stat
+  values, stage numbers). Don't put UI labels in mono — an earlier pass did and it read worse.
+- **Decision Framework tab** is a single left-aligned vertical timeline (`.tl-*` + reused
+  `.stage-card`/`.badge`/`.tick-chip`), NOT an SVG flowchart. An earlier flowchart version
+  (diamonds, legend, extra phase colors) was scrapped for looking like an imported diagram —
+  don't rebuild it that way. Reuse existing components over inventing new visual patterns.
+- The UI (theme, fonts, framework tab) was merged in from a separate Claude.ai design session
+  (`public/index.reference.html` / the old `capillary-tracker enhacements/` copy, now deleted).
+  Treat the live `public/index.html` as source of truth; it has both the visual work AND the
+  data.json/backend wiring layered together.
