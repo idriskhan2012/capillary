@@ -95,7 +95,10 @@ SITE_URL="$(get_output SiteURL)"
 # --- 4. upload site ------------------------------------------------------
 echo "Uploading site content to s3://${BUCKET}..."
 # Push everything except the live data/log files so we never clobber scraper output.
-aws s3 sync public/ "s3://${BUCKET}/" --exclude "data.json" --exclude "logs.json" --region "$REGION"
+# no-cache so browsers always revalidate index.html/config.js (cheap 304s via ETag) —
+# otherwise a stale cached index.html hides new UI until the browser cache expires.
+aws s3 sync public/ "s3://${BUCKET}/" --exclude "data.json" --exclude "logs.json" \
+  --cache-control "no-cache" --region "$REGION"
 
 # Seed data.json only if it isn't already there (first deploy), unless forced.
 if [[ "${FORCE_DATA:-0}" == "1" ]] || ! aws s3api head-object --bucket "$BUCKET" --key data.json --region "$REGION" >/dev/null 2>&1; then
