@@ -1,0 +1,196 @@
+TITLE: 5 Bottlenecks Where AI-Era Cybersecurity Money Will Pool
+DATE: 2026-05-26
+
+Originally published a month ago for my Reddit community 
+r/USGrowthStocks
+, where it was stress-tested with people who actually work in cybersecurity and cloud infrastructure. Republishing here for the Substack audience.
+The stocks mentioned have moved up 50-70% since, but that’s not the point. The point is the framework working in real time, where the real bottlenecks form in AI-era cybersecurity, and why money pools at certain choke points.
+Part 2 is coming soon, where the identity and network telemetry layers get expanded and the next level of bottlenecks gets mapped out. One stock that was explicitly added based on community input was Zscaler.
+The original Reddit thread has live discussion and community inputs that refined the thinking further. Link at the bottom if you want to engage, you can join the conversation on both platforms.
+Over the past 2-3 weeks, most cybersecurity stocks have corrected brutally, with 
+30-50% drawdowns
+ across the board. The trigger was 
+Anthropic’s Mythos
+, which surfaced thousands of vulnerabilities in corporate software and triggered a sector-wide re-rating along with an existential threat narrative.
+The reason this spooked the market is because Mythos isn’t just running faster scans. It’s finding 
+logic flaws that traditional vulnerability scanners can’t even detect
+. So basically a whole new category of exploits just became visible, and the legacy security stack wasn’t built to catch any of it. I was going through these developments for the past 3 days when something interesting came up on the JPMorgan Chase earnings call.
+Jamie Dimon specifically spoke about cybersecurity in the context of AI and mentioned their internal testing of Anthropic’s Mythos project. He said Mythos has “already exposed a lot more vulnerabilities that need to be fixed,” and that AI has “made it worse, made it harder.”
+Dimon flagged it as a 
+system-level risk
+ that extends to exchanges and counterparties. The same warning Treasury Secretary Bessent acted on by calling bank CEOs into an emergency meeting last week.
+That’s what made me pause. If the people who actually allocate the world’s largest cybersecurity budgets are saying this, something structural is shifting. 
+Cybersecurity spend isn’t going down. It’s just migrating to a different set of companies
+ than the ones currently dominating the legacy categories.
+So I went back to a thesis I’d been working on, the real bottlenecks of AI-era cybersecurity. The question I wanted to answer was simple. 
+When AI agents become the dominant actors in enterprise systems, where do the real security bottlenecks form?
+ Not the categories the industry sells, but the actual choke points where money will pool.
+First, the thinking that got me here
+The current security stack was built for a world where 
+humans are the actors
+. A human logs in twice a day and works at biological speed. Every product (firewalls, EDR, IAM) assumes the actor is slow, accountable and “one-per-seat.”
+Now invert it. An AI agent logs in thousands of times a minute. It works at machine speed with no natural pause. One human can spin up a thousand agents in a day. The agent’s intent lives in a prompt that gets used and thrown away. 
+No biometric, no HR lifecycle, no sleep cycle.
+So the current stack breaks. This is why the market has punished so many legacy names. 
+They are real toll booths, but they sit on roads that are getting bypassed.
+The five bottlenecks I came to are below. None of them are firewalls, endpoint AV, email security, vulnerability scanning, or traditional antivirus. Those will all still exist. They will just stop being where the money pools.
+The five bottlenecks and the names sitting on them
+Machine Identity Infrastructure.
+ CyberArk (inside Palo Alto), Wiz (inside Alphabet). Public play left is PANW. Cloudflare also sits here at the network layer.
+AI Runtime Inspection.
+ CrowdStrike, Palo Alto, Wiz (inside Google), Zscaler. Cloudflare and Rubrik also sit here.
+Agent-Aware Data Access Brokerage.
+ Varonis Systems. Cloudflare and Rubrik also sit here.
+Unified Security Telemetry.
+ CrowdStrike (Falcon Next-Gen SIEM).
+Continuous Attestation / Agentic Audit Trail.
+ Rubrik.
+Two patterns worth flagging upfront.
+Rubrik sits across three bottlenecks (2, 3, 5).
+ Partial on runtime inspection via SAGE, partial on data brokerage, strong on attestation through immutable backups plus time-travel recovery.
+Cloudflare also sits across three bottlenecks (1, 2, 3)
+, but it’s a different shape of bet entirely, because it’s not really a security company, it’s the underlying network. I’ll come back to that distinction at the end because it forced me to refine the framework.
+Now let me walk through each one.
+New to the Bottleneck Strategy? Start here
+: 
+The AI Bottleneck Strategy, Where the Real Opportunities Are
+.
+Bottleneck 1: Machine Identity Infrastructure
+Today most enterprise IT is built around human users. Maybe a thousand employees logging in from a thousand laptops. Now imagine each of those employees spinning up fifty AI agents to do their work. Suddenly you have 
+fifty thousand “identities” inside the company instead of one thousand
+. And it scales from there. Within a few years, every enterprise will have way more machine identities running around than humans.
+So who issues those identities? Who verifies them? Who can shut them off the moment one goes rogue? That’s the bottleneck. 
+Whoever controls how machine identities get created and killed becomes the toll booth every single agent has to pay.
+There were really only two companies operating at scale here. CyberArk (which acquired Venafi, the company that basically created the machine identity category, for 
+$1.54B in October 2024
+) and Wiz (slightly different angle, more on the cloud runtime side, but adjacent).
+Now read this carefully because this is the whole pattern.
+Alphabet bought Wiz for $32B. Palo Alto bought CyberArk for $25B.
+ So two of the five bottlenecks already got absorbed by platforms before most retail investors even noticed they were bottlenecks. This is how serious players identify future toll booths and position early. By the time it becomes obvious, 
+the public market pure plays are gone
+.
+So what’s left to own here on the public side is 
+PANW
+. I personally hold PANW at $62 split-adjusted, close to a 4-year hold now.
+Okta I genuinely like, but 
+Okta is dominant in human identity, not machine identity
+. Whether they can transition into the machine identity world at scale is an open question I’m not confident on. Would love community input here.
+Side note. This whole M&A pattern (Wiz to Google, CyberArk to PANW) reminds me of Chris Mayer’s 
+Invest Like a Dealmaker
+. Mayer’s whole point is to always keep a track of what’s happening in private markets, what valuations they’re paying, and which sectors they’re allocating to, because 
+those are the future money-making machines and runways
+. The cybersecurity M&A wave we’re seeing right now is exactly that signal. Recommend everyone read that masterpiece.
+Bottleneck 2: AI Runtime Inspection
+Old security worked like a security guard at the front gate of a building. Check the ID, let the person in, you’re done. The guard didn’t have to follow the person around to see what they were doing inside.
+AI agents break that model. The agent gets through the front gate (it has valid credentials, it’s logged in correctly), but then it starts doing things at machine speed inside the building. Reading thousands of files. Calling external APIs. Triggering actions in other systems. 
+The security guard at the front gate never sees any of it.
+So the new security model has to 
+sit inside the building, watching every action the agent takes, deciding in real time whether to allow it or kill it
+. Same shape as what stock exchanges built when algo trading came in. They couldn’t pre-approve every trade by hand, so they built systems that check every order in milliseconds and kill the bad ones before they execute.
+Names sitting on this. 
+CrowdStrike via Charlotte AI, Palo Alto via Prisma and XSIAM, Wiz inside Google, and Zscaler
+, though I haven’t placed Zscaler cleanly yet because I’m not fully sure how their SASE foundation translates to AI-era platform economics. Would love community input on Zscaler.
+I added CRWD recently at $360. Second addition to the position in 3 years.
+Bottleneck 3: Agent-Aware Data Access Brokerage
+Here’s the pattern. 
+Whenever the actors change from humans to machines, the toll booth always moves from the access path to the resource itself.
+ This has happened before in other industries.
+Think about 
+electricity
+. When power flowed one direction (grid to home, billed monthly), the meter at the house was enough. When solar panels and EVs created two-way flows at high frequency, the meter had to become smart and live at the resource (panel, battery, vehicle), not at the front door of the house.
+Same thing happened in 
+financial markets
+. When humans traded by phone, the chokepoint was the broker. When algos started reading order books at machine speed, the chokepoint moved to the exchange’s market data feed itself. 
+Bloomberg and the exchange feeds became the toll booth, not the broker.
+So the same pattern is now playing out with data. In a human world the network perimeter was the toll booth, because everything had to cross the network. In an agent world, agents constantly pull data from your files, databases, tools, to do their work. So the access pattern goes from 
+one human reading one record to one agent reading ten thousand records to answer one question
+. So the toll booth has to move to the data itself.
+Cleanest specialist here is 
+Varonis Systems
+. Built for human compliance over 20 years, but turns out to be exactly the right foundation for the AI agent problem. They sit at the data, not at the network. SaaS transition mostly done.
+Worth flagging that 
+Snowflake and Databricks
+ are also playing in this bottleneck, but from a completely different angle. They’re not AI security companies. They’re data platforms. But because so much enterprise data now lives inside Snowflake and Databricks, both of them are building access governance and permission controls natively into their products. So they end up sitting on the same bottleneck, just approaching it as data platform owners rather than security specialists. Different category of bet entirely, but worth knowing if you’re thinking about who actually controls the toll booth at the data layer.
+No position yet on Varonis, considering it.
+Bottleneck 4: Unified Security Telemetry
+Every big company has a security team that watches alerts all day. A human analyst can investigate maybe 
+10-20 of these in a full work day before fatigue kicks in
+.
+In an agentic world that volume goes up 100x, because every agent generates its own activity logs at machine speed. No human team can keep up. 
+AI agents have to run the security operations center themselves
+, investigating alerts in seconds instead of hours.
+But an AI security agent is only as good as the data underneath it. 
+Whoever owns the unified data layer that all these AI security agents plug into owns the bottleneck.
+ Basically the Bloomberg Terminal of security. 
+CrowdStrike’s Falcon Next-Gen SIEM
+ is the cleanest play. 
+Microsoft Sentinel
+ is the long-term threat via E5 bundling. PANW XSIAM and Splunk inside Cisco are the others.
+Position covered through CrowdStrike already.
+Bottleneck 5: Continuous Attestation / Agentic Audit Trail
+Here’s the problem. In an agentic world, one agent triggers another, which calls a tool built by some random vendor, which talks to a database somewhere. When something goes wrong, you can’t trace who did what. 
+Attribution just breaks.
+And whenever attribution breaks, the market always responds the same way. 
+It builds an insurance and attestation layer on top.
+ Same pattern as credit rating agencies (you can’t verify every borrower, so you pay someone to rate them), code-signing certificates (you can’t verify every software publisher, so you pay someone to vouch), and payment fraud networks (you can’t verify every transaction, so Visa underwrites the risk).
+Category barely exists yet. 
+Rubrik is the best-positioned public name here
+, even though they didn’t plan for it. The backup architecture they spent a decade building turns out to be exactly the right foundation for agentic attestation. Rubrik already built an insurance layer for the ransomware era. They figured out years ago that prevention alone fails and you need recovery underneath. Now the same logic applies to agent actions, and the same architecture handles both. 
+Agent takes an action, you have a verifiable record before and after, you can roll it back.
+ Their bet is that 
+fast reversibility beats perfect prevention in the agentic world
+. Agent Rewind is the product expression of that thesis.
+I personally hold RBRK at $48, picked up during the last crash.
+Now the company that doesn’t fit this list, and the framework refinement worth talking about
+Here is where I want to flag something I had to work through honestly because I hold the position. 
+Cloudflare.
+Cloudflare doesn’t sit on one bottleneck. 
+It sits on three.
+ Strong on Bottleneck 2 (AI runtime inspection, because they’re inline by default since the traffic already flows through them, which is a structural advantage CRWD and Rubrik don’t have). Medium-strong on Bottleneck 3 (network-layer brokerage between agents and tools, complementary to what Varonis does at the file level). Medium on Bottleneck 1 (Cloudflare Access acts as the login and authorization layer for agents, complementary to PANW/CyberArk depth at the cryptographic level).
+Three bottlenecks, same network footprint, same product line.
+So this forced me to refine the framework. 
+A toll booth captures value from traffic that already exists. A road creates the traffic in the first place.
+ The toll booth’s economics are bounded by what already happens. The road’s economics expand with every new thing that gets built on top of it. Which means 
+road owners eventually become the toll booth owners too
+, through bundling, through proximity, through network effects.
+Bloomberg owned the road for financial data
+ and captured every toll booth on it. 
+AWS owned the road for compute
+ and captured toll booths in databases, analytics, ML, security. 
+Visa and Mastercard own the road for payments
+ and capture every toll booth on top of it.
+Cloudflare is making the same kind of bet for the agent era. Anthropic open-sourced 
+MCP as the protocol for connecting agents to enterprise tools
+, and Anthropic, OpenAI, and Google are all converging on it. So that protocol war is essentially settled. The question now is who hosts the MCP infrastructure when every enterprise deploys agents at scale, and 
+Cloudflare is already the default place where remote MCP servers get deployed
+. They built the SDK, they published the reference architecture, they run the catalog.
+So they’re not building a toll booth. 
+They’re laying the road.
+ And once the road is theirs, the toll booth becomes theirs by default.
+I personally hold Cloudflare at $168.
+If you work in cybersecurity, development, cloud infrastructure, or anywhere close to where this stuff actually gets built, drop your inputs on any of these bottlenecks. Every input from this community strengthens the thesis for everyone reading.
+The complete research on each of these bottlenecks and the companies inside them runs over 100 pages. What you’ve just read is 
+the summary, the mental model, the shape of the thinking
+.
+The original Reddit discussions have community inputs that refined the thinking further. I moderate two communities where deeper investment discussion happens. Both threads on this piece are open if you want to go deeper:
+r/USGrowthStocks
+:
+ Why Alphabet Paid $32B for Wiz and Palo Alto...
+r/IndiaGrowthStocks
+:
+ Why Alphabet Paid $32B for Wiz and Palo Alto...
+Update on the original thesis:
+ Bottleneck 3 is right but I was looking deeper into Varonis and the DSPM layers, and Varonis is actually going through an 
+anti-Lollapalooza effect
+ because of full-stack players like 
+Cyera
+ (currently in private markets), 
+Microsoft Purview bundling
+, and 
+CrowdStrike and Palo Alto on platform absorption
+. Multiple forces are converging and acting against Varonis. So it’s a removal from the list now. People can look into Cyera and the company which acquires it or when it goes for IPO. More updates on DSPM will be coming in a follow-up because 
+that’s the root or fundamental layer on which other bottlenecks are being created
+.
+Disclosures:
+ long CRWD ($360, second add in 3 years), PANW ($62 split-adjusted, 4 year hold), RBRK ($48, picked up during the last crash), NET ($168), and ZS ($130, added with conviction after decoding the network telemetry bottleneck). VRNS removed from the list after going deeper into the DSPM layer (see update above). I may trim, add to, or exit any of these positions based on new information or how the bottlenecks play out.
+If you want the framework before the next correction, not after, subscribe. Part 2 on the network telemetry bottleneck is coming soon.

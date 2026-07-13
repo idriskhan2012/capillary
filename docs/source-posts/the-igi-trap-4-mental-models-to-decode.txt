@@ -1,0 +1,80 @@
+TITLE: The IGI Trap: 4 Mental Models to Decode Any IPO
+DATE: 2026-06-25
+
+Before anything, this post is not really about IGI. IGI is just the worked example. What I actually want to hand you are four lenses you can run on any IPO or any idea you’re about to put money into. The stock will change, the lenses won’t.
+Here are the four. Run them in this order on anything:
+The Dealmaker
+, read the structure, not the story.
+The Shrinking Host
+, a fee feeding on an asset that’s losing value.
+The Pond Theory
+, the market consolidating to organised gorillas.
+The Incentive Model
+, whose payday the structure was really built for.
+Mental Model 1: The Dealmaker
+I have shared this mental model once in the past. It helps you avoid the IPO and story traps and the pump-and-dump structure the ecosystem makes.
+I learned it from Chris Mayer who makes this point beautifully in Invest Like a Dealmaker, that there are always two markets for the same business. One is the ticker everyone stares at on their screen. The other is the private, control market, where actual dealmakers and analysts fight to extract the real intrinsic value.
+And one should always think like a private equity guy and invest like a dealmaker, rather than investing based on ticker symbols. The retail investor who just focuses on the ticker can get blindsided.
+And this will happen with a lot of hospital stocks in India as well, which have been pushed by private equity, in which the retail investor is buying at 80 to 90 multiples. So you can use this lens on those companies and see the underlying pattern.
+Now let’s use the Dealmaker mental model on IGI, and you should always use this on every IPO company you invest in.
+So when I follow the ownership chain of IGI:
+2018:
+ Fosun (via Shanghai Yuyuan Tourist Mart) buys 80% of the IGI group, and the founding Lorie family keeps 20%. So that 80% cost roughly $101.8M, which puts the whole group’s private-market value at around $127M.
+Then in May 2023:
+ Blackstone buys 100% of IGI, from both Fosun and the Lorie family, for $569.7M. And the acquiring vehicle is BCP Asia II TopCo Pte. Ltd., its Singapore affiliate. Inside that $569.7M price, they split it as roughly $393M for IGI India and $176M for IGI Belgium and Netherlands.
+December 2024, the IPO for just the IGI India:
+ A Rs 4,225 crore issue, comprising a fresh issue of 35,376,651 shares (Rs 1,475 crore) and an offer-for-sale of 65,947,242 shares (Rs 2,750 crore), the entire OFS by promoter BCP Asia II TopCo. It was priced at Rs 417, and on 20 December 2024 it listed at 505, and all the retail investors got excited looking at the margins and growth profile.
+One more observation,
+ just after the Fosun acquisition, the margins moved from 50 to 75% in 3 to 5 years. Everyone should look for the reason behind that as well.
+Now here’s the core insight you all should focus on.
+So the Rs 2,750 crore OFS is a straightforward Blackstone cash-out.
+And then when you follow where the fresh issue went. That Rs 1,475 crore of “new” capital did not go into the company to fund growth. Around Rs 1,324 crore of it was used to buy IGI Belgium and IGI Netherlands from the parent, Blackstone, the very entities Blackstone had picked up just months earlier. So the fresh money round-tripped straight back to the promoter as the seller of the European arms.
+So the net effect was that Blackstone effectively monetised close to the entire Rs 4,225 crore. Now see how the dealmaker operates, so they paid around $393M for IGI India in 2023, and the IPO valued it at around $2.1B. That’s roughly a 5x return in 20 months.
+Now ask yourself the dealmaker’s question. If this were a genuine long compounder, why structure the listing as a near-complete cash-out, and why load a loss-making European arm onto public investors using their own fresh-issue money?
+So the private market already told you the value. And it had already signalled that the IPO was never about creating value for retail investors, it was simply an exit for those institutions.
+Now don’t just take my word for it. Run this same lens on the last IPO you bought, or were tempted by, and see what you find.
+The last one I ran it on was SpaceX. And I already know exactly where the incentives are aligned there. But there’s a small difference most people miss, and it’s the whole game. When the optimism is already priced in, you never make money, even if the execution actually happens.
+Look at Tesla. For almost a decade the whole world bet against it, and nobody believed there was an EV future. Then Musk executed, and because the entire system was positioned against him, that disbelief turning into belief is what created the parabolic move. The value was created in the gap between expectation and reality.
+Now look at SpaceX. The whole system is already in full euphoria, everyone is assuming flawless execution, so it’s all already priced into the valuation. There’s no disbelief left to convert.
+That one difference, whether the optimism is priced in or not, separates two things people always confuse. The returns you actually earn even if the execution succeeds, and the risk you carry if it fails.
+Mental Model 2: The Shrinking Host
+So people defend the business with some version of this. “
+The fee doesn’t really depend on the stone’s price, and falling prices just push more volume, so revenue keeps growing. And the volume part is fair, that’s roughly what management points to on the concall too, more stones, more reports, revenue still rising.”
+But first of all, I don’t trust a management that architects an IPO like this, to dump on retail and buy loss-making companies indirectly with retail investors’ own money. So I’m not taking their framing at face value.
+And here’s the thing they gloss over. The fee isn’t really fixed, it’s pinned to the carat weight of the stone, not to its market value. And that’s the whole problem, because it means the fee is indexed to the wrong variable. The carat weight of a stone never changes. The market value of that stone is collapsing. So the fee tracks the thing that stays still and ignores the thing that’s falling.
+Train yourself to notice this pattern: when a company’s revenue is a fee feeding on an asset whose value is structurally falling, it acts like a parasite on a shrinking host. Because today’s comfortable little cut becomes tomorrow’s unbearable burden, and eventually the host dies, and the parasite dies with it.
+Now let’s run the mental model properly.
+So when a one-carat stone is at $4,000, a $40 certification charge is only 1% of the product’s value. So nobody blinks. These certifications are cheap insurance and cheap information.
+Now the same one-carat stone drops 80 to 90% in value, to $400, which is exactly what’s happening. But the carat didn’t change, so the charge stays around $40. That’s now roughly 10% of the transaction. So the arbitrage between what it costs to certify and what the thing being certified is worth just evaporates.
+And if it drags further, then certifying the stone will cost more than the information is worth, because a trust signal that eats 10 to 20% of the item stops making economic and mathematical sense on a commoditised stone.
+And this isn’t just my theory, it’s already happening, just at the bottom where nobody’s looking. For a 1-carat stone certification is still only 1 to 2% of value, so nobody skips it. But on the smaller stones, below half a carat, that cost is already running 3 to 8% of the stone’s value, and only about half of them get certified at all, versus around 70% overall. The math broke at the small end first, and people are already walking away from certification there. As prices keep falling, that same line creeps up the carat ladder.
+And one more thing, I haven’t gone into the detailed per-carat charge here, the dollar figures are just an example, so run the real numbers yourself on the thesis you are building.
+Mental Model 3: The Pond Theory
+So every industry should be viewed as a pond, where unorganised sectors are a massive, shallow pond with millions of microscopic organisms. And consolidation into the organised players happens when some technology or structural change raises the bar of survival.
+And this is what’s happening across sectors. In retail and quick commerce, the Blinkits and Amazons of the world have raised the survival cost for the unorganised sector. Same with gold jewellers. So the minimum size you now need just to stay in the game rises exponentially, and it becomes a structural shift, because the unorganised sector has neither the technological nor the financial firepower to keep up.
+So as the market IGI supplies into moves from unorganised players to the organised gorillas, the trust function itself migrates, from the independent certificate to the brand.
+Here, ask yourself one simple question. Do you trust Tanishq more than IGI? Most Indians do. IGI is a slip of paper most buyers have never heard of. Tanishq is a Tata household name with decades of brand equity. 
+And the day the brand itself becomes the trust, the third-party certificate becomes optional.
+And the ecosystem is already moving that way.
+As per IGI’s own concall, India’s largest organised retailer’s new lab-grown line is grading the 4Cs in-house rather than routing through IGI, that’s the Tata ecosystem, via its new LGD brand beYon.
+Tanishq has gone the De Beers route on naturals, with in-store verification centres where the brand plus the technology becomes the assurance, and they don’t need a third party to verify it.
+And Kalyan’s leadership also said, believe the brand more than the product.
+So when a trusted gorilla sits between the buyer and the stone, and when these gorillas take the largest share of the future market, the future state of IGI’s model is already shifting. So anyone allocating to it is betting against a structural shift that has already started.
+So as an investor you should focus not only on the past and present state of the business model, but on where the future state could land. Because investing is all about reading the odds of the future, and positioning based on probabilities.
+Mental Model 4: The Incentive Model
+And this one is the one I love the most. You can use it not only in investing but across your life, your friends, your career, your colleagues. Within a fraction of a second you can figure out the real incentive of any company or individual.
+The simplest way to picture it. Think of a landlord who’s about to sell his property. No landlord truly renovates a house they’re about to list. He does just enough to make the photos look good, create an illusion in the buyer’s mind, and inflate the value of the property. That’s exactly how a PE owner runs a company into an IPO.
+So let’s run it all together and see where the incentive alignment actually sits.
+Was this IPO structured to create value for public shareholders? Absolutely not. It was structured as an exit for a PE owner.
+It’s still 76.55% owned by BCP Asia II TopCo (Blackstone), and that stake hasn’t moved a single share since listing, with effectively no lock-in left.
+So you have a permanent supply ceiling. A PE fund will eventually sell down, when it gets a better opportunity cost, or whenever the stock recovers and they can dump on you again, a near 77% position.
+And there’s no operator with real skin in the game aligned to compounding for you. 
+The incentive was monetisation, not value creation.
+Now when your screener shows 24x and you think it looks cheap, understand that the multiple is not the only variable you need in your favour. You need to look at the underlying business state and the future probability of that state, and then map the multiple onto it.
+So please, don’t let an influencer on YouTube, Instagram, or a Telegram group sell you the multiple without the structure underneath it. Dig deeper. That is the job. There are no free rewards in investing, and definitely no 5 screener ratios that will tell you the business state.
+So after running all four lenses, for me it’s a clear skip. And the reason is simple. Why would I hand my money to an allocator who has designed the entire structure to dump on me? The round-trip, the near-complete cash-out, the loss-making arm loaded onto retail, the 77% still sitting overhead waiting to be sold, every piece of this was built for their exit, not my entry. My incentives and theirs are on opposite sides of the table. And I don’t put my capital on the wrong side of that table.
+Keep the lenses, forget the stock if you want, and if it helped you see structure over story, pass it on to someone who needs it.
+Read next →
+ 
+The one ratio that tells you when to favour gold over equity
+The crowd is always sold the story. The few who read the structure are the ones who own the outcome. Choose which you want to be

@@ -1,0 +1,153 @@
+TITLE: Caplin Point Q4 FY26: The Boring 50x Compounder
+DATE: 2026-05-14
+
+Every quarterly result has two readers.
+The first reader scans the PAT line, checks if it beat or missed, and moves on. The second reader runs a sequence of mental models on the filing: bear cases first, depreciation trap second, cash-adjusted valuation third, expense discipline fourth, and the linguistic tone of the management commentary last. The first reader sees a number. The second reader sees the business.
+Thanks for reading! Subscribe for free to receive new posts and support my work.
+This post is about the second reader.
+Caplin Point FY26: The Bear Cases
+Caplin Point results just came and they have executed on each and every run. Let me break it down for you and tell you how I decode the results.
+The first thing I do, I go for what the bears have said, and then check whether the company is following the bear track or the bull track.
+Bear Case 1: Latin America is saturating, growth has to die.
+Pull the print. Q4 revenue is up 
+19.4% YoY
+ and sequentially almost 
+10% QoQ
+. That signals Latin America continues to 
+expand
+, not just hold, which is exactly what the original thesis said. The reinvestment runway is still very strong.
+Zoom out and the compounding story gets even more interesting. PAT has compounded at 
+27.3% over 10 years
+ and 
+21.0% over the last 5 years
+. 
+Here is the mental model. In the last 3 years, Caplin has front-loaded more capex than it did in the previous 8 years combined. 
+₹870 Cr of capex over the last 5 years
+, all funded from internal accruals. The capex pipeline continues, with roughly 
+₹500 Cr more to be spent over the next 2-3 years
+ on facilities still under construction (Oncology API at Thervoy, OSD Facility at Puducherry, COL Injectable Facility at Gummidipoondi).
+When a company front-loads capex like this, depreciation hits the P&L 
+before
+ the revenue from that capex shows up. FY26 depreciation is already up 10% YoY, and it will step up materially as these facilities get commissioned through FY27 and FY28. 
+Depreciation is a non-cash charge that compresses reported PAT growth while the underlying cash engine keeps compounding.
+Look at the cash numbers instead of PAT:
+CFO: +21% YoY
+EBITDA: +17.9% YoY
+Free Cash Reserves: ₹68 Cr to ₹1,471 Cr in 10 years (a 22x build)
+(If you want the full backstory on how this cash engine was built, 
+the original thesis is here
+.)
+The cash engine is stronger than ever. The PAT line is optically slower because depreciation from front-loaded capex is eating into reported profitability. By FY27-28, when the new facilities start generating revenue, the depreciation is already baked in, and reported PAT growth will re-accelerates.
+This is the 
+depreciation mental model
+. Most investors don’t run it. They see PAT decelerating from 27% to 21% and assume the business is maturing. They miss that the company is investing for the next decade while still throwing off record cash.
+Bear Case 2: US ramp will disappoint, Caplin Steriles won’t deliver.
+US clocked close to 
+₹471 Cr, +28.7% YoY
+. That is the second engine which is now visible in the P&L. Bears are wrong again.
+Geographic mix tells the story even better. Five years ago, US was negligible in the mix. Today it is 
+21% of operating revenue
+. LatAm is 76%, Africa 3%. The US engine has gone from zero to one-fifth of the business without the LatAm engine slowing down. Both engines firing simultaneously.
+And the main timeline for US ANDA approvals is closer to 2027, that is when it will explode further. ANDA tally jumped from 34 to 
+59 in FY26
+ alone (10 in-house approvals plus 15 acquired). Pipeline of 
+55+ over the next 4 years
+. The two-engine framework is playing out in real time:
+Latin America cash flow is funding the US operation
+US is no longer optionality, it is a meaningful P&L contributor
+Bear Case 3: Margins will compress as US mix grows.
+The assumption was US generics are commodity, lower margin, so blended margins must fall. But Caplin strategically entered only those US verticals where margins were high.
+Gross margin: 
+60.4% vs 60.2%
+, expansion has continued. 
+EBITDA margin expanded 160 bps to 38.1%
+. If US were dragging margins down, you would never see this expansion.
+Now here is the smoking gun nobody talked about today. Caplin’s own US front-end subsidiary, Caplin Steriles USA (CSU), completed its first full year of operations. The numbers:
+Revenue: $11 million
+EBITDA margin: 26.2%
+Self-sustaining cashflow in Year 1
+A US generics startup hitting 26% EBITDA in its first year is exceptional. Most US generic startups bleed for 3-4 years before turning profitable. CSU did it in one. 
+That is direct empirical proof that Caplin selected the right high-margin verticals.
+ Bears are wrong again, and now there is hard data backing the answer.
+Bear Case 4: Cash pile is just sitting, no capital allocation discipline.
+This is where the bear case actually loses on the math, and this is where most investors miss the real insight. Let me show you.
+Cash flow from operations: 
+₹432 Cr to ₹523 Cr, a 21% improvement
+. Total liquid assets: 
+₹2,726 Cr as of 31 March 2026
+. Cash per share right now: close to 
+₹359 per share
+.
+That means roughly 
+18% of market cap is sitting in cash
+. Now here is the math most investors don’t run.
+Even at today’s price after the 10% pop, the headline PE looks like 24x. But when you strip out the cash, because that cash is sitting on the balance sheet, debt-free, doing nothing operational, the real PE you are paying for the business model is close to 20x. 
+19.8x to be exact.
+Now rewind to when the thesis was being accumulated around ₹1,600-₹1,700 levels. The headline PE at that time was close to 19x. But at that point, cash per share was around ₹324. After adjusting for cash, the real PE you were paying was 
+15.1x
+.
+This is how you adjust for cash for these compounding machines.
+Read this slowly:
+You were getting a boring, debt-free, two-engine pharma business with 21% PAT CAGR and a heavy capex pipeline being funded entirely from internal accruals, at 15x earnings after cash adjustment.
+That is where you make your concentrated bet. Because the mathematical odds are stacked in your favour. A 15x ex-cash multiple on a business that is reinvesting for the next decade is not a stretch valuation, it is an asymmetric setup. The downside is bounded by the cash floor and the LatAm cashflow stability. The upside is the US engine, the Caplin One Labs domestic build, the Caplin Steriles USA scale-up, and the unspent ₹2,726 Cr war chest.
+And the cash is not idle. Capex jumped from 
+₹191 Cr in FY25 to ₹248 Cr in FY26
+ because Mexico facility, COL-II, Oncology API, and OSD facility are all under construction. Free cash flow after capex was still 
+₹275 Cr in FY26
+ (vs ₹241 Cr in FY25). This is good capex during a growth phase, not idle capital. And all of it is being funded by internal accruals. 
+Zero debt. Ever.
+Management has never gone for reckless growth. 
+This is a compounding machine with a war chest.
+Bear Case 5: Expenses are bloating.
+Total expenses moved from 
+₹351 Cr to ₹415 Cr, up 18%
+. Revenue moved up 
+19.4%
+.
+Revenue growth is higher than expense growth.
+ This is a mental model I want you to internalise. Whenever a company is growing, always check whether expenses are growing more than the growth rate. If expenses outpace growth, that growth is destroying shareholder value, not creating it. Here, the opposite is happening. The EPS engine is strengthening and diversifying.
+What the Bears Missed
+All five engines are stacked in your favour.
+Sterile injectables are not commodity generics.
+ Most investors lump all “US generics” into one bracket. Caplin figured out the high-margin verticals inside US that bears assumed didn’t exist. CSU at 
+26.2% EBITDA in Year 1
+ is the proof.
+Latin America operating leverage is still working.
+ Distribution infrastructure is fixed cost. Every incremental rupee of LatAm revenue drops more to EBITDA. Subsidiary PAT grew 
+50% YoY (₹202 Cr to ₹303 Cr)
+ while the parent grew 17%. The growth is increasingly in the subsidiaries, which is exactly where the US optionality sits.
+The distribution-to-direct shift.
+ This is the next layer. Caplin is moving from a pure distribution model to a direct-led model in markets where the size justifies the capital. That captures the distribution margin internally and lifts blended margins further. In smaller markets, distribution stays, because capital deployment has to clear a return threshold.
+The Asset Light Outsourcing pattern is back.
+ Management explicitly stated they are moving high-volume, price-sensitive US injectables to compliant CMOs and freeing in-house capacity for high-margin products. This is textbook moat deepening. Willis Johnson at Copart did exactly this.
+China 2.0 is the silent third engine.
+ Caplin has signed partnerships with multiple Chinese companies, granting access to 
+110+ approved ANDAs/MAs in US and EU
+. These will be extended to LatAm under Caplin’s own name. First biosimilar product filing already done in Central America. This opens up biosimilars, peptides, and GLP-1 segments traditionally dominated by big pharma. 
+Nobody is talking about this. It will matter in FY28-29.
+I’ll share the comment thread separately with more on the direct-led shift and China 2.0.
+One Honest Flag (Because I Don’t Hide Anything)
+Receivables jumped from 
+121 days to 136 days in Q4
+. Management explained that without the foreign exchange impact on the closing date, receivables would have been 125 days. So the operational deterioration is from 121 to 125 days, which is manageable. 
+The headline 136 days is FX inflation.
+Worth watching but not alarming for an emerging-markets-heavy business. Bears will pick on this, so address it before they do.
+Q4 gross margin also dipped to 
+59.2% from Q3’s 60.4%
+. The reason is purchase of traded goods jumped from ₹128 Cr in Q3 to ₹209 Cr in Q4 (
++63% QoQ
+). They are buying more sourced products to scale volume, which is lower margin than in-house manufacturing. The full-year picture still shows 20 bps GM expansion, but Q4 alone shows the trade-off. This is the mix shift in real time. Worth monitoring through FY27.
+Reading the Concall: The Linguistic Lens
+This applies to every company, not just Caplin. Every founder, every management team, has a cognitive and linguistic vocabulary of their own. The words they reach for, the verbs they avoid, the adjectives they repeat, the metaphors they trust. That vocabulary is enough to identify what lies ahead.
+Confident founders use concrete numbers and timelines. Nervous founders use hedged adjectives and softer verbs. Visionary founders return again and again to the same conceptual frames, because those frames are how they actually think.
+Read the language first. Then go back to the numbers with that filter on.
+The full linguistic mental model is dropping soon as its own post. You can integrate it with every company you follow.
+Further Reading
+The mental model used here:
+The Hidden Law of Great Compounders: They Look Slow Before They Look Fast
+The Caplin Point series:
+Original Thesis: How a Boring Pharma Exporter Became a 50x Compounder
+The Full 10-Part Deep Dive
+Visual Version
+Responding to the Best Critique (Part 1: The Moat)
+Thanks for reading! Subscribe for free to receive new posts and support my work.

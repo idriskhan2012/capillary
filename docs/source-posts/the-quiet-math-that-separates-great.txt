@@ -1,0 +1,85 @@
+TITLE: The Quiet Math That Separates Great Investors From Good Ones
+DATE: 2026-05-16
+
+A reader recently asked me, “How do you play snowball? When the thesis is playing out, do you wait for dips or buy on strength even at slightly skewed valuations?” That question made me realise most investors misunderstand what snowballing actually means.
+So I wanted to break it down properly, using a real case study to ground every framework in something concrete. This post uses Symbotic to explain three things at once. How to snowball a position, how to identify a 100-bagger setup, and how to read capital allocator quality. The stock is just the proof. The frameworks are the takeaway.
+Some readers will leave with a stock idea. Others will leave with a framework. Both are fine, but the framework is the part that compounds.
+So let’s start with what snowballing actually is.
+Snowballing isn’t adding because the price is going up. It’s adding when the business is actually delivering.
+ When the margins are expanding. When the moat is widening and deepening. When new reinvestment runways are emerging. When management is executing at the same or superior returns on capital.
+The price moves on noise. The business compounds in silence. Snowballing means adding on signal strengthening, not on price retreats.
+Let me show you what this looks like with Symbotic.
+The original thesis at $14
+You have to value different models based on their lifecycles and moat. Like Symbotic, I invested around $14. I know it’s a 10-20x of the future and I’m not gonna time that company. But yes, when it cracked back to $24 last year, I added more. The moat got stronger, the markets got bigger, the reinvestment runway got bigger, and no other company comes close to them when it comes to warehouse automation.
+My bet was very simple at that time. It was based on the capital allocator and a man who is GOAT when it comes to warehouse. The Cohen family has been in this business for almost a century, across three generations. Rick himself has been refining the solution for decades. So no engineer and robotics scientist can have more knowledge than him on how to actually solve the problems. And his parent company himself is one of the largest distributors who supplied to all the giants, even Walmart, so that years of relationship aligned automatically.
+The customer list and TAM
+When I invested, only Walmart was the client and the only vertical was retail. But now the customer list includes Albertsons, Target, Giant Tiger, United Natural Foods, Associated Food Stores, and Medline Industries. Every year the thesis is strengthening. And now it’s into medicine infrastructure as well, which is the hardest vertical to crack because of regulatory complexity. All these new sectors expanded the TAM further than my original thesis.
+At that time the thesis had only warehouse automation. But then Walmart sold their robotics and micro-fulfillment segment to Symbotic, which was essentially Alert Innovation, a company that specialised in micro-fulfillment centers directly attached to the front end of a retail store. So Symbotic got the store-level technology and data they were missing.
+And that acquisition is a signal in itself. Walmart had bought Alert Innovation back in 2016, had all the capex and firepower in the world, but still couldn’t execute it at scale or build their own solution. They ended up selling the technology to Symbotic and now they need Symbotic to scale it for them, because of the complexity of the technology.
+So the thesis expanded from just warehouse automation to store-level micro-fulfillment, and a future where both get linked.
+The data moat and switching cost
+Plus when the thesis was decoded, I didn’t know that all the warehouses being deployed can communicate and learn with each other. So that dataset expands and creates a data flywheel effect, which makes each and every existing and new system more efficient as facilities get trained across the globe. That’s another layer of moat. And it’s a lock-in of not just 20-30 years, because whenever a customer redeploys or upgrades, it’s obligatory.
+The switching cost is almost impossible, because it’s not just the system you replace but the brains as well.
+You don’t replace a system after deploying $500 million to it just because someone offers you the same system at $480 million. You have to stop the warehouse and robotic delivery for months to rebuild, and the new system won’t have the data your operations have been working on for 10-20 years.
+And then it’s a razor-blade model, and services will give a revenue stream of 20-30 years.
+This is no ordinary warehouse automation technology. It’s one of the hardest automation problems to crack because of huge SKU counts, aggressive inventory turns, perishables, and mixed pallets. This is exactly where dense robotics plus data has a very strong edge and builds a deep moat.
+And no other robotics company has a testing ground like Symbotic had, because Rick used and tested it in his own C&S Wholesale Grocers operations for decades before commercialising it. That’s a structural advantage no competitor can replicate.
+This is what snowballing actually looks like over time. Every layer here is one more reason to add, not because the price moved, but because the business kept proving itself.
+Every year of execution stacks another layer onto the original reason to own it. The thesis at Year 10 is unrecognisable from the thesis at Year 1.
+Where the real bottleneck moved
+Execution is a real bottleneck for these kinds of models. And in my thesis, the focus has always been on how fast they can deploy the system, lock in that site for decades, and get the service margins live.
+Beyond the core technology, the biggest bottlenecks for any warehouse robotics system are the speed of physical site construction, the robots’ charging time, and the efficiency of the site itself. And what’s interesting now is that Symbotic has started positioning on its own bottlenecks. 
+The company that solves bottlenecks for retailers is now solving them for itself.
+In their latest results just one to two weeks back, they launched a “next-generation storage structure” that cuts on-site assembly parts by over 90% and increases storage density by roughly 40%. So now higher density per warehouse, faster installation, lower on-site labor. That’s solving the deployment bottleneck and deepening the long-term moat.
+Now the charging bottleneck is critical because if a robot is charging, it’s a lazy asset, not generating any ROI during that time.
+To position for that, Symbotic invested in Nyobolt, where batteries charge from 0 to 80% in under five minutes and have over 20,000 charge cycles. For context, standard lithium-ion batteries have 1,000-2,000 cycles. And they are directly integrating that technology into their Symbots.
+And Nyobolt’s tech provides a threefold increase in robot uptime, which means warehouses can reduce fleet size by 30-40% while maintaining the same operational capacity. So Symbotic doesn’t just deploy faster. They deploy fewer robots for the same throughput. It improves both time and cost in one move.
+So you can actually learn something bigger from this capital allocator. If you have any thesis or investment, just focus on the bottlenecks of that business model or product, and then see if the capital allocation by the company is in those directions, solving their own bottlenecks or not. That’s what signals a high-quality capital allocator.
+The real backlog economics
+Now if you take everything above, the expanded customer list, the deepening moat, the data lock-in, and look at what it actually means for the financials, that’s where it gets really interesting.
+Another thing I didn’t factor in when I invested. The backlog of Symbotic is not just an order book. It’s actually Remaining Performance Obligation (RPO), which is a binding contractual agreement under ASC 606.
+So it’s not an order book which cannot be legally binding. It’s RPO, which is legally binding.
+When I invested, the backlog was only $22 billion, which gave them almost a decade of visibility. But the economic value of the backlog I didn’t factor in, which is the recurring revenue stream that will go on for 15, 20, 25 years because of the data moat and the embedded workflow architecture of the ecosystem. So that actually makes the valuation closer to $47 billion on that backlog alone.
+And that was before Exol (formerly GreenBox), the joint venture with SoftBank, and before the new customers came in. The Exol JV now has committed deployments of close to $11 billion. And the expansion has happened into new geographies, Mexico and the European market.
+The founder story most people don’t know
+And not a lot of people know, but Rick Cohen actually bought each and every robotic system on this planet, but none was able to solve the problem he had in his own distribution chain. So what he did, he just reverse-engineered the whole problem, broke every robot system, and then designed something that could solve the problem for him. And he’s keeping on making it more efficient and efficient and efficient.
+That’s not an engineer building a product. That’s an operator who lived the problem for decades and built the only solution that actually worked for him first.
+The technology is downstream of his thinking. The bet was on the brains of the founder.
+Cloud computing for the physical world
+And one more thing about Cohen most people miss. He didn’t build Symbotic to sell to warehouse operators. He built it because he was a warehouse operator. That’s a fundamentally different starting point. Operator first, vendor second produces a fundamentally different product than the other way around.
+And look at what he actually said about his vision.
+“When I first started thinking about automating the supply chain, I wanted to create not just an automated warehouse, but an automated platform that had perfect inventory management, perfect accuracy in shipping, and could be so good that you could create a multi-tenant warehouse with perfect accuracy that allowed anyone that had any storage need at any time to take advantage of this platform.”
+This is not the language of a vendor. This is the language of a founder and a platform architect. He was already describing WaaS years before it became a product line. He literally described it as cloud computing for the physical world.
+And think about what that means. Amazon spent over 20 years and billions of dollars building its own logistics. Symbotic now gives any retailer better warehouse efficiency than Amazon, without that 20-year lag and without billions in R&D. That’s why the customers keep coming. The alternative is to spend two decades building from scratch what Symbotic delivers in 18 months.
+And what fascinated me is that this is the vision of a man who is 73 years old. Most founders at that age are coasting. Cohen is still architecting the next 20 years.
+The 100-bagger framework
+And it obviously aligned with the 100-bagger framework, which I learned from Thomas Phelps in his book 
+100 to 1 in the Stock Market
+. Phelps’ core thesis was that the greatest wealth is created by finding “small, unknown, and research-minded” companies that solve a major human problem, and then having the fortitude to stay the course.
+The framework is simple. A technological force that can reduce the constraint of your customer, reduce the cost of your customer, improve the time of your customer, and have a high degree of replacement cost is usually a 100-bagger in the making.
+Three forces transform the customer. The fourth makes leaving brutal. When all four align in one business, the conditions for a 100-bagger are set.
+Same was with Mastercard, they reduced the transaction time. Same as I think I will see in the stablecoin ecosystem as well. It’s making the system more efficient, reducing the cost of the system, improving the transparency of the system, improving the speed and delivery of the ecosystem. So all those four or five variables, when they align, that usually creates a lot of boost.
+But Phelps also said that finding the company is only half the equation. The other half is the investor.
+The psychological moat. Why adoption is now mandatory
+Here’s where it gets really interesting. Anyone competing with Amazon or operating within the retail ecosystem has to deploy this technology just to survive. Because if your competitor does it and you don’t, you lose on cost efficiency, margin, and speed. And retailers have already lived through what happens when you don’t adapt to technology. They watched Amazon eat their lunch the first time.
+So this time it’s a psychological reflex. You can see how psychology comes into play to position in a thesis. And that’s why Walmart went so aggressive with robotics automation.
+And there’s another forcing function that acts like a macro tailwind. Symbotic isn’t just addressing one major constraint for retailers. It’s also addressing the labor scarcity in the US, especially in the retail and warehouse segments which have huge attrition rates. US warehouse attrition is around 40-50% annually, except Costco. And wage inflation has kicked in for the past few years. So even if retailers wanted to stay manual, the labor isn’t there to hire anymore. They’re being forced into automation from two directions. Top-down psychological reflex and bottom-up structural labor crisis.
+This is what a Lollapalooza looks like in real time. Multiple independent forces all aligning in the same direction at the same time, for the same sector.
+And it’s the same pattern as Oracle and cloud computing. Back in 2008, Larry Ellison called cloud computing “complete gibberish.” He literally said:
+“Maybe I’m an idiot, but I have no idea what anyone is talking about. What is it? It’s complete gibberish. It’s insane. When is this idiocy going to stop?”
+Oracle missed the wave. AWS, Azure, and Google Cloud became trillion-dollar businesses while Oracle played catch-up for over a decade.
+That’s exactly why Ellison this time is the most aggressive player in AI infrastructure. It’s a psychological reflex. He doesn’t want to make the same mistake twice. That’s why Oracle signed the massive OpenAI deal.
+So if I apply the same pattern, the same scar tissue is now driving every retailer to adopt warehouse automation aggressively. Because the people who get scarred hardest by missing a wave become the most aggressive in catching the next one. And warehouse automation is having that psychological tailwind as well.
+That’s why I positioned in this boring model which has decades of infrastructure to be built up. Just like Nvidia’s CEO says the whole architecture has to shift to GPU, similarly, I believe the whole retail infrastructure of the future will shift to automation. And supply chain automation is one of the biggest bottlenecks of any economy. Symbotic is positioned right on that bottleneck.
+The three virtues
+So you can see a lot of the development happened after my original thesis. And if I get the stock back at the same price or even 2-3x the price but the valuations are reasonable, I allocate more, because every variable that mattered when I bought it at $14 is stronger today.
+The TAM, the moat, the margins, the runway, the customer list, the economics, the psychology. Everything is strengthening and stacking in favour.
+That’s how I take my decision on building a snowball in any investment. I don’t wait for dips. If it comes, that’s a gift from the market. But the real move is adding when the business itself is becoming more valuable than the market is pricing in, and how many engines are coming in your favour.
+Phelps listed three things an investor needs to actually capture a 100-bagger. Vision, courage, and patience. Vision to see the thesis early. Courage to hold when the market reacts to short-term noise while the business itself is strengthening. And patience to let the snowball compound, instead of selling on a 50-100% gain because the ticker has moved.
+Each virtue has its own season, and each is harder to keep alive than the last. Most investors find the right company. Almost nobody stays for the full climb.
+That’s the part most people miss. They find the right company, but they don’t have the temperament to stay with it.
+If tomorrow the market had priced it at $100 but the variables I mentioned were not strengthening, I might still ride it or start trimming based on odds, but I wouldn’t deploy fresh capital.
+The strengthening of the moat and the business model is what triggers the snowball. The ticker price is just the receipt.
+That’s the breakdown.
+If a friend of yours is trying to figure out when to add to a winner and when to step back, send them this. The frameworks travel.
+Now tell me yours. What’s the next bottleneck in your investing journey? Drop it in the comments, and I’ll write through the ones that hit hardest.

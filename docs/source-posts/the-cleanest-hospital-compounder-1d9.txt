@@ -1,0 +1,57 @@
+TITLE: The Cleanest Hospital Compounder in India Is Still at a 50% Discount. Are You Holding?
+DATE: 2026-06-23
+
+A quick note before you read. This first went out in my r/IndiaGrowthStocks community and sparked a good bit of discussion. Sharing it here for anyone who missed it, and if you want the live back-and-forth with doctors and sector folks adding their layers, 
+The original thread is here
+This was asked by u/mayank1609 in the community, and instead of letting it get buried in the comments, I thought of putting it out as a post since it might help anyone tracking the hospital sector or holding Kovai.
+This is a brainstorm of the results, not a formal thesis or a decode like the result series. The hospital checklist is linked at the end for anyone going deeper into the sector.
+Kovai Medical Center & Hospital Ltd
+Full Year FY26 (vs FY25):
+Revenue: Rs. 1,371 cr to Rs. 1,584 cr (+15.5% YoY)
+PAT: Rs. 209 cr to Rs. 244.46 cr (+17% YoY)
+EPS: Rs. 190.96 to Rs. 223.41 (+17% YoY)
+Dividend: Rs. 15 per share (150% of face value)
+The compounding track record:
+10Y CAGR (FY16 to FY26): Revenue 13%, PAT 20%, EPS 20%
+5Y CAGR (FY21 to FY26): Revenue 18%, PAT 26%, EPS 26%
+One thing I want to call out before anyone uses the 5Y number in isolation. The 5Y CAGR is optically inflated because FY21 was a COVID-depressed base.
+If you strip out the COVID base effect and run the math on a clean FY22 to FY26 window, PAT still compounded at 24% and revenue at 15%. So the structural rate is roughly 15% revenue and 20 to 24% PAT compounding. And the business is way past the one-time COVID revenue hit and is structurally compounding from a clean base.
+And this is how a quality compounding machine actually behaves. There will be a difference between revenue growth and PAT growth, and that gap will keep expanding as they scale.
+Revenue 10Y CAGR is 13% while PAT 10Y CAGR is 20%, a gap of about 7 percentage points. Post-COVID, revenue 4Y CAGR is about 15% while PAT 4Y CAGR is about 24%, a gap of about 9 percentage points. So the gap is widening, not closing.
+That is operating leverage. As they move up the value chain into higher-acuity verticals like neurosciences, cardiac, and oncology, every incremental rupee of revenue drops more profit to the bottom line.
+Q4 FY26, Year-on-Year (vs Q4 FY25):
+Revenue: Rs. 356.64 cr to Rs. 413.20 cr (+15.9% YoY, all-time quarterly high)
+EBITDA: Rs. 100 cr to Rs. 110 cr (+10% YoY)
+PAT: Rs. 54.70 cr to Rs. 59.69 cr (+9.1% YoY)
+And now in the recent quarter the margins have contracted, and I looked into the why behind that contraction. Revenue was up 15% but profits only 9%, which is temporary and not structural in nature.
+Three of the 4 reasons were directly tied to their new Neuro Sciences and OPD block that opened in January. So now depreciation is hitting as the Neuro Sciences block goes live, plus the employee cost because of new hires, and this is front-loading of cost because in the hospital ecosystem, cost comes first and revenue and margins come with a lag of 2 to 3 quarters.
+Second was the tax rate spike from 25% to 29.2%, which was a normal adjustment and not recurring in nature.
+And one more point I observed was their interest cost actually fell, especially when they have just made a Rs. 120 cr capex, and it signals they paid down debt or refinanced it, and they fund the majority of their growth through internal cash only. They are one of the most disciplined capital allocators who generate such high numbers without using leverage.
+So the gap between revenue and profit growth is not structural.
+One more lens on this, through the Plateau Framework:
+If you look at this through the Plateau Framework mental model, you can see it very cleanly. In FY23, the EPS was around 106 and the multiple was around 24. Now after close to three years, the PE is still in that same 24-25 range, but the EPS has expanded all the way to 223.
+So the EPS has more than doubled while the multiple has stayed flat, and the stock has doubled from 2023. But the stock has not gone anywhere meaningfully since 2024-2025, only because the multiple compressed from a peak around 34-35x back to 24.
+But even if someone went in at the 2024 top or in 2025 at 35x multiples and is sitting on a 20-25% drawdown right now, they just need to have a little patience.
+Look at the math. EPS today is Rs. 223. At a base compounding of 16-17%, FY28 EPS lands somewhere around Rs. 300. At even the current 24x multiple, with no re-rating at all, that puts the price around Rs. 7,200. Zero multiple expansion needed for this. And if the multiple even partially re-rates as the new verticals scale and the company moves into newer geographies, you are looking at materially higher numbers. That is the asymmetry of buying quality compounders in their allocation window.
+And one thing, if you invest in a quality business and don’t overpay much, the only thing you need is time. Always remember, bad timing costs you time, bad businesses cost you capital, and those two are not the same thing.
+And now coming back to Kovai, a lot of you will be looking at the price action of the last two years and concluding nothing is happening. But the business state has actually moved significantly. Two new growth verticals have been created. EPS has more than doubled. ROCE and ROE have stayed in the 21-23% band without leverage. The business has been compounding all this while, the price just has not caught up yet.
+This is the Plateau Framework playing out in real time. The price stagnates because of multiple compression, the business keeps compounding, and at some point you again get both engines in your favour where you positioned.
+The original comment, before the expansion above:
+The results were good, and if anyone is holding it, then they should wait for FY27-28 and see the magic of compounding, because they are moving up the value chain and the payer mix is improving, plus they’re moving to a high-margin vertical, which was mentioned in the checklist. When a hospital moves to that vertical, the margins will expand over the long run.
+Now, they are going for a major kick. It’s that they’re going for a massive expansion, and that expansion is close to 600 beds, and that includes the Sulur Hospital and also a new Children’s Hospital. Plus, they have created a new Neuroscience and OPD block, so that is a high-margin vertical for them, and that will start coming into the financials over the next two to three years.
+Obviously, they have the best capital allocation, it’s in ROCE and everything. Plus, the main thing is a majority of the Indian hospitals, they inflate their ROE through leverage, but Kovai does not do it. They have disciplined capital allocation without leverage. If you can hit ROE of 20 to 22% without leverage, that’s what real capital allocation looks like. And then they are self-sustaining all the growth.
+So these are the few things, and obviously, it’s undervalued if you compare the madness which is going on in the Indian hospital ecosystem right now. It’s trading at almost a 50% discount to the majority of hospitals in its domain, and that gap doesn’t reflect the underlying quality.
+It’s a structural compounding machine, but you need to buy them at right valuations, and I think this is one of the best ranges to buy it. But the recovery phase will happen in FY27-28, and by that time, if you wait, then what will happen. You will be seeing it at ATH or all-time high, because the market discounts the future.
+So this is the phase where you buy it slowly and steadily if you want to buy. If they execute the expansion curve, the multiple re-rating will happen, or the odds from here even just on the EPS growth is giving you a decent above-index return.
+So these are the few things I can tell you, and now you can go and look deeper into it.
+Live Discussion Engine
+Join the live discussion on the original thread →
+The live discussion is happening over in the community, with people adding their own research, on-the-ground takes, and counterpoints. 
+Further Reading:
+The Multibagger Hospital Checklist: Visual Version
+The Multibagger Hospital Checklist: A Complete Framework
+Caplin Point Q4 FY26: The Boring 50x Compounder
+Narayana Hrudayalaya Insights:
+A Business Model with Three Compounding Engines
+How to Play Narayana Hrudayalaya: ARPOB and Margins
+Thanks for reading! Subscribe for free to receive new posts and support my work.

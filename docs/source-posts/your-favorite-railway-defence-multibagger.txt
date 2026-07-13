@@ -1,0 +1,114 @@
+TITLE: Your Favorite “Railway + Defence” Multibagger Might Be a Trap
+DATE: 2026-05-22
+
+This post is a forensic teardown. I will walk you through every trap mental model that fired in this one company and how together they form a Lollapalooza, but in reverse. Every retail investor needs to see this pattern stack at least once. It will take a 5-10 minute read, but it will preserve your hard earned money and help you decode IPOs in a better way.
+So the stock name is 
+Airfloa Rail Technology
+. Retail investors are walking into it without seeing the patterns.
+And this is not just about Airfloa. You can pull out the frameworks inside the lines, scan your old holdings, and learn how to spot the same patterns in other names. Because the patterns travel and the traps repeat. Only the company name on the ticker changes.
+The story being marketed is around the Vande Bharat supplier narrative, defense play, 
+300x subscribed IPO
+, anti-drone/drone narratives, and it’s a whole package designed to seduce you. But when I inverted it, I found very critical red flags. Almost everything was a red flag in this if you look closely into it.
+But before I start, I’ll just pull out some Peter Lynch basic common-sense things to identify what they did. The company was named 
+Air Flow Equipments India Limited
+, which was a generic, boring name. But suddenly, just before the IPO, the name was shifted to 
+Airfloa Rail Technology
+ because the word “technology” in the name seduces a lot of people. That is mentioned in Peter Lynch’s book. You can go and read how IPOs and companies transition their names without actually transforming anything underlying in their business.
+So that rebranding just before the IPO was the first red flag.
+Now look at the profit. The profits were around just 
+Rs. 1.5 crore in FY23
+, and suddenly they jumped to almost 
+Rs. 26 crore in FY25
+. So that is a leap of 
+18-20x
+, and that happened just before the listing. The profit margins, which were around 1-point-something percent, suddenly got lifted to 
+13%
+.
+So the question I asked myself, how can the margins explode so much?
+There were multiple reasons, but one thing was the decline in input costs, which led to margin expansion. Secondly, there was the accounting angle. So they beautifully timed the IPO. And these margins are not structural. They will collapse in the future. So if you are pricing the business, you should keep that in mind.
+The biggest signal, however, was the cash flow. And this is where most retail investors get lost, because the analysts and the media only show you the profit number.
+The profit number is an opinion. Cash is the fact.
+And always follow the cashflow because eventually compounding will depend on cashflow and the quality and durability of the cashflow.
+Now I will break the cashflow into 2 parts to reduce the complexity.
+The first is operating cash flow. Even after making an 18-20x jump in profitability, the 
+OCF was negative Rs. 4 crore
+. So the business reported Rs. 26 crore of profit but the actual operating business consumed cash instead of producing it. That alone signals the quality of the business model and that the cash is not coming in.
+But it gets worse when I looked at free cash flow. Because FCF is the actual cash the business generates after paying for its operations and capex. It is the real money flowing into the firm that can be used for debt repayment, dividends, buybacks, or reinvestment. And the 
+FCF was negative Rs. 11 crore
+.
+So the company reported 
+Rs. 26 crore of profit
+, generated 
+negative Rs. 4 crore from operations
+, and the shareholder cash position was 
+negative Rs. 11 crore
+. While the analysts and telegram groups are seducing you with the Vande Bharat narrative and the 60% revenue growth story, the actual cash position of the business was bleeding on both fronts.
+So the P&L is saying one thing. The cash flow statement is saying the opposite. The narrative is saying a third thing. And when you cannot figure out the direction, always trust the cash flow.
+And the reason the cash isn’t coming in becomes obvious the moment you look at debtor days. Just after the IPO, they had exploded to 
+242
+. So the customer is not paying them even after the product is delivered for almost 8-9 months.
+Now the receivables sit at close to 
+Rs. 127 crore against revenue of Rs. 192 crore
+. So that means almost all the profit and revenue growth being marketed by the company is sitting on someone else’s balance sheet, and the cash has not come back.
+And here is where it all connects. In the IPO they raised around 
+Rs. 91 crore
+, and that is almost the exact working capital they needed. Always look into where the IPO proceeds are going and use this simple mental model. Ask yourself, did they raise public money to build new factories? Did they raise it to build new product lines or for the defense pivot they keep talking about? Or did they raise public money to literally pay for the inventory sitting on their floor and the receivables stuck with the railways for 242 days? And you will have your answers. You can use this mental model on all SME and IPO raising companies and you will figure out the pattern. And in this case, just by looking at a few of these patterns, the answer is clear: 
+the retail investor’s IPO money went into financing a working capital hole.
+People should also understand that when you are dealing with Indian Railways or any monopolistic buyer, this is called a 
+monopsony
+. A market with one buyer and many sellers. The reason being that Indian Railways goes for 
+L1 reverse auctions
+. When an L1 reverse auction happens, there is no pricing power and no switching costs. All the marketing gets adjusted around the company’s relationships with the railways and everything else.
+But you don’t have a relationship with the government. You only have incentives aligned with the babus of the system, and there is no moat around it. It just gives you entry to bid. It doesn’t give you the contract. There is a difference between the two.
+On top of the monopsony issue, there is the defense narrative. They are trying to do everything, anti-drone systems, kamikaze drones, artillery tank structures, AMCA simulators, everything. But there is no roadmap, no innovation, and no meaningful IP. They don’t have anything on their side, and it looks more like a marketing gimmick. And let’s be honest, during FY24-25, the two easiest themes to raise money around in India were railways and defense. They picked both.
+Now look at who is buying and who is selling. FIIs and DIIs were 
+2.77% and 1.23%
+ in September 2025 just after the IPO. Now FIIs are at 
+0.09%
+ and DIIs at 
+0.98%
+. Retail investors moved from 
+41.78% to 44.72%
+. So 
+FIIs cut their stake by 97% in just two quarters
+, while retail picked up the difference. The smart money walked out and retail walked in. Think about why.
+And now let me show you how the story actually got formed. They used FY23 as the base to create the growth narrative. But if I just go to FY22, the picture changes completely.
+FY22 revenue was Rs. 137 crore. FY25 revenue is Rs. 192 crore. That is a 3-year CAGR of 12%, not 60%.
+ The 60% growth story exists only because they anchored it to FY23, which was a trough year where revenue dropped 30% to Rs. 95 crore.
+And the 
+OPM moved from 12% in FY22 to 27% in FY24
+, right before the IPO timeline. Structural margin expansion does not happen like that in a manufacturing business. Always ask and look at what the company actually did which led to this margin expansion. That tells you about management quality and capital allocation skills.
+Because if the answer is “they got lucky on input costs and used accounting choices to absorb fixed costs into inventory and front-load revenue through POC”, then you are not looking at operational excellence. You are just looking at packaging and you see how Indian promoters and bankers package the story.
+And here is exactly what they did on the accounting side. Let me break it into 4 steps because once you see this sequence, you will see it in every IPO trap going forward.
+Step 1.
+ The company shifted revenue mix from Indian Railways 
+78% to 55%
+. Looks like diversification, right? Wrong. They moved that revenue into turnkey projects through metro builders, RRTS, exports, and defense.
+Step 2.
+ These turnkey contracts get recognized using 
+Percentage of Completion (POC) accounting
+. The management can simply claim a turnkey project is 
+70% done
+ based on their own internal estimates, and book that revenue today.
+Step 3.
+ They front-load the revenue to showcase the growth rate, even if the client has not approved the work, even if no payment has been received, even if the physical delivery is still months away. That is the lever.
+Step 4.
+ And because the revenue is on paper but the cash is not in the bank, the receivables explode. The balance sheet bloats. The cash flow turns negative. Which is exactly what you saw in the cash flow section above.
+Once you understand this 4-step loop, you understand why the receivables exploded, why OCF turned negative, why FCF is bleeding.
+It is all one sequence.
+So putting it all together, POC accounting plus monopsony customer plus L1 contracts plus rebranding plus IPO timing, every piece of the trap clicks into the same place. So you can see how the Lollapalooza effect is playing out on the trap mental model in this company.
+So please understand, don’t be seduced by the Vande Bharat narrative or anything built around it. Great businesses are built on moats, pricing power, and durable cash flows. This company has none of these. What it has is packaging and narratives that are not aligning with the financials.
+Share this post with anyone who owns this stock or anyone who is being pitched it in a WhatsApp group, a Telegram channel, or a YouTube video. The cost of one read is 5-10 minutes. The cost of not reading could be their hard earned money. So don’t buy stories. Focus on buying cash flows. Buy moats which protect that cash flow. Buy management with high capital allocation skills that build the moat and think like an operator rather than a storyteller.
+And I recently watched the web series 
+Sapne vs Everyone
+, both parts, beautifully written and executed by Ambrish Verma. There is a line that captures this perfectly. 
+“Jab banda hi na samajh aaye toh uske saath dhanda nahi karna chahiye.”
+ If you cannot understand the person, don’t do business with them. The same logic applies to management. If the capital allocator at the top is not honest with you about the numbers, if they are dressing up packaging as performance, if they are selling stories instead of building cash flows, then you do not invest your capital with them. You preserve that capital. You allocate it to better management. Because at the end of the day, you are not buying a stock. You are partnering with the people who decide what to do with your money.
+Related reading:
+→ 
+A Trap Detection Framework: How Value Destruction Hides in Plain Sight
+→ 
+The 3 Cycle Patterns Every Infra Investor Must Know
+→ 
+Why 90% of Retail Gets Trapped in Infra and EPC Stocks
+Share with someone working through their own capital allocation thinking. Follow if useful. Skip otherwise.

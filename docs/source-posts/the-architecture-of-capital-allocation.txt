@@ -1,0 +1,45 @@
+TITLE: The Architecture of Capital Allocation: Why TransDigm Borrows, Copart Won’t Spend, and Buffett Took Yen Debt
+DATE: 2026-05-19
+
+A reader on Substack asked: “Is promoter pledge a red flag, or should it be checked alongside other variables? There are high-growth companies where promoters have pledged their shares. Is there a sign from history that high-compounding machines shouldn’t have promoter pledging?”
+How I Think About It
+A capital allocator’s decision in isolation tells you nothing. You have to ask why those decisions were made and what direction the company has moved after taking it. Because no variable in investing stands alone, and that’s the biggest mistake most people make.
+If the capital allocator is good and creating value, which is measured through ROIIC, and you have to look at both ROCE and ROIIC in combination because one shows the structural quality of the business and the other shows the marginal quality of new capital being deployed, then you can figure out whether the leverage is being used in the right direction or whether it will lead to capital destruction.
+Leverage is good only when the allocator is good, and a good allocator knows when to use it and how to use it.
+TransDigm: Designed Leverage
+There’s a compounding machine called TransDigm. Amazing business. They have always run high debt and stayed leveraged, and net debt is around 5.8x EBITDA. So if you screen on any AI or screener you won’t understand the structure. But that balance sheet was designed to sit there.
+They’ve used that leverage to fund acquisitions, special dividends, and buybacks for nearly two decades. They have compounded at around 23% a year, and once you add the special dividends they’ve kept paying out using leverage, the total return CAGR climbs to around 27%. So leverage in this case was used in a very strategic way to reward and maximise the returns of shareholders.
+And this is where it connects back to the Two Engine Framework, which explains what happened to the stock price. But the leverage architecture sitting underneath the EPS engine is what made that engine work for TransDigm. So the number in isolation means nothing. You have to see and understand what the underlying structure holds. And you have to go into the mind of the capital allocator to test whether their incentives are aligned with rewarding shareholders.
+ServiceNow: Buying Longevity and Pricing Power
+Sometimes the ROIIC on a particular deployment might look low, but they’ll be using it to build a very strong moat that defends the business model against future competition. Look at ServiceNow. They acquired Veza for around $1B and then Armis for $7.75B back-to-back, both in cybersecurity and identity, to plug holes in their workflow architecture before agentic AI exposes them.
+Yes, they paid a premium, nearly $9B combined, but the move was to seal the platform against being commoditized as AI agents multiply the attack surface for every enterprise. The accounting ROIIC on that deal in year one will look unimpressive, but the strategic ROIIC over a decade looks completely different, because they’re not buying revenue, they’re buying longevity and pricing power. And that’s part of the acquisition mental model.
+And then use the incentive mental model. Ask a few simple questions like what is management actually doing with this capital, and how much ROIC or moat will get built over the long term?
+The Lifecycle Lens
+The mature compounders run with negligible pledge or leverage today, unless they have a massive reinvestment opportunity like the AI infrastructure buildout, or if the business model itself operates in the wrong pool and requires constant reinvestment just to survive. I call these the treadmill trap models.
+But the reason isn’t that pledge is incompatible with compounding. It’s because those businesses have already compounded into self-funding maturity. So they generate so much internal cashflow that the promoter never needs external capital. Pledge becomes necessary earlier in the lifecycle, when the growth opportunity exceeds internal cash generation. Kalyan is at that stage.
+Kalyan: Pledge as Bridge Capital
+The same pattern shows up in Kalyan Jewellers in the Indian market right now, which I have researched before. Look at how the pledge was used:
+It funded store expansion in a category where shelf space and trust compound.
+The growth is healthy because same-store sales growth is happening alongside new store additions, so it’s not just store-count optics.
+They’re taking mindshare and market share from the unorganised segment.
+The promoters are now using operating cashflow to bring the pledge down to zero by 2027, and you can see this happening every quarter. That trajectory is what you should be observing.
+So you need to integrate the pledge question with the lifecycle approach. Look at Artemis. They took pledge too, but it was justified by the explosive growth rates they’ve delivered in a capital-intensive hospital build-out. A smart allocator takes a balance of both debt and pledge depending on capital market conditions and the interest rate cycle. And then a few companies manage to achieve scale without needing either at a very early stage, which is what Caplin did.
+Copart: Architecture Over Borrowing
+Look at Copart. The capital allocator's quality shows up in the structure itself. They sit on more than $5 billion of cash and investments. They have zero need for debt. Yet they have recently taken a $1.25 billion multi-currency revolving credit facility with dedicated sub-facilities in Euro, Pounds Sterling, and Canadian Dollars, structured specifically to fund their international expansion in the UK, Germany, Spain, and Canada. And they haven’t even drawn on it.
+When it happened I went to see the structure, because it had $5 billion in cash, then why did the capital allocator go for it? This is how you penetrate the minds of founders and learn patterns. And when you go in, you see the architecture. They built this facility to borrow in the local currency of the geography they’re expanding into, because that’s how you hedge currency risk on a long-duration international investment. So that’s how the allocator decided which tool to pick.
+Buffett: The Gold Standard
+Even Buffett did the same thing in Japan. He borrowed in yen at roughly 0.5% Japanese rates to buy into the Japanese trading houses that were paying dividends in the 3 to 5% range, with double-digit earnings yields, all trading at cheap multiples. He had all the cash in the world at Berkshire. He still chose yen-denominated debt because the currency match, the cost of capital, and the spread between the two made it a better trade than using his own dollars.
+The math is brutal. Berkshire pays around ¥135 billion a year in interest on those yen bonds and collects close to ¥812 billion a year in dividends from the trading houses. That’s roughly a 6x coverage ratio before any capital appreciation. That’s the move of a great allocator.
+So you can see, cash is one tool. Debt is another. A currency-matched credit line is a third. The skill is in keeping all of them available and knowing which one to pick and when.
+Whether a company has pledge or not depends on where the business sits in its lifecycle and how the capital cycle is pricing risk at that moment.
+Red Flag Patterns
+A few red flag patterns that signal whether the direction is right or wrong:
+The capital is flowing into the promoter’s personal balance sheet, not the business.
+The pledge ratio is rising while ROIIC is falling.
+There’s no stated and tracked deleveraging path.
+The pledged shares sit at a price where a forced sale would trigger a death spiral.
+Why Humans Still Matter
+These are a few patterns, but the larger point is that you have to see things holistically, and that’s exactly why humans still matter in investing.
+An AI tool can give you numbers. It cannot tell you which numbers matter in this business, at this stage of its lifecycle, under this capital cycle. Until you have the skillset to read the structure, the patterns, the linkages, the incentives, you can’t even tell the AI what to look for, and it will just hand you generalised opinions back.
+The mental model has to fire in your head first. Only then does the AI become useful. Without that trigger, every tool in the world is just noise dressed up as analysis.
+The Capillary
