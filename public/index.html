@@ -149,14 +149,6 @@
   .delete-x{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:2px 6px;}
   .delete-x:hover{color:var(--bear);}
 
-  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.6;}
-  a{color:var(--accent);}
-  @media (max-width:560px){
-    header h1{font-size:28px;}
-    .modal{padding:24px 20px;}
-    .modal-grid{grid-template-columns:1fr;}
-    .tab-btn{padding:9px 12px;font-size:12px;}
-  }
   .framework-intro{color:var(--text-secondary);font-size:14.5px;line-height:1.65;max-width:760px;margin:18px 0 22px;}
 
   .stage-card{
@@ -212,49 +204,179 @@
     .tl-phase-label{padding-left:38px;}
     .tl-loop-note{padding-left:0;}
   }
+
+  /* ===== Full-page detail views (stock / model) ===== */
+  .detail-page{max-width:780px;margin:0 auto;padding:4px 0 50px;}
+  .detail-back{
+    display:inline-flex;align-items:center;gap:6px;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:500;
+    color:var(--muted);cursor:pointer;margin-bottom:26px;background:none;border:none;padding:0;transition:color .15s ease;
+  }
+  .detail-back:hover{color:var(--accent);}
+  .detail-eyebrow{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:12px;}
+  .detail-title{font-family:'Source Serif 4',serif;font-size:34px;font-weight:600;line-height:1.22;margin:0 0 10px;}
+  .detail-sub{color:var(--muted);font-size:14.5px;margin-bottom:20px;}
+  .detail-badges{display:flex;gap:10px;align-items:center;margin-bottom:28px;flex-wrap:wrap;}
+  .detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:34px;}
+  .detail-stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;}
+  .detail-stat .lbl{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;}
+  .detail-stat .val{font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;}
+  .detail-section{margin-bottom:32px;}
+  .detail-section .h{
+    font-family:'Inter',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;
+    color:var(--muted);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line);
+  }
+  .detail-section p{font-size:16px;line-height:1.75;color:var(--text-secondary);margin:0;}
+  .detail-section.analogy{
+    background:rgba(201,84,26,.06);border:1px solid rgba(201,84,26,.2);border-radius:10px;padding:20px 22px;margin-bottom:32px;
+  }
+  .detail-section.analogy .h{color:var(--accent);border-bottom:none;padding-bottom:0;margin-bottom:8px;}
+  .detail-links a{
+    display:block;font-family:'Inter',sans-serif;font-size:14.5px;color:var(--accent);text-decoration:none;
+    padding:10px 0;border-bottom:1px solid var(--line);
+  }
+  .detail-links a:last-child{border-bottom:none;}
+  .detail-links a:hover{text-decoration:underline;}
+
+  @media (max-width:640px){
+    .detail-title{font-size:26px;}
+    .detail-stats{grid-template-columns:repeat(2,1fr);}
+  }
+
+  /* ===== Top bar navigation ===== */
+  .topbar{position:sticky;top:0;z-index:40;background:var(--ink);border-bottom:1px solid var(--line);}
+  .topbar-inner{max-width:1180px;margin:0 auto;padding:13px 24px;display:flex;align-items:center;gap:20px;}
+  .topbar-logo{font-family:'Source Serif 4',serif;font-weight:600;font-size:19px;color:var(--text);text-decoration:none;white-space:nowrap;flex-shrink:0;}
+  .topbar-logo span{color:var(--accent);}
+  .topbar-links{display:flex;gap:2px;flex:1;flex-wrap:wrap;}
+  .topbar-links a{
+    font-family:'Inter',sans-serif;font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none;
+    padding:8px 13px;border-radius:8px;transition:all .15s ease;white-space:nowrap;
+  }
+  .topbar-links a:hover{color:var(--text);background:var(--surface);}
+  .topbar-links a.active{color:var(--accent);background:rgba(255,103,25,.09);font-weight:600;}
+  .topbar-count{font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:.65;margin-left:2px;}
+
+  /* ===== Breadcrumbs ===== */
+  .breadcrumbs{font-family:'Inter',sans-serif;font-size:13px;color:var(--muted);padding:20px 0 0;display:none;}
+  .breadcrumbs a{color:var(--muted);text-decoration:none;}
+  .breadcrumbs a:hover{color:var(--accent);text-decoration:underline;}
+  .breadcrumbs .sep{margin:0 7px;opacity:.5;}
+  .breadcrumbs .current{color:var(--text);font-weight:500;}
+
+  /* ===== Home page ===== */
+  .home-hero{position:relative;padding:36px 0 30px;border-bottom:1px solid var(--line);margin-bottom:36px;overflow:hidden;}
+  .home-hero h1{font-family:'Source Serif 4',serif;font-weight:600;font-size:38px;letter-spacing:-.3px;margin:0 0 10px;position:relative;}
+  .home-hero h1 span{color:var(--accent);}
+  .home-hero p{color:var(--text-secondary);font-size:16px;max-width:680px;line-height:1.65;margin:0;position:relative;}
+  .home-hero .meta-row{margin-top:26px;position:relative;}
+  .home-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+  .home-card{
+    display:block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px 22px;
+    text-decoration:none;box-shadow:var(--shadow);transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .home-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);}
+  .home-card-eyebrow{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--accent);margin-bottom:12px;}
+  .home-card h3{font-family:'Source Serif 4',serif;font-size:20px;font-weight:600;color:var(--text);margin:0 0 10px;line-height:1.3;}
+  .home-card p{font-size:14px;line-height:1.6;color:var(--text-secondary);margin:0 0 16px;}
+  .home-card-cta{font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;color:var(--accent);}
+
+  @media (max-width:900px){
+    .home-cards{grid-template-columns:1fr;}
+    .topbar-inner{flex-wrap:wrap;}
+  }
+  @media (max-width:640px){
+    .home-hero h1{font-size:28px;}
+  }
+
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.6;}
+  a{color:var(--accent);}
+  @media (max-width:560px){
+    .modal{padding:24px 20px;}
+    .modal-grid{grid-template-columns:1fr;}
+  }
 </style>
 </head>
 <body>
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a class="topbar-logo" href="#home">The <span>Capillary</span></a>
+    <div class="topbar-links">
+      <a href="#home" data-route="home">Home</a>
+      <a href="#stocks" data-route="stocks">Stock Tracker <span class="topbar-count">18</span></a>
+      <a href="#models" data-route="models">Mental Models Guide <span class="topbar-count">20</span></a>
+      <a href="#framework" data-route="framework">Decision Framework <span class="topbar-count">11</span></a>
+    </div>
+    <button id="themeToggleBtn" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:8px 16px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;">Dark mode</button>
+  </div>
+</nav>
+
 <div class="wrap">
+  <div class="breadcrumbs" id="breadcrumbs"></div>
 
-  <header>
-    <svg class="vein-bg" viewBox="0 0 1180 140" preserveAspectRatio="none">
-      <path d="M0,110 C150,80 220,140 340,100 C460,60 500,120 620,80 C740,40 800,100 920,70 C1040,40 1100,80 1180,50"
-        fill="none" stroke="#FF6719" stroke-width="1.2" opacity="0.5"/>
-      <path d="M0,125 C120,115 200,80 320,120 C440,155 540,100 660,125 C780,155 860,110 980,125 C1080,138 1130,118 1180,125"
-        fill="none" stroke="#FF6719" stroke-width="1" opacity="0.3"/>
-    </svg>
-    <h1>The <span>Capillary</span> — Research Terminal</h1>
-    <p>Every stock mentioned across all 16 posts, plus the 20 mental models behind those calls — cross-linked both ways. Open a stock to see exactly which frameworks drove the call; open a model to see every stock it was tested on.</p>
-
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-top:26px;border-bottom:1px solid var(--line);padding-bottom:0;">
-      <div class="tabbar">
-        <button class="tab-btn active" data-tab="stocks">Stock Tracker <span class="tab-count">· 18</span></button>
-        <button class="tab-btn" data-tab="models">Mental Models Guide <span class="tab-count">· 20</span></button>
-        <button class="tab-btn" data-tab="framework">Decision Framework <span class="tab-count">· 11 stages</span></button>
+  <div class="panel active" id="panel-home">
+    <div class="home-hero">
+      <svg class="vein-bg" viewBox="0 0 1180 140" preserveAspectRatio="none">
+        <path d="M0,110 C150,80 220,140 340,100 C460,60 500,120 620,80 C740,40 800,100 920,70 C1040,40 1100,80 1180,50"
+          fill="none" stroke="#FF6719" stroke-width="1.2" opacity="0.5"/>
+        <path d="M0,125 C120,115 200,80 320,120 C440,155 540,100 660,125 C780,155 860,110 980,125 C1080,138 1130,118 1180,125"
+          fill="none" stroke="#FF6719" stroke-width="1" opacity="0.3"/>
+      </svg>
+      <h1>The <span>Capillary</span> — Research Terminal</h1>
+      <p>Every stock mentioned across all 16 posts, plus the 20 mental models behind those calls, plus a synthesized decision process that chains them together — all cross-linked. Open a stock to see exactly which frameworks drove the call; open a model to see every stock it was tested on.</p>
+      <div class="meta-row">
+        <div class="meta-item"><b>16</b>posts read</div>
+        <div class="meta-item"><b>18</b>stocks tracked</div>
+        <div class="meta-item"><b>20</b>mental models</div>
+        <div class="meta-item"><b>11</b>stage framework</div>
       </div>
-      <button id="themeToggleBtn" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:8px 16px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;margin-bottom:8px;">Dark mode</button>
     </div>
-  </header>
 
-  <div class="panel active" id="panel-stocks">
-    <div class="meta-row">
-      <div class="meta-item"><b>16</b>posts read</div>
-      <div class="meta-item" id="trackedCount"><b>18</b>stocks tracked</div>
-      <div class="meta-item"><b>10</b>bullish calls</div>
-      <div class="meta-item"><b>7</b>bearish / avoid</div>
-      <div class="meta-item"><b>Jul 11, 2026</b>prices as of</div>
+    <div class="home-cards">
+      <a class="home-card" href="#stocks">
+        <div class="home-card-eyebrow">Stock Tracker</div>
+        <h3>Every stock, thesis, and outcome</h3>
+        <p>Sentiment, price then vs. now, the full thesis, and which mental models drove each call — cross-linked to the guide below.</p>
+        <div class="home-card-cta">Browse 18 stocks &rarr;</div>
+      </a>
+      <a class="home-card" href="#models">
+        <div class="home-card-eyebrow">Mental Models Guide</div>
+        <h3>The 20 recurring frameworks</h3>
+        <p>Each one explained in plain language with an analogy, plus a worked example pulled from the actual tracked stocks.</p>
+        <div class="home-card-cta">Browse 20 models &rarr;</div>
+      </a>
+      <a class="home-card" href="#framework">
+        <div class="home-card-eyebrow">Decision Framework</div>
+        <h3>All 20 models, one process</h3>
+        <p>A synthesized 11-stage sequence — screen, analyze, size, maintain — showing how the models actually chain together.</p>
+        <div class="home-card-cta">Walk through 11 stages &rarr;</div>
+      </a>
     </div>
-    <div class="filters" id="stockFilters"></div>
-    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="panel" id="panel-stocks">
+    <div id="stocksListView">
+      <div class="meta-row">
+        <div class="meta-item"><b>16</b>posts read</div>
+        <div class="meta-item" id="trackedCount"><b>18</b>stocks tracked</div>
+        <div class="meta-item"><b>10</b>bullish calls</div>
+        <div class="meta-item"><b>7</b>bearish / avoid</div>
+        <div class="meta-item"><b>Jul 11, 2026</b>prices as of</div>
+      </div>
+      <div class="filters" id="stockFilters"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+    <div id="stockDetailView" style="display:none;"></div>
   </div>
 
   <div class="panel" id="panel-models">
-    <p style="color:var(--muted);font-size:13.5px;max-width:720px;line-height:1.6;margin:18px 0 4px;">
-      Grouped by what job each model does. Ticker chips are clickable — they jump straight to that stock's full card.
-    </p>
-    <div class="cat-nav" id="catNav"></div>
-    <div id="catContainer"></div>
+    <div id="modelsListView">
+      <p style="color:var(--muted);font-size:13.5px;max-width:720px;line-height:1.6;margin:18px 0 4px;">
+        Grouped by what job each model does. Ticker chips are clickable — they jump straight to that stock's full page.
+      </p>
+      <div class="cat-nav" id="catNav"></div>
+      <div id="catContainer"></div>
+    </div>
+    <div id="modelDetailView" style="display:none;"></div>
   </div>
 
 <div class="panel" id="panel-framework">
@@ -273,13 +395,13 @@
   <div class="tl-card-wrap">
     <div class="stage-card" id="stage-1" style="cursor:default;">
       <h3>Read The Business, Not The Ticker</h3>
-      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Business State vs. Ticker State')">Business State vs. Ticker State</span></div>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('Business State vs. Ticker State')">Business State vs. Ticker State</span></div>
       <p>This is the lens every other stage sits inside, not a one-time checkbox. Before anything else, separate what the price is doing from what the business is doing. A stock can sit dead flat, crash, or spike for reasons that have nothing to do with the underlying company &mdash; and the entire method only works if this gap is checked first, before valuation, before a moat test, before anything.</p>
       
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;"><b>Kovai Medical</b> looked "boring" on a price chart for years while EPS quietly doubled underneath &mdash; the business state had moved enormously; the ticker just hadn't caught up. <b>KPIT</b> is the inverse warning: a screener showing "cheap after a crash" isn't automatically a bargain if the business state is also genuinely deteriorating underneath the falling ticker.</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('KOVAI')">KOVAI</span><span class="tick-chip" onclick="openStockModal('KPITTECH')">KPITTECH</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('KOVAI')">KOVAI</span><span class="tick-chip" onclick="showStockDetail('KPITTECH')">KPITTECH</span></div>
       </div>
     </div>
   </div>
@@ -289,7 +411,7 @@
   <div class="tl-card-wrap">
     <div class="stage-card" id="stage-2" style="cursor:default;">
       <h3>New Listing, IPO, or PE-Backed Story? — Ownership Screen</h3>
-      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Dealmaker Model')">The Dealmaker Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Shrinking Host Model')">The Shrinking Host Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Pond Theory')">The Pond Theory</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Incentive Model')">The Incentive Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Trap Detection Framework ("Lollapalooza in Reverse")')">Trap Detection Framework ("Lollapalooza in Reverse")</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Percentage-of-Completion (POC) Accounting Trap')">Percentage-of-Completion (POC) Accounting Trap</span></div>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Dealmaker Model')">The Dealmaker Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Shrinking Host Model')">The Shrinking Host Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Pond Theory')">The Pond Theory</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Incentive Model')">The Incentive Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('Trap Detection Framework ("Lollapalooza in Reverse")')">Trap Detection Framework ("Lollapalooza in Reverse")</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('Percentage-of-Completion (POC) Accounting Trap')">Percentage-of-Completion (POC) Accounting Trap</span></div>
       <p>Only triggers for recent IPOs or a story built around a private-equity-owned company &mdash; but when it applies, it comes before valuation, because a structurally broken deal is broken at any price. Trace who owned this privately, at what price, and how fast they're selling to the public. Check whether the revenue model is pinned to a shrinking underlying asset. Check whether an unorganized industry is consolidating in a way that cuts this business out. Ask bluntly what the people in control are actually incentivized to do. Watch for revenue recognized before cash or customer approval exists.</p>
       
         <div class="tl-checkpoint">
@@ -300,7 +422,7 @@
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;"><b>IGI</b> failed on nearly every one of these at once (Blackstone's ~5x private-to-public flip in 20 months, a fee pinned to shrinking lab-grown-diamond values, certification trust migrating to brands). <b>Airfloa</b> failed the accounting and incentive tests specifically (POC-driven profit spike, negative free cash flow, IPO proceeds plugging a working-capital hole).</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('IGIL')">IGIL</span><span class="tick-chip" onclick="openStockModal('AIRFLOA')">AIRFLOA</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('IGIL')">IGIL</span><span class="tick-chip" onclick="showStockDetail('AIRFLOA')">AIRFLOA</span></div>
       </div>
     </div>
   </div>
@@ -310,13 +432,13 @@
   <div class="tl-card-wrap">
     <div class="stage-card" id="stage-3" style="cursor:default;">
       <h3>Decompose The Return</h3>
-      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Two-Engine Framework')">The Two-Engine Framework</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Law of Large Numbers (Size Ceiling)')">Law of Large Numbers (Size Ceiling)</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Plateau Framework')">The Plateau Framework</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Depreciation Model / "Hidden Law of Great Compounders"')">The Depreciation Model / "Hidden Law of Great Compounders"</span></div>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Two-Engine Framework')">The Two-Engine Framework</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('Law of Large Numbers (Size Ceiling)')">Law of Large Numbers (Size Ceiling)</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Plateau Framework')">The Plateau Framework</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Depreciation Model / "Hidden Law of Great Compounders"')">The Depreciation Model / "Hidden Law of Great Compounders"</span></div>
       <p>Once ownership clears, understand <i>why</i> the price is where it is. Split return into the earnings engine and the multiple engine &mdash; a stock can have real earnings growth and still be a bad investment if the multiple is simultaneously collapsing. Check whether the growth rate being paid for is even mathematically sustainable at the company's current size. If a good business looks "dead" on the chart for years, check whether earnings growth and multiple compression have simply been canceling out. And if reported profit growth looks like it's decelerating, check whether that's just front-loaded capex depreciation rather than a real slowdown.</p>
       
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;"><b>HDFC Bank's</b> EPS tripled while the stock barely moved &mdash; multiple compression ate the earnings engine. <b>KPIT</b> got hit by both engines reversing at once at an already-large market cap. <b>Caplin Point's</b> "decelerating" PAT growth was actually front-loaded capex depreciation, not a real slowdown.</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('HDFCBANK')">HDFCBANK</span><span class="tick-chip" onclick="openStockModal('KPITTECH')">KPITTECH</span><span class="tick-chip" onclick="openStockModal('CAPLIPOINT')">CAPLIPOINT</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('HDFCBANK')">HDFCBANK</span><span class="tick-chip" onclick="showStockDetail('KPITTECH')">KPITTECH</span><span class="tick-chip" onclick="showStockDetail('CAPLIPOINT')">CAPLIPOINT</span></div>
       </div>
     </div>
   </div>
@@ -326,7 +448,7 @@
   <div class="tl-card-wrap">
     <div class="stage-card" id="stage-4" style="cursor:default;">
       <h3>Stress-Test The Moat</h3>
-      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Caged Bird Model')">The Caged Bird Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Maginot Line Model')">The Maginot Line Model</span></div>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Caged Bird Model')">The Caged Bird Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Maginot Line Model')">The Maginot Line Model</span></div>
       <p>Before trusting any "durable moat" narrative, run two separate tests. First: was this loyalty or stickiness ever actually tested against a real alternative? Second: is the moat being attacked from the exact direction it was built to defend, or is a competitor bypassing it entirely from an angle it was never designed to face? A moat can be completely real and still become irrelevant.</p>
       
         <div class="tl-checkpoint">
@@ -337,7 +459,7 @@
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;"><b>Sagility's</b> 18-year client stickiness was measured entirely in a pre-AI world with no alternative (fails the first test), and its relationship-based moat was built to defend against other outsourcing firms, not against AI making the underlying labor obsolete (fails the second) &mdash; both models pointed the same direction independently.</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('SAGILITY')">SAGILITY</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('SAGILITY')">SAGILITY</span></div>
       </div>
     </div>
   </div>
@@ -347,7 +469,7 @@
   <div class="tl-card-wrap">
     <div class="stage-card" id="stage-5" style="cursor:default;">
       <h3>Check For Fresh Cracks</h3>
-      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Foreshock Model')">The Foreshock Model</span></div>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Foreshock Model')">The Foreshock Model</span></div>
       <p>If the stock just had a profit warning, a guidance cut, or a sudden crash, don't treat that single data point as either "priced in" or "the bottom." The base rate strongly favors more bad news following a first crack, not stabilization. This stage is about timing discipline on top of the analysis already done in Stages 3 and 4, not new analysis of its own.</p>
       
         <div class="tl-checkpoint">
@@ -358,7 +480,7 @@
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;"><b>KPIT's</b> 16% single-day crash was treated as a fresh warning, not a bottom, right after it happened. <b>Trent</b> is the sharper case &mdash; down 45% is read as the sixth or seventh slowdown in a pattern stretching back over a year, not "the crack" itself.</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('KPITTECH')">KPITTECH</span><span class="tick-chip" onclick="openStockModal('TRENT')">TRENT</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('KPITTECH')">KPITTECH</span><span class="tick-chip" onclick="showStockDetail('TRENT')">TRENT</span></div>
       </div>
     </div>
   </div>
@@ -368,13 +490,13 @@
   <div class="tl-card-wrap">
     <div class="stage-card" id="stage-6" style="cursor:default;">
       <h3>Read Management & Capital Allocation</h3>
-      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Linguistic Mental Model')">The Linguistic Mental Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Capital Allocator Quality (ROCE vs. ROIIC)')">Capital Allocator Quality (ROCE vs. ROIIC)</span></div>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Linguistic Mental Model')">The Linguistic Mental Model</span><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('Capital Allocator Quality (ROCE vs. ROIIC)')">Capital Allocator Quality (ROCE vs. ROIIC)</span></div>
       <p>Two checks on the people actually running the business. First, listen to how they literally talk on earnings calls &mdash; concrete numbers and firm timelines read differently than vague, hedged, storytelling language. Second, judge whether the incremental capital being deployed right now is actually earning good returns, and whether structures like a promoter pledge have a visible, tracked path down.</p>
       
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;"><b>Kalyan Jewellers'</b> promoter refusing to engage with a share-price question on a concall, paired with a pledge being paid down on a tracked schedule using operating cash flow, reframes what could look like two red flags into one honest operator being deliberately blunt about both.</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('KALYANKJIL')">KALYANKJIL</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('KALYANKJIL')">KALYANKJIL</span></div>
       </div>
     </div>
   </div>
@@ -384,13 +506,13 @@
   <div class="tl-card-wrap">
     <div class="stage-card" id="stage-7" style="cursor:default;">
       <h3>Paradigm-Shift Overlay</h3>
-      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Bottleneck Strategy ("Road vs. Toll Booth")')">The Bottleneck Strategy ("Road vs. Toll Booth")</span></div>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Bottleneck Strategy ("Road vs. Toll Booth")')">The Bottleneck Strategy ("Road vs. Toll Booth")</span></div>
       <p>Only activates when the entire sector is being re-architected by a technological shift &mdash; it doesn't apply to a stable, mature industry. When it does apply, map where the new, unavoidable chokepoint actually sits, and check whether a candidate owns that chokepoint or just operates near it. Some companies aren't a toll booth on someone else's road, they're building the road itself.</p>
       
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;">The entire cybersecurity basket was built by mapping five specific AI-era bottlenecks rather than picking the biggest legacy vendor. <b>Cloudflare</b> was reframed mid-thesis from "a toll booth" to "the road." <b>Varonis</b> was removed once its bottleneck was absorbed by larger platforms &mdash; proof this stage needs ongoing re-checking, not a one-time map.</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('PANW')">PANW</span><span class="tick-chip" onclick="openStockModal('CRWD')">CRWD</span><span class="tick-chip" onclick="openStockModal('RBRK')">RBRK</span><span class="tick-chip" onclick="openStockModal('ZS')">ZS</span><span class="tick-chip" onclick="openStockModal('NET')">NET</span><span class="tick-chip" onclick="openStockModal('VRNS')">VRNS</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('PANW')">PANW</span><span class="tick-chip" onclick="showStockDetail('CRWD')">CRWD</span><span class="tick-chip" onclick="showStockDetail('RBRK')">RBRK</span><span class="tick-chip" onclick="showStockDetail('ZS')">ZS</span><span class="tick-chip" onclick="showStockDetail('NET')">NET</span><span class="tick-chip" onclick="showStockDetail('VRNS')">VRNS</span></div>
       </div>
     </div>
   </div>
@@ -400,13 +522,13 @@
   <div class="tl-card-wrap">
     <div class="stage-card" id="stage-8" style="cursor:default;">
       <h3>Size The Conviction</h3>
-      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The 100-Bagger Framework (Thomas Phelps)')">The 100-Bagger Framework (Thomas Phelps)</span></div>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The 100-Bagger Framework (Thomas Phelps)')">The 100-Bagger Framework (Thomas Phelps)</span></div>
       <p>Before deciding how much conviction a name deserves, check whether four specific forces stack together: does it cut a customer's cost, their time, and a structural constraint, and does adopting it create switching costs high enough that leaving becomes genuinely painful? This stage is about position sizing, not a buy/skip decision on its own.</p>
       
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;"><b>Symbotic</b> was sized with real conviction specifically because all four forces stacked &mdash; labor cost reduction, time reduction, and a switching cost that becomes close to unthinkable once a $500 million warehouse system is deployed.</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('SYM')">SYM</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('SYM')">SYM</span></div>
       </div>
     </div>
   </div>
@@ -416,13 +538,13 @@
   <div class="tl-card-wrap">
     <div class="stage-card" id="stage-9" style="cursor:default;">
       <h3>Plan The Entry</h3>
-      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('Phoenix Forge & Dragon Flight Framework')">Phoenix Forge & Dragon Flight Framework</span></div>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('Phoenix Forge & Dragon Flight Framework')">Phoenix Forge & Dragon Flight Framework</span></div>
       <p>Once a name clears Stages 1-8, the entry should be pre-planned, not decided emotionally. Is a falling price a "Forge" (business strengthening while the ticker sleeps) or a "Pyre" (business deteriorating &mdash; a trap dressed as a discount)? Once confirmed as a Forge, pre-commit to price zones for adding on the way down, and separate tiers for adding on the way to new highs.</p>
       
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;"><b>Caplin Point's</b> accumulation zones (roughly &#8377;1,350-2,050 on the way down) and later "Dragon" tiers (&#8377;2,020-2,971 on the way up) were both mapped out ahead of time, because Stages 1-6 had already confirmed a strengthening business.</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('CAPLIPOINT')">CAPLIPOINT</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('CAPLIPOINT')">CAPLIPOINT</span></div>
       </div>
     </div>
   </div>
@@ -432,13 +554,13 @@
   <div class="tl-card-wrap">
     <div class="stage-card" id="stage-10" style="cursor:default;">
       <h3>Add Over Time, Not On Price</h3>
-      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="openModelModal('The Snowball Method')">The Snowball Method</span></div>
+      <div class="chip-row" style="margin-bottom:10px;"><span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;" onclick="showModelDetail('The Snowball Method')">The Snowball Method</span></div>
       <p>For positions already held, the rule for adding more is explicitly not about price &mdash; it's about whether the business keeps proving new, independent reasons to own it. If every variable that mattered at the original purchase is still getting stronger, that's the signal to add, regardless of price.</p>
       
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;"><b>Symbotic</b> was added to at $14 and again at $24 specifically because the customer list, backlog value, and moat evidence had each independently strengthened &mdash; not because of where the price happened to be sitting.</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('SYM')">SYM</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('SYM')">SYM</span></div>
       </div>
     </div>
   </div>
@@ -454,7 +576,7 @@
       <div class="stage-worked" style="margin-top:14px;">
         <div class="h">Worked Example From The Tracker</div>
         <p style="margin:0;">This is the same discipline that let the framework catch <b>Varonis's</b> thesis breaking mid-post (Stage 7 re-checked) and <b>Kovai's</b> plateau resolving upward (Stage 1 and 3 re-checked) &mdash; the loop, not any single stage, is what the method actually is.</p>
-        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="openStockModal('VRNS')">VRNS</span><span class="tick-chip" onclick="openStockModal('KOVAI')">KOVAI</span></div>
+        <div class="chip-row" style="margin-top:8px;"><span class="tick-chip" onclick="showStockDetail('VRNS')">VRNS</span><span class="tick-chip" onclick="showStockDetail('KOVAI')">KOVAI</span></div>
       </div>
     </div>
   </div>
@@ -476,6 +598,8 @@
 
 <script>
 let stocks=[], categories=[], models=[], stockPosts={}, modelPost={};
+
+
 
 
 
@@ -521,22 +645,29 @@ function tickerChips(list, clickable){
     const s = stocks.find(x=>x.ticker===t);
     const label = s ? s.ticker : t;
     return clickable
-      ? `<span class="tick-chip" onclick="event.stopPropagation();openStockModal('${t}')">${label}</span>`
+      ? `<span class="tick-chip" onclick="event.stopPropagation();showStockDetail('${t}')">${label}</span>`
       : `<span class="tick-chip">${label}</span>`;
   }).join('');
 }
 
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.onclick = ()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
-  };
-});
 function switchTab(tab){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.topbar-links a').forEach(a=>a.classList.toggle('active', a.dataset.route===tab));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+tab));
+}
+
+function renderBreadcrumbs(trail){
+  const el = document.getElementById('breadcrumbs');
+  if(!trail || trail.length < 2){
+    el.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  el.style.display = 'block';
+  el.innerHTML = trail.map((t, i)=>{
+    const isLast = i === trail.length - 1;
+    if(isLast) return `<span class="current">${t.label}</span>`;
+    return `<a href="${t.href}">${t.label}</a><span class="sep">/</span>`;
+  }).join('');
 }
 
 const grid = document.getElementById('grid');
@@ -551,7 +682,7 @@ function renderStocks(filter){
     const card = document.createElement('div');
     card.className = 'card';
     card.style.position = 'relative';
-    card.onclick = ()=>openStockModal(s.ticker);
+    card.onclick = ()=>showStockDetail(s.ticker);
     card.innerHTML = `
       <div class="card-top">
         <div class="ticker-block">
@@ -572,25 +703,14 @@ function renderStocks(filter){
   });
 }
 function buildFilters(){
-  const bull = stocks.filter(s=>s.sentiment==='bull').length;
-  const bear = stocks.filter(s=>s.sentiment==='bear').length;
-  const neu  = stocks.filter(s=>s.sentiment==='neutral').length;
-  const defs = [
-    {key:'all', label:'All ('+stocks.length+')'},
-    {key:'bull', label:'Bullish ('+bull+')'},
-    {key:'bear', label:'Bearish / Avoid ('+bear+')'},
-    {key:'neutral', label:'Neutral ('+neu+')'}
-  ];
-  stockFiltersEl.innerHTML = '';
+  const bull=stocks.filter(s=>s.sentiment==='bull').length, bear=stocks.filter(s=>s.sentiment==='bear').length, neu=stocks.filter(s=>s.sentiment==='neutral').length;
+  const defs=[{key:'all',label:'All ('+stocks.length+')'},{key:'bull',label:'Bullish ('+bull+')'},{key:'bear',label:'Bearish / Avoid ('+bear+')'},{key:'neutral',label:'Neutral ('+neu+')'}];
+  stockFiltersEl.innerHTML='';
   defs.forEach(f=>{
-    const b = document.createElement('button');
-    b.className = 'filter-btn' + (f.key==='all'?' active':'');
-    b.textContent = f.label;
-    b.onclick = ()=>{
-      document.querySelectorAll('#stockFilters .filter-btn').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      renderStocks(f.key);
-    };
+    const b=document.createElement('button');
+    b.className='filter-btn'+(f.key==='all'?' active':'');
+    b.textContent=f.label;
+    b.onclick=()=>{ document.querySelectorAll('#stockFilters .filter-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); renderStocks(f.key); };
     stockFiltersEl.appendChild(b);
   });
 }
@@ -609,7 +729,7 @@ function renderModels(){
       <p class="cat-desc">${c.desc}</p>
       <div class="m-grid">
         ${ms.map(m=>`
-          <div class="m-card" style="border-left-color:${c.color}" onclick="openModelModal('${m.name.replace(/'/g,"\\'")}')">
+          <div class="m-card" style="border-left-color:${c.color}" onclick="showModelDetail('${m.name.replace(/'/g,"\\'")}')">
             <div class="m-name">${m.name}</div>
             <div class="m-oneliner">${m.oneliner}</div>
             <div class="m-tickers">${tickerChips(m.tickers, true)}</div>
@@ -621,99 +741,164 @@ function renderModels(){
   });
 }
 function buildCatNav(){
-  catNav.innerHTML = '';
+  catNav.innerHTML='';
   categories.forEach(c=>{
-    const b = document.createElement('button');
-    b.className = 'cat-btn';
-    b.style.borderColor = c.color;
-    b.textContent = c.title;
-    b.onclick = ()=>{ document.getElementById('cat-'+c.key).scrollIntoView({behavior:'smooth', block:'start'}); };
+    const b=document.createElement('button');
+    b.className='cat-btn';
+    b.style.borderColor=c.color;
+    b.textContent=c.title;
+    b.onclick=()=>{ document.getElementById('cat-'+c.key).scrollIntoView({behavior:'smooth', block:'start'}); };
     catNav.appendChild(b);
   });
 }
 
-function openStockModal(ticker){
-  switchTab('stocks');
+function renderStockDetailHTML(ticker){
   const s = stocks.find(x=>x.ticker===ticker);
+  if(!s) return null;
   const change = pct(s.postPrice, s.current);
   const related = modelsForTicker(s.ticker);
-  const modal = document.getElementById('modalBody');
-  modal.innerHTML = `
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="eyebrow">${s.sector||''}</div>
-    <h2>${s.name}</h2>
-    <div class="sub">${s.ticker} · ${s.exch}</div>
-    <div class="badge ${s.sentiment}" style="margin-bottom:4px;">${s.sentiment==='bull'?'Bullish':s.sentiment==='bear'?'Bearish / Avoid':'Neutral'}</div>
-    <div class="modal-grid">
-      <div class="modal-stat"><div class="lbl">Price at post (${s.postDate||'—'})</div><div class="val">${fmtPrice(s.postPrice, s.exch)}</div></div>
-      <div class="modal-stat"><div class="lbl">Current price</div><div class="val">${fmtPrice(s.current, s.exch)}</div></div>
-      <div class="modal-stat"><div class="lbl">Change since post</div><div class="val" style="color:${change===null?'var(--muted)':change>=0?'var(--bull)':'var(--bear)'}">${change===null?'n/a':(change>=0?'+':'')+change.toFixed(1)+'%'}</div></div>
-      <div class="modal-stat"><div class="lbl">Entry / context</div><div class="val" style="font-size:12px;font-weight:400;line-height:1.4;">${s.entryNote||'—'}</div></div>
-    </div>
-    <div class="modal-section">
-      <div class="h">The Thesis</div>
-      <p>${s.thesis||'No notes added yet.'}</p>
-    </div>
-    <div class="modal-section">
-      <div class="h">Current Outlook</div>
-      <p>${s.outlook||'—'}</p>
-    </div>
-    ${related.length ? `
-    <div class="modal-section">
-      <div class="h">Mental Models Behind This Call</div>
-      <div class="chip-row">
-        ${related.map(m=>`<span class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:11.5px;" onclick="openModelModal('${m.name.replace(/'/g,"\\'")}')">${m.name}</span>`).join('')}
+
+  return `
+    <div class="detail-page">
+      <a class="detail-back" href="#stocks">&larr; Back to Stock Tracker</a>
+      <div class="detail-eyebrow">${s.sector||''}</div>
+      <h1 class="detail-title">${s.name}</h1>
+      <div class="detail-sub">${s.ticker} &middot; ${s.exch}</div>
+      <div class="detail-badges">
+        <span class="badge ${s.sentiment}">${s.sentiment==='bull'?'Bullish':s.sentiment==='bear'?'Bearish / Avoid':'Neutral'}</span>
       </div>
-    </div>` : ''}
-    <div class="modal-section">
-      <div class="h">Read The Original Post(s)</div>
-      ${postLinksHtml(s.ticker)}
+      <div class="detail-stats">
+        <div class="detail-stat"><div class="lbl">Price at post (${s.postDate||'—'})</div><div class="val">${fmtPrice(s.postPrice, s.exch)}</div></div>
+        <div class="detail-stat"><div class="lbl">Current price</div><div class="val">${fmtPrice(s.current, s.exch)}</div></div>
+        <div class="detail-stat"><div class="lbl">Change since post</div><div class="val" style="color:${change===null?'var(--muted)':change>=0?'var(--bull)':'var(--bear)'}">${change===null?'n/a':(change>=0?'+':'')+change.toFixed(1)+'%'}</div></div>
+        <div class="detail-stat"><div class="lbl">Entry / context</div><div class="val" style="font-size:13px;font-weight:400;line-height:1.4;">${s.entryNote||'—'}</div></div>
+      </div>
+      <div class="detail-section">
+        <div class="h">The Thesis</div>
+        <p>${s.thesis||'No notes added yet.'}</p>
+      </div>
+      <div class="detail-section">
+        <div class="h">Current Outlook</div>
+        <p>${s.outlook||'—'}</p>
+      </div>
+      ${related.length ? `
+      <div class="detail-section">
+        <div class="h">Mental Models Behind This Call</div>
+        <div class="chip-row">
+          ${related.map(m=>`<a class="tick-chip" style="border-radius:6px;padding:7px 12px;font-size:13px;text-decoration:none;" href="#model-${encodeURIComponent(m.name)}">${m.name}</a>`).join('')}
+        </div>
+      </div>` : ''}
+      <div class="detail-section">
+        <div class="h">Read The Original Post(s)</div>
+        <div class="detail-links">${postLinksHtml(s.ticker)}</div>
+      </div>
     </div>
   `;
-  document.getElementById('modalBg').classList.add('open');
-  document.getElementById('modalBg').scrollTop = 0;
 }
 
-function openModelModal(name){
-  switchTab('models');
+function renderModelDetailHTML(name){
   const m = models.find(x=>x.name===name);
+  if(!m) return null;
   const cat = categories.find(c=>c.key===m.cat);
-  const modal = document.getElementById('modalBody');
-  modal.innerHTML = `
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="eyebrow" style="color:${cat.color}">${cat.title}</div>
-    <h2>${m.name}</h2>
-    <div class="modal-section">
-      <div class="h">In Plain Terms</div>
-      <p>${m.full}</p>
-    </div>
-    <div class="modal-section analogy">
-      <div class="h">The Analogy</div>
-      <p>${m.analogy}</p>
-    </div>
-    <div class="modal-section">
-      <div class="h">Where It Was Used</div>
-      <p>${m.stockNote}</p>
-      <div class="chip-row">${tickerChips(m.tickers, true)}</div>
-    </div>
-    <div class="modal-section">
-      <div class="h">Read Where This Was Introduced</div>
-      ${modelPostLinkHtml(m.name)}
+
+  return `
+    <div class="detail-page">
+      <a class="detail-back" href="#models">&larr; Back to Mental Models Guide</a>
+      <div class="detail-eyebrow" style="color:${cat.color}">${cat.title}</div>
+      <h1 class="detail-title">${m.name}</h1>
+      <div class="detail-section">
+        <div class="h">In Plain Terms</div>
+        <p>${m.full}</p>
+      </div>
+      <div class="detail-section analogy">
+        <div class="h">The Analogy</div>
+        <p>${m.analogy}</p>
+      </div>
+      <div class="detail-section">
+        <div class="h">Where It Was Used</div>
+        <p>${m.stockNote}</p>
+        <div class="chip-row" style="margin-top:12px;">${tickerChips(m.tickers, true)}</div>
+      </div>
+      <div class="detail-section">
+        <div class="h">Read Where This Was Introduced</div>
+        <div class="detail-links">${modelPostLinkHtml(m.name)}</div>
+      </div>
     </div>
   `;
-  document.getElementById('modalBg').classList.add('open');
-  document.getElementById('modalBg').scrollTop = 0;
 }
 
+/* ===== Router: single source of truth for what's on screen, driven entirely
+   by location.hash. Works on first load, on refresh, and on browser
+   back/forward — not just on click, which is what a "real page" needs. ===== */
+function route(){
+  const hash = location.hash || '#home';
 
+  document.getElementById('stocksListView').style.display = 'none';
+  document.getElementById('stockDetailView').style.display = 'none';
+  document.getElementById('modelsListView').style.display = 'none';
+  document.getElementById('modelDetailView').style.display = 'none';
 
-function scrollToStage(id){
-  switchTab('framework');
-  const el = document.getElementById(id);
-  if(el){
-    setTimeout(()=>el.scrollIntoView({behavior:'smooth', block:'start'}), 30);
+  if(hash.startsWith('#stock-')){
+    const ticker = decodeURIComponent(hash.slice('#stock-'.length));
+    const html = renderStockDetailHTML(ticker);
+    if(html){
+      const s = stocks.find(x=>x.ticker===ticker);
+      switchTab('stocks');
+      document.getElementById('stockDetailView').innerHTML = html;
+      document.getElementById('stockDetailView').style.display = 'block';
+      renderBreadcrumbs([
+        {label:'Home', href:'#home'},
+        {label:'Stock Tracker', href:'#stocks'},
+        {label:s.name}
+      ]);
+    } else {
+      location.hash = '#stocks';
+      return;
+    }
+  } else if(hash.startsWith('#model-')){
+    const name = decodeURIComponent(hash.slice('#model-'.length));
+    const html = renderModelDetailHTML(name);
+    if(html){
+      switchTab('models');
+      document.getElementById('modelDetailView').innerHTML = html;
+      document.getElementById('modelDetailView').style.display = 'block';
+      renderBreadcrumbs([
+        {label:'Home', href:'#home'},
+        {label:'Mental Models Guide', href:'#models'},
+        {label:name}
+      ]);
+    } else {
+      location.hash = '#models';
+      return;
+    }
+  } else if(hash === '#models'){
+    switchTab('models');
+    document.getElementById('modelsListView').style.display = 'block';
+    renderBreadcrumbs([{label:'Home', href:'#home'}, {label:'Mental Models Guide'}]);
+  } else if(hash === '#framework'){
+    switchTab('framework');
+    renderBreadcrumbs([{label:'Home', href:'#home'}, {label:'Decision Framework'}]);
+  } else if(hash === '#stocks'){
+    switchTab('stocks');
+    document.getElementById('stocksListView').style.display = 'block';
+    renderBreadcrumbs([{label:'Home', href:'#home'}, {label:'Stock Tracker'}]);
+  } else {
+    switchTab('home');
+    renderBreadcrumbs([]);
   }
+  window.scrollTo({top:0, behavior:'instant'});
 }
+window.addEventListener('hashchange', route);
+
+// Kept as the public call sites used throughout the file (card onclicks, chip
+// onclicks, framework cross-links) — they just navigate via the hash now, so
+// every one of these is a real, bookmarkable, refresh-safe, back-button-safe URL.
+function showStockDetail(ticker){ location.hash = '#stock-' + encodeURIComponent(ticker); }
+function backToStockList(){ location.hash = '#stocks'; }
+function showModelDetail(name){ location.hash = '#model-' + encodeURIComponent(name); }
+function backToModelList(){ location.hash = '#models'; }
+
+
 
 function closeModal(){document.getElementById('modalBg').classList.remove('open');}
 document.getElementById('modalBg').addEventListener('click', e=>{ if(e.target.id==='modalBg') closeModal(); });
@@ -834,47 +1019,36 @@ function renderLogList(){
   }).join('');
 }
 
-function updateHeaderCounts(){
-  const bull = stocks.filter(s=>s.sentiment==='bull').length;
-  const bear = stocks.filter(s=>s.sentiment==='bear').length;
-  const bs = document.querySelectorAll('#panel-stocks .meta-item b');
-  if(bs[0] && window.__postsRead!=null) bs[0].textContent = window.__postsRead;
-  if(bs[2]) bs[2].textContent = bull;
-  if(bs[3]) bs[3].textContent = bear;
-  if(bs[4] && window.__pricesAsOf) bs[4].textContent = window.__pricesAsOf;
-  const tcS = document.querySelector('.tab-btn[data-tab="stocks"] .tab-count');
-  if(tcS) tcS.textContent = '· ' + stocks.length;
-  const tcM = document.querySelector('.tab-btn[data-tab="models"] .tab-count');
-  if(tcM) tcM.textContent = '· ' + models.length;
+function scrollToStage(id){
+  switchTab('framework');
+  const el = document.getElementById(id);
+  if(el){
+    setTimeout(()=>el.scrollIntoView({behavior:'smooth', block:'start'}), 30);
+  }
 }
 
-async function bootstrap(){
+function updateCounts(){
+  const bull=stocks.filter(s=>s.sentiment==='bull').length, bear=stocks.filter(s=>s.sentiment==='bear').length;
+  const tc=document.querySelectorAll('.topbar-count'); if(tc[0])tc[0].textContent=stocks.length; if(tc[1])tc[1].textContent=models.length;
+  const hm=document.querySelectorAll('#panel-home .meta-row .meta-item b');
+  if(hm[0]&&window.__postsRead!=null)hm[0].textContent=window.__postsRead; if(hm[1])hm[1].textContent=stocks.length; if(hm[2])hm[2].textContent=models.length;
+  const sm=document.querySelectorAll('#stocksListView .meta-row .meta-item b');
+  if(sm[0]&&window.__postsRead!=null)sm[0].textContent=window.__postsRead; if(sm[1])sm[1].textContent=stocks.length; if(sm[2])sm[2].textContent=bull; if(sm[3])sm[3].textContent=bear; if(sm[4]&&window.__pricesAsOf)sm[4].textContent=window.__pricesAsOf;
+}
+initTheme();
+(async function(){
   try{
-    const res = await fetch('./data.json', {cache:'no-store'});
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    stocks = data.stocks || [];
-    categories = data.categories || [];
-    models = data.models || [];
-    stockPosts = data.stockPosts || {};
-    modelPost = data.modelPost || {};
-    window.__pricesAsOf = data.pricesAsOf || null;
-    window.__postsRead = (typeof data.postsRead === 'number') ? data.postsRead : null;
+    const res=await fetch('./data.json',{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const d=await res.json();
+    stocks=d.stocks||[]; categories=d.categories||[]; models=d.models||[]; stockPosts=d.stockPosts||{}; modelPost=d.modelPost||{};
+    window.__pricesAsOf=d.pricesAsOf||null; window.__postsRead=(typeof d.postsRead==='number')?d.postsRead:null;
   }catch(e){
-    document.getElementById('grid').innerHTML =
-      '<p style="color:var(--bear);padding:20px 0;line-height:1.6;">Could not load <code>data.json</code> ('+e.message+'). If you opened this file directly, serve it over http instead — e.g. <code>cd public &amp;&amp; python3 -m http.server 8000</code>.</p>';
+    document.getElementById('grid').innerHTML='<p style="color:var(--bear);padding:20px 0;line-height:1.6;">Could not load data.json — serve over http (e.g. python3 -m http.server).</p>';
     return;
   }
-  buildFilters();
-  buildCatNav();
-  renderModels();
-  updateHeaderCounts();
-  renderStocks('all');
-  updateTrackedCount();
-}
-
-initTheme();
-bootstrap();
+  buildFilters(); buildCatNav(); renderModels(); renderStocks('all'); updateCounts(); route();
+})();
 </script>
 </body>
 </html>

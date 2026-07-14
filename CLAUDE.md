@@ -25,10 +25,15 @@ is authored static HTML (synthesized content the scraper never touches).
 
 ## Current state
 
-- `public/index.html` is fully built and working: three tabs (Stock Tracker / Mental Models
-  Guide / Decision Framework), filters, cross-linked modals, links to original Substack
-  posts, a light/dark theme toggle, and a hidden "System Diagnostics" panel (footer link)
-  that reads `logs.json`.
+- `public/index.html` is a **hash-routed single-page app with a home landing page, a
+  persistent top navigation bar (Home / Stock Tracker / Mental Models Guide / Decision
+  Framework + theme toggle), and breadcrumbs**. Every view has its own real, bookmarkable,
+  back/forward-safe URL via `location.hash` (`#stocks`, `#stock-CAPLIPOINT`, `#model-<name>`,
+  `#framework`), driven by a `route()` function. Stock/model "detail pages" render into
+  in-panel views, not modals. This design came from a separate Claude.ai session
+  (`capillary_research_terminal.html`, kept at repo root as the design source) and was wired
+  to `data.json` + had the removed Add-Stock stripped when it went live. Diagnostics is still
+  a small modal opened from the footer link (reads `logs.json`).
 - **Data is no longer hardcoded.** The curated content (`stocks`, `models`, `categories`,
   `stockPosts`, `modelPost`) lives in `public/data.json`; `index.html` `fetch()`es it on
   load. Header/filter counts are computed from the data. Regenerate `data.json` from a
