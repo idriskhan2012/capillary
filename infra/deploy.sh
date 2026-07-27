@@ -29,7 +29,7 @@ if [[ ! -f infra/secrets.env ]]; then
 fi
 # shellcheck disable=SC1091
 set -a; source infra/secrets.env; set +a
-: "${GEMINI_API_KEY:?set GEMINI_API_KEY in infra/secrets.env}"
+: "${GROQ_API_KEY:?set GROQ_API_KEY in infra/secrets.env}"
 : "${TWELVEDATA_API_KEY:?set TWELVEDATA_API_KEY in infra/secrets.env}"
 
 ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
@@ -37,12 +37,12 @@ echo "Deploying to account ${ACCOUNT_ID}, region ${REGION}"
 
 SITE_BUCKET="${SITE_BUCKET:-${PROJECT}-site-${ACCOUNT_ID}}"
 ARTIFACTS_BUCKET="${PROJECT}-deploy-artifacts-${ACCOUNT_ID}-${REGION}"
-GEMINI_PARAM="/capillary/gemini-api-key"
+GROQ_PARAM="/capillary/groq-api-key"
 TWELVEDATA_PARAM="/capillary/twelvedata-api-key"
 
 # --- 1. secrets -> SSM ---------------------------------------------------
 echo "Storing API keys in SSM Parameter Store (SecureString)..."
-aws ssm put-parameter --name "$GEMINI_PARAM"     --type SecureString --value "$GEMINI_API_KEY"     --overwrite --region "$REGION" >/dev/null
+aws ssm put-parameter --name "$GROQ_PARAM"       --type SecureString --value "$GROQ_API_KEY"       --overwrite --region "$REGION" >/dev/null
 aws ssm put-parameter --name "$TWELVEDATA_PARAM" --type SecureString --value "$TWELVEDATA_API_KEY" --overwrite --region "$REGION" >/dev/null
 
 # --- 2. artifacts bucket (for Lambda zips) -------------------------------

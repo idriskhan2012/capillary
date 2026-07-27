@@ -4,7 +4,7 @@ The Capillary — scheduled scraper.
 Runs on a daily EventBridge trigger. Job:
   1. Diff Substack's archive against what we saw last time -> find new posts.
   2. Pull each new post's full text and strip it to plain text.
-  3. Call Gemini (free tier) to classify each new post: ticker, sentiment,
+  3. Call Groq (free tier, OpenAI-compatible) to classify each new post: ticker, sentiment,
      mental model, thesis, outlook -> write drafts to pending_review.json
      (NOT straight into the live tracker — see the "Safety net" in ARCHITECTURE.md).
   4. Refresh current prices for all tracked tickers (Twelve Data, Yahoo fallback)
@@ -14,7 +14,7 @@ Runs on a daily EventBridge trigger. Job:
      same bucket, so they're visible from the site's hidden diagnostics panel instead
      of only living in CloudWatch. See "Logging" below and ARCHITECTURE.md.
 
-Secrets (Twelve Data + Gemini API keys) are read at runtime from SSM Parameter Store
+Secrets (Twelve Data + Groq API keys) are read at runtime from SSM Parameter Store
 (SecureString) — the parameter NAMES come in as env vars, never the keys themselves.
 
 See ../CLAUDE.md and ../docs/ARCHITECTURE.md for full context and decisions before
@@ -47,24 +47,27 @@ MAX_LOG_ENTRIES = 300  # oldest entries drop off once this cap is hit, so the fi
 USER_AGENT = "Mozilla/5.0 (compatible; CapillaryTracker/1.0)"
 
 # Names of the SSM SecureString parameters that hold the API keys (set by deploy.sh).
-GEMINI_PARAM = os.environ.get("GEMINI_PARAM", "/capillary/gemini-api-key")
+GROQ_PARAM = os.environ.get("GROQ_PARAM", "/capillary/groq-api-key")
 TWELVEDATA_PARAM = os.environ.get("TWELVEDATA_PARAM", "/capillary/twelvedata-api-key")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
-GEMINI_URL_TMPL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
 
-# Gemini free tier caps requests-per-minute (10-15 RPM), not just requests-per-day.
-# Volume is never the risk here (even reclassifying every tracked stock daily is
-# ~2% of the 1,500/day cap) — bursting past the per-minute ceiling is. Classification
-# calls MUST run sequentially with this delay between them, never in parallel
-# (no asyncio.gather / thread pool / batch-all-at-once). A full run finishing in
-# 60-90 seconds instead of 5 costs nothing on a daily cron job.
-GEMINI_CALL_DELAY_SECONDS = int(os.environ.get("GEMINI_CALL_DELAY_SECONDS", "6"))
-# Only classify a few posts per run so a burst of new posts can never blow the free-tier
-# per-minute / per-day request cap. Anything beyond this waits for the next daily run
-# (steady state is ~1-4 new posts/week, far under the cap).
+# Classification runs on Groq's OpenAI-compatible Chat Completions API (free tier).
+# gpt-oss-20b returns the ticker symbol reliably and is fast; gpt-oss-120b is the
+# fallback used only when the primary is rate-limited (429).
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-20b")
+GROQ_FALLBACK_MODEL = os.environ.get("GROQ_FALLBACK_MODEL", "openai/gpt-oss-120b")
+
+# Classification calls run sequentially with a small delay between them (never in
+# parallel — no asyncio.gather / thread pool) to stay under the free-tier per-minute cap.
+CLASSIFY_CALL_DELAY_SECONDS = int(os.environ.get("CLASSIFY_CALL_DELAY_SECONDS", "3"))
+# Only classify a few posts per run; the rest wait for the next daily run.
 MAX_CLASSIFY_PER_RUN = int(os.environ.get("MAX_CLASSIFY_PER_RUN", "5"))
-# Truncate post text so each call stays well under the free-tier input-tokens-per-minute
-# cap. The thesis is almost always within the first few thousand characters.
+# Give up on a post after this many failed classification attempts (counted across runs in
+# classify_attempts.json) so a permanently-failing post stops being retried daily and
+# spamming diagnostics; it is marked seen and flagged once for manual entry.
+MAX_CLASSIFY_ATTEMPTS = int(os.environ.get("MAX_CLASSIFY_ATTEMPTS", "3"))
+ATTEMPTS_KEY = "classify_attempts.json"
+# Truncate post text sent to the model.
 POST_TEXT_LIMIT = int(os.environ.get("POST_TEXT_LIMIT", "4000"))
 
 # Twelve Data free tier caps 8 requests/minute (and 800/day). Same reasoning as above:
@@ -90,7 +93,7 @@ TICKER_OVERRIDES = {
 def log_event(s3_client, level, source, message, context=None):
     """
     level:   "error" | "warning" | "info"
-    source:  "substack_archive" | "substack_post" | "gemini_classify" |
+    source:  "substack_archive" | "substack_post" | "groq_classify" |
              "price_refresh" | "s3_write" | "run_summary"
     context: small dict of extra detail (slug, ticker, http_status, exception text, ...)
              Keep this small — it gets rendered directly in the frontend panel.
@@ -238,84 +241,54 @@ def save_data(s3_client, data):
 
 
 # ---------------------------------------------------------------------------
-# Classification (Gemini)
+# Classification (Groq)
 # ---------------------------------------------------------------------------
-
-CLASSIFY_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "ticker": {"type": "string"},
-        "exch": {"type": "string"},
-        "name": {"type": "string"},
-        "sector": {"type": "string"},
-        "sentiment": {"type": "string", "enum": ["bull", "bear", "neutral"]},
-        "modelShort": {"type": "string"},
-        "postDate": {"type": "string"},
-        "postPrice": {"type": "number", "nullable": True},
-        "entryNote": {"type": "string"},
-        "thesis": {"type": "string"},
-        "outlook": {"type": "string"},
-    },
-    "required": ["ticker", "name", "sentiment", "modelShort", "thesis", "outlook"],
-}
-
 
 def _classify_prompt(post_title, post_text, model_names):
     models_block = "\n".join(f"- {n}" for n in model_names)
     text = (post_text or "")[:POST_TEXT_LIMIT]
     return (
-        "You are classifying a stock-analysis blog post from an Indian/US markets "
-        "newsletter into a structured tracker entry. Read the post and extract:\n"
-        "- ticker: the primary stock's exchange ticker symbol (uppercase, no suffix). "
-        "Indian stocks use their NSE symbol where possible.\n"
+        "Classify this stock-analysis blog post into a JSON object with keys: ticker, "
+        "exch, name, sector, sentiment, modelShort, postDate, postPrice, entryNote, "
+        "thesis, outlook.\nRULES:\n"
+        "- ticker: the stock's UPPERCASE exchange SYMBOL (e.g. KALYANKJIL), NEVER the "
+        "company name. If you do not know the exact symbol, use \"\".\n"
         "- exch: one of NSE, BSE, NASDAQ, NYSE.\n"
         "- name: the full company name.\n"
         "- sector: a short 'Region · Industry' label, e.g. 'India · Pharma'.\n"
-        "- sentiment: 'bull', 'bear', or 'neutral' — the author's stance on the stock.\n"
-        "- modelShort: the single mental-model framework that best matches the post's "
-        "reasoning. Choose from EXACTLY one of these framework names:\n"
+        "- sentiment: 'bull', 'bear', or 'neutral' (the author's stance).\n"
+        "- modelShort: copy EXACTLY one framework name, verbatim, from this list:\n"
         f"{models_block}\n"
-        "- postDate: the post's date if stated, else ''.\n"
-        "- postPrice: the share price at the time of the post if stated, else null.\n"
+        "- postDate and postPrice: ONLY if explicitly stated in the post text; otherwise "
+        "use null. NEVER guess these from prior knowledge.\n"
         "- entryNote: a one-line note on the author's position/context.\n"
         "- thesis: a 2-4 sentence plain-language summary of the argument.\n"
-        "- outlook: a one-line current stance.\n\n"
-        "If the post is not about a single specific stock (e.g. it's a general market "
-        "essay), still fill your best guess and set sentiment to 'neutral'.\n\n"
+        "- outlook: a one-line current stance.\n"
+        "Return only the JSON object.\n\n"
         f"POST TITLE: {post_title}\n\nPOST TEXT:\n{text}"
     )
 
 
-def _retry_delay_seconds(detail):
-    """Pull the suggested retryDelay (e.g. \"25s\") out of a Gemini 429 error body."""
-    m = re.search(r'"retryDelay":\s*"(\d+)s"', detail or "")
-    return int(m.group(1)) if m else None
-
-
-def classify_post_with_gemini(ssm_client, post_title, post_text, model_names):
+def classify_post_with_groq(ssm_client, post_title, post_text, model_names):
     """
-    Calls the Gemini API (free tier) with the mental-model list embedded and returns
-    a dict matching the stock object shape used in public/index.html / data.json.
-
-    Raises on failure. If it raises due to a 429 (rate limit), the caller
-    (classify_new_posts) detects it, logs level="error" source="gemini_classify"
-    with rate_limited=true in context, and moves on — it does not abort the run.
+    Classifies a post via Groq's OpenAI-compatible Chat Completions API and returns a
+    dict matching the data.json stock shape. Tries GROQ_MODEL first, falls back to
+    GROQ_FALLBACK_MODEL once on a 429. Raises on failure; the caller logs it and skips.
     """
-    api_key = get_secret(ssm_client, GEMINI_PARAM)
-    url = GEMINI_URL_TMPL.format(model=GEMINI_MODEL, key=api_key)
-    body = {
-        "contents": [{"parts": [{"text": _classify_prompt(post_title, post_text, model_names)}]}],
-        "generationConfig": {
-            "responseMimeType": "application/json",
-            "responseSchema": CLASSIFY_SCHEMA,
-            "temperature": 0.2,
-        },
-    }
-    data = json.dumps(body).encode("utf-8")
+    api_key = get_secret(ssm_client, GROQ_PARAM)
+    prompt = _classify_prompt(post_title, post_text, model_names)
 
-    def _attempt():
+    def _call(model):
+        body = json.dumps({
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.1,
+        }).encode("utf-8")
         try:
-            return fetch_json(url, data=data, headers={"Content-Type": "application/json"}, timeout=40)
+            resp = fetch_json(GROQ_URL, data=body,
+                              headers={"Authorization": "Bearer " + api_key,
+                                       "Content-Type": "application/json"}, timeout=40)
         except urllib.error.HTTPError as e:
             detail = ""
             try:
@@ -323,31 +296,25 @@ def classify_post_with_gemini(ssm_client, post_title, post_text, model_names):
             except Exception:
                 pass
             if e.code == 429:
-                raise RateLimited(f"429 {detail[:300]}", _retry_delay_seconds(detail))
+                raise RateLimited(f"429 {detail[:300]}")
             raise RuntimeError(f"{e.code} {e.reason} {detail[:300]}")
+        content = (resp.get("choices") or [{}])[0].get("message", {}).get("content", "")
+        if not content:
+            raise RuntimeError(f"empty Groq response: {json.dumps(resp)[:300]}")
+        return json.loads(content)
 
     try:
-        resp = _attempt()
-    except RateLimited as e:
-        # Honor the API's suggested retry delay once (bounded), then let it propagate so
-        # the caller logs it and this post is retried on the next run.
-        time.sleep(min(e.retry_after or 20, 30))
-        resp = _attempt()
-
-    candidates = resp.get("candidates") or []
-    if not candidates:
-        raise RuntimeError(f"no candidates in Gemini response: {json.dumps(resp)[:300]}")
-    parts = candidates[0].get("content", {}).get("parts", [])
-    raw = "".join(p.get("text", "") for p in parts)
-    return json.loads(raw)
+        return _call(GROQ_MODEL)
+    except RateLimited:
+        return _call(GROQ_FALLBACK_MODEL)
 
 
 def classify_new_posts(s3_client, ssm_client, new_posts, get_post_body_fn, model_names):
     """
     Classifies each new post one at a time, with a fixed delay between calls, to stay
-    under Gemini's free-tier requests-per-minute cap. Do NOT parallelize this loop
+    under the free-tier requests-per-minute cap. Do NOT parallelize this loop
     (no asyncio.gather, no thread pool) — see the module-level comment on
-    GEMINI_CALL_DELAY_SECONDS and ARCHITECTURE.md's "Rate limits" section for why.
+    CLASSIFY_CALL_DELAY_SECONDS and ARCHITECTURE.md's "Rate limits" section for why.
 
     A failure on one post is logged and skipped — it does not stop the rest of the
     batch or the price-refresh step later in lambda_handler.
@@ -355,7 +322,7 @@ def classify_new_posts(s3_client, ssm_client, new_posts, get_post_body_fn, model
     Returns a list of draft stock entries for the pending-review queue.
     """
     batch = new_posts[:MAX_CLASSIFY_PER_RUN]  # cap per run; the rest wait for next run
-    drafts = []
+    drafts, failed = [], []
     for i, post in enumerate(batch):
         try:
             body_html = get_post_body_fn(post["slug"])
@@ -365,12 +332,13 @@ def classify_new_posts(s3_client, ssm_client, new_posts, get_post_body_fn, model
                 f"Failed to fetch post body for '{post['slug']}'",
                 {"slug": post["slug"], "exception": str(e)},
             )
+            failed.append(post["slug"])
             continue
 
         plain_text = strip_html(body_html)
 
         try:
-            draft = classify_post_with_gemini(ssm_client, post["title"], plain_text, model_names)
+            draft = classify_post_with_groq(ssm_client, post["title"], plain_text, model_names)
             draft["_source_slug"] = post["slug"]
             draft["_source_title"] = post.get("title")
             draft["_classified_at"] = datetime.now(timezone.utc).isoformat()
@@ -378,23 +346,24 @@ def classify_new_posts(s3_client, ssm_client, new_posts, get_post_body_fn, model
             drafts.append(draft)
         except Exception as e:
             msg = str(e)
-            is_rate_limit = "429" in msg or "RESOURCE_EXHAUSTED" in msg
+            is_rate_limit = "429" in msg
             log_event(
                 s3_client,
                 "error",
-                "gemini_classify",
+                "groq_classify",
                 f"Classification failed for '{post['slug']}'"
-                + (" (rate limited — check GEMINI_CALL_DELAY_SECONDS pacing)" if is_rate_limit else ""),
+                + (" (rate limited)" if is_rate_limit else ""),
                 {"slug": post["slug"], "exception": msg, "rate_limited": is_rate_limit,
-                 "traceback": traceback.format_exc()[-800:]},
+                 "traceback": traceback.format_exc()[-600:]},
             )
+            failed.append(post["slug"])
             continue
 
         is_last = (i == len(batch) - 1)
         if not is_last:
-            time.sleep(GEMINI_CALL_DELAY_SECONDS)
+            time.sleep(CLASSIFY_CALL_DELAY_SECONDS)
 
-    return drafts
+    return drafts, failed
 
 
 # ---------------------------------------------------------------------------
@@ -402,7 +371,7 @@ def classify_new_posts(s3_client, ssm_client, new_posts, get_post_body_fn, model
 # ---------------------------------------------------------------------------
 
 class RateLimited(Exception):
-    """Raised on a 429 free-tier limit (Twelve Data credits, or Gemini RPM/TPM/RPD).
+    """Raised on a 429 free-tier limit (Twelve Data credits, or Groq rate limits).
     Carries the API's suggested retry delay in seconds when one was provided."""
     def __init__(self, message, retry_after=None):
         super().__init__(message)
@@ -550,7 +519,7 @@ def lambda_handler(event, context):
     new_posts = [p for p in archive if p["slug"] not in seen]
 
     # First run ever: everything currently in the archive is already represented in the
-    # curated data.json, so seed seen_slugs and DON'T re-classify the backlog. Gemini
+    # curated data.json, so seed seen_slugs and DON'T re-classify the backlog. The classifier
     # classification only fires for posts published after this point.
     if not seen_existed and archive:
         seen.update(p["slug"] for p in archive)
@@ -563,9 +532,15 @@ def lambda_handler(event, context):
                   {"seeded": len(archive)})
         new_posts = []
 
-    pending_review = []
+    # Load per-slug failed-attempt counters (for the give-up cap below).
+    try:
+        attempts = json.loads(s3.get_object(Bucket=S3_BUCKET, Key=ATTEMPTS_KEY)["Body"].read())
+    except Exception:
+        attempts = {}
+
+    pending_review, failed = [], []
     if new_posts:
-        pending_review = classify_new_posts(s3, ssm, new_posts, get_post_body, model_names)
+        pending_review, failed = classify_new_posts(s3, ssm, new_posts, get_post_body, model_names)
 
     if pending_review:
         # Merge with any existing pending queue so drafts aren't lost between runs.
@@ -585,22 +560,33 @@ def lambda_handler(event, context):
             log_event(s3, "error", "s3_write", "Failed to write pending_review.json",
                       {"exception": str(e)})
 
-    # Mark only successfully-classified posts as seen, so posts that failed (rate limit,
-    # transient error) or weren't reached this run (per-run cap) are retried next run
-    # instead of being silently dropped.
+    # Mark successfully-classified posts as seen (and clear their counter). For failed
+    # posts, bump a counter; once a post has failed MAX_CLASSIFY_ATTEMPTS times, give up —
+    # mark it seen so it stops being retried daily (and spamming diagnostics) and flag it
+    # once for manual entry.
     classified_slugs = {d.get("_source_slug") for d in pending_review}
-    if classified_slugs:
-        seen.update(classified_slugs)
+    for slug in classified_slugs:
+        seen.add(slug); attempts.pop(slug, None)
+    for slug in failed:
+        attempts[slug] = attempts.get(slug, 0) + 1
+        if attempts[slug] >= MAX_CLASSIFY_ATTEMPTS:
+            seen.add(slug); attempts.pop(slug, None)
+            log_event(s3, "warning", "groq_classify",
+                      f"Gave up classifying '{slug}' after {MAX_CLASSIFY_ATTEMPTS} attempts — add it manually",
+                      {"slug": slug})
+    if classified_slugs or failed:
         try:
             save_seen_slugs(s3, seen)
+            s3.put_object(Bucket=S3_BUCKET, Key=ATTEMPTS_KEY,
+                          Body=json.dumps(attempts).encode("utf-8"), ContentType="application/json")
         except Exception as e:
-            log_event(s3, "error", "s3_write", "Failed to write seen_slugs.json",
+            log_event(s3, "error", "s3_write", "Failed to write seen_slugs.json / attempts",
                       {"exception": str(e)})
 
     # --- 4-5: refresh prices + write data.json back ---------------------------
     # Price refresh is intentionally separate from classification above — it hits a
-    # price API (Twelve Data / Yahoo), never Gemini, so it can't affect or be affected
-    # by Gemini's rate limits regardless of how many tickers are tracked.
+    # price API (Twelve Data / Yahoo), never the classifier, so it can't affect or be
+    # affected by the classifier's rate limits regardless of how many tickers are tracked.
     updated = {}
     try:
         updated = refresh_prices(s3, ssm, data.get("stocks", []))

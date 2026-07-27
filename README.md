@@ -31,7 +31,7 @@ AWS_PROFILE=capillary ./infra/deploy.sh
 public/index.html    → the app: 3 tabs (tracker / mental models / decision framework)
 public/data.json     → curated content the app fetches (stocks, models, cross-links)
 public/logs.json     → sample; the live one is written to S3 by the scraper
-lambda/scraper.py     → daily scraper: new posts (Gemini) + prices (Twelve Data/Yahoo) → data.json
+lambda/scraper.py     → daily scraper: new posts (Groq) + prices (Twelve Data/Yahoo) → data.json
 infra/template.yaml   → CloudFormation: S3 + CloudFront + scraper Lambda + EventBridge
 infra/deploy.sh       → one-command deploy;  infra/teardown.sh → remove everything
 infra/promote.sh      → review + promote scraper-classified drafts into the live tracker

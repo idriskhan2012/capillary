@@ -48,39 +48,30 @@ free daily quotas.
 
 ## Classifying new posts (sentiment, mental model, thesis)
 
-This step is language understanding, not scraping — needs an LLM call. Decision: use
-**Google Gemini's free API tier** (Flash / Flash-Lite models) rather than a paid API,
-since at ~1-4 posts/week this workload is a rounding error against the free tier's
-~1,500 requests/day.
+This step is language understanding, not scraping — needs an LLM call. **Provider: Groq's
+free tier** (OpenAI-compatible Chat Completions), `openai/gpt-oss-20b` primary →
+`gpt-oss-120b` fallback on 429. At ~1-4 posts/week this is a rounding error against Groq's
+free limits.
 
-**Two things to not forget:**
-1. Keep this Gemini classifier in its own Google Cloud project with **billing disabled**.
-   Enabling billing on a project kills its free tier entirely — even for calls that would
-   have fit inside the free quota anyway. Don't share a project with anything else you
-   might later add billing to.
-2. Google may use free-tier prompts to improve their models. Fine for public Substack
-   content; don't reuse this exact setup for anything sensitive.
+**Why not Gemini (the original plan):** Gemini was implemented first, but its free-tier
+quota returned `limit: 0` for this Google account across *both* projects with billing OFF
+— i.e. the free tier isn't provisioned for this account/region (verified live; not a
+billing/project misconfiguration). Every `generateContent` call 429'd. Groq's free tier
+works, so classification moved there. (Google/Groq may train on free-tier prompts — fine
+for public Substack content; don't reuse for anything sensitive.)
 
-## Rate limits — will this ever hit Gemini's free tier?
+## Rate limits & robustness
 
-Checked this explicitly. Two things stay cleanly separate:
-
-- **Price refresh** (all ~18-30 tickers, daily) goes through the price API (Alpha Vantage /
-  Twelve Data / Finnhub), never Gemini. Zero Gemini quota used here, regardless of how many
-  tickers are tracked.
-- **Mental-model classification** only runs for *new* posts (~1-4/week normally). Even in
-  a deliberately excessive worst case — reclassifying all ~25 stocks daily instead of just
-  new posts — that's 25 calls/day against a free tier that resets at **1,500 requests/day**.
-  Under 2% of the daily cap either way.
-
-**The one real risk is bursting, not volume.** Gemini Flash's free tier also caps
-**requests per minute** (10-15 RPM). If the Lambda fires many classification calls at once
-(e.g. via `asyncio.gather()`), it'll get `429` errors from bursting past the per-minute
-ceiling — not from running out of quota. Fix: process classification calls **sequentially,
-with a small delay (2-3s) between each**, never in parallel. A batch job has no reason to
-rush this — finishing in 60-90 seconds instead of 5 seconds costs nothing. This pacing is
-implemented in `lambda/scraper.py`'s `classify_new_posts()` — don't remove the `time.sleep`
-call there or parallelize that loop.
+- **Price refresh** (all tracked tickers, daily) goes through Twelve Data / Yahoo, never the
+  LLM — so prices and classification never share a quota, regardless of ticker count.
+- **Classification** only runs for *new* posts (~1-4/week). Guards in
+  `lambda/scraper.py`'s `classify_new_posts()` (do not remove when extending):
+  - calls run **sequentially** with `CLASSIFY_CALL_DELAY_SECONDS` between them — never in
+    parallel (no `asyncio.gather` / thread pool) — to stay under the per-minute cap;
+  - `MAX_CLASSIFY_PER_RUN` caps how many posts are classified per daily run;
+  - a **give-up counter** (`classify_attempts.json`, `MAX_CLASSIFY_ATTEMPTS`) marks a
+    post seen after N failed attempts so a permanently-failing post stops being retried
+    daily and spamming the diagnostics log — it's flagged once for manual entry instead.
 
 ## Safety net (recommended, not yet built)
 
@@ -92,7 +83,7 @@ real investing decisions.
 
 ## Logging — so failures are visible without digging through CloudWatch
 
-Every external call in `lambda/scraper.py` (Substack archive/post fetch, Gemini
+Every external call in `lambda/scraper.py` (Substack archive/post fetch, Groq
 classification, price refresh, S3 writes) is wrapped in a try/except that calls
 `log_event()` on failure. Entries are appended to **`logs.json`** in the same S3
 bucket as `data.json` — same-origin, so the frontend can fetch it directly with no
@@ -104,15 +95,15 @@ the file can't grow unbounded.
 {
   "timestamp": "2026-07-11T15:30:00+00:00",
   "level": "error" | "warning" | "info",
-  "source": "substack_archive" | "substack_post" | "gemini_classify" | "price_refresh" | "s3_write" | "run_summary",
+  "source": "substack_archive" | "substack_post" | "groq_classify" | "price_refresh" | "s3_write" | "run_summary",
   "message": "human-readable description",
   "context": { "slug": "...", "ticker": "...", "exception": "...", "rate_limited": true/false }
 }
 ```
 
-A `gemini_classify` failure containing `"rate_limited": true` in its context means a
+A `groq_classify` failure containing `"rate_limited": true` in its context means a
 `429`/`RESOURCE_EXHAUSTED` was hit — that specifically points at the pacing in
-`classify_new_posts()` (see `GEMINI_CALL_DELAY_SECONDS`) needing to be increased,
+`classify_new_posts()` (see `CLASSIFY_CALL_DELAY_SECONDS`) needing to be increased,
 not at the daily quota being exhausted (see the Rate limits section above for why
 volume itself is very unlikely to be the cause).
 

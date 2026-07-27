@@ -45,7 +45,7 @@ is authored static HTML (synthesized content the scraper never touches).
   removed a whole class of cross-device/auth complexity. If you ever want a personal
   watchlist of non-Capillary stocks back, that's the feature to re-add.
 - **Deployed and live.** `lambda/scraper.py` implements the archive-diff, HTML-strip,
-  Gemini classification, and Twelve-Data-with-Yahoo-fallback price refresh, writing
+  Groq classification, and Twelve-Data-with-Yahoo-fallback price refresh, writing
   `data.json` back to S3. `infra/template.yaml` is the CloudFormation stack (S3 + CloudFront
   + scraper Lambda + daily EventBridge); `infra/deploy.sh` is one-command deploy. See
   `docs/DEPLOY.md`.
@@ -60,7 +60,13 @@ is authored static HTML (synthesized content the scraper never touches).
   (only direct IAM SigV4 worked; likely an AWS-side edge case), and the scraper already
   covers every posted stock. If cross-device custom stocks are ever wanted, API Gateway
   HTTP API in front of a Lambda is the reliable path (free 12 mo, then pennies).
-- **Classification:** implemented now (not deferred), Gemini via REST, sequential pacing kept.
+- **Classification:** **Groq** (OpenAI-compatible Chat Completions, `openai/gpt-oss-20b`
+  primary → `gpt-oss-120b` fallback on 429). Gemini was dropped: its free-tier returned
+  `limit: 0` for this Google account (region/eligibility — not a billing/project issue),
+  so every call 429'd. Groq's free tier works. Sequential pacing + `MAX_CLASSIFY_PER_RUN`
+  cap + a give-up-after-`MAX_CLASSIFY_ATTEMPTS` counter (`classify_attempts.json`) so a
+  permanently-failing post stops being retried daily. gpt-oss-20b returns the ticker symbol
+  reliably; drafts still land in `pending_review.json` for human review before promote.
 - **Secrets:** SSM Parameter Store SecureString, set by `deploy.sh` from `infra/secrets.env`.
   Never in the template, git, or Lambda env vars.
 
@@ -109,25 +115,21 @@ this must run server-side.
 - **IAM role** — scoped to just this one bucket
 
 **For classifying NEW posts automatically** (sentiment, mental-model tag, thesis summary):
-this needs an LLM call, since it's language understanding, not scraping. Decided to use
-**Google Gemini's free API tier** (Flash/Flash-Lite models) instead of the Anthropic API,
-purely for zero cost — confirmed the free tier (~1,500 requests/day) is enormous overkill
-for ~1-4 posts/week of usage, so this is sustainable indefinitely, with two caveats to
-remember:
-  1. Keep the Gemini classifier in its **own dedicated Google Cloud project with billing
-     disabled** — enabling billing on a project kills its free tier entirely, even for
-     calls that would've fit inside the free quota.
-  2. Google trains on free-tier prompts — fine here since Substack content is already public,
-     but don't reuse this exact setup for anything sensitive.
-  3. **Price refresh and classification never share a quota** — refreshing all tracked
-     tickers' prices goes through a separate price API, not Gemini, so it can't touch
-     Gemini's limits no matter how many stocks you track. Classification only fires for
-     new posts (or worst-case, a full daily reclassification of ~25 stocks), which is
-     under 2% of Gemini's 1,500/day free cap either way. The actual risk isn't volume,
-     it's **bursting** — Gemini free tier also caps requests-per-minute (10-15 RPM), so
-     classification calls must run sequentially with a small delay between them (2-3s),
-     never in a parallel batch. This is implemented in `lambda/scraper.py` — don't remove
-     the pacing when extending it.
+this needs an LLM call. **Now uses Groq's free tier** (OpenAI-compatible Chat Completions,
+`openai/gpt-oss-20b` primary → `gpt-oss-120b` fallback on 429).
+
+  1. **Gemini was tried first and abandoned.** Its free-tier quota came back `limit: 0`
+     for this Google account across *both* projects with billing OFF — i.e. the free tier
+     simply isn't provisioned for this account/region (not a billing/project mistake). Every
+     `generateContent` call 429'd. Groq's free tier works, so classification moved there.
+  2. Free tiers may train on prompts — fine here (public Substack content); don't reuse for
+     anything sensitive.
+  3. **Price refresh and classification never share a quota** — prices go through Twelve
+     Data/Yahoo, never the LLM. Classification only fires for genuinely new posts (~1-4/wk).
+     Guards in `lambda/scraper.py` (don't remove when extending): sequential calls with
+     `CLASSIFY_CALL_DELAY_SECONDS` (never parallel), `MAX_CLASSIFY_PER_RUN` cap per run, and
+     a give-up-after-`MAX_CLASSIFY_ATTEMPTS` counter in `classify_attempts.json` so a
+     permanently-failing post stops being retried daily and spamming the diagnostics log.
 
 **Recommended safety net:** don't let the scraper auto-publish new stock entries straight
 to the live tracker. Have it write to a "pending review" section (or just notify you) so

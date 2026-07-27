@@ -96,9 +96,9 @@ def cmd_approve(args):
         print(f"No draft with slug {args.slug!r}. Run 'list' to see options.", file=sys.stderr)
         return 1
 
-    ticker = (draft.get("ticker") or "").strip().upper()
+    ticker = (args.ticker or draft.get("ticker") or "").strip().upper()
     if not ticker:
-        print("Draft has no ticker.", file=sys.stderr)
+        print("Draft has no ticker — pass --ticker <SYMBOL>.", file=sys.stderr)
         return 1
 
     # 1. build + upsert the stock
@@ -152,6 +152,7 @@ def main():
     p.add_argument("--pending", required=True)
     p.add_argument("--slug", required=True)
     p.add_argument("--model", help="override the mental model to tag (exact name)")
+    p.add_argument("--ticker", help="override the ticker symbol (e.g. if the classifier got it wrong)")
 
     args = ap.parse_args()
     return {"list": cmd_list, "reject": cmd_reject, "approve": cmd_approve}[args.cmd](args)

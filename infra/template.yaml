@@ -17,15 +17,15 @@ Parameters:
     Type: String
     Default: cron(0 21 * * ? *)
     Description: When the scraper runs (UTC). Default 21:00 UTC = after US + India close.
-  GeminiParamName:
+  GroqParamName:
     Type: String
-    Default: /capillary/gemini-api-key
+    Default: /capillary/groq-api-key
   TwelveDataParamName:
     Type: String
     Default: /capillary/twelvedata-api-key
-  GeminiModel:
+  GroqModel:
     Type: String
-    Default: gemini-2.0-flash
+    Default: openai/gpt-oss-20b
 
 Resources:
 
@@ -128,7 +128,7 @@ Resources:
               - Effect: Allow
                 Action: ssm:GetParameter
                 Resource:
-                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${GeminiParamName}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${GroqParamName}"
                   - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${TwelveDataParamName}"
               - Effect: Allow
                 Action: kms:Decrypt
@@ -150,9 +150,9 @@ Resources:
       Environment:
         Variables:
           DATA_BUCKET: !Ref SiteBucket
-          GEMINI_PARAM: !Ref GeminiParamName
+          GROQ_PARAM: !Ref GroqParamName
           TWELVEDATA_PARAM: !Ref TwelveDataParamName
-          GEMINI_MODEL: !Ref GeminiModel
+          GROQ_MODEL: !Ref GroqModel
 
   ScheduleRule:
     Type: AWS::Events::Rule

@@ -11,7 +11,7 @@ staying inside the free tiers. The whole thing is one CloudFormation stack + a d
 | CloudFront distribution | HTTPS + CDN in front of S3 | free 12 mo (1 TB/mo out) |
 | Lambda `capillary-scraper` | daily: refresh prices + classify new posts → `data.json` | always-free (1M req/mo) |
 | EventBridge rule | daily cron trigger for the scraper | free |
-| SSM Parameter Store (SecureString ×2) | holds the Gemini + Twelve Data keys | free (Standard tier) |
+| SSM Parameter Store (SecureString ×2) | holds the Groq + Twelve Data keys | free (Standard tier) |
 
 Hosting (S3 + CloudFront) is free for 12 months, then ~1–5¢/month for a site this small.
 The scraper Lambda + EventBridge are always-free. The tracker is read-only (no write API,
@@ -54,9 +54,10 @@ aws sts get-caller-identity --profile capillary
 ## Step 3 — Get the two API keys
 
 - **Twelve Data** — https://twelvedata.com/ → sign up → copy the API key (free tier: 800 calls/day).
-- **Gemini** — https://aistudio.google.com/apikey → create a key in a **dedicated Google Cloud
-  project with billing DISABLED** (enabling billing kills that project's free tier — see
-  [ARCHITECTURE.md](ARCHITECTURE.md)).
+- **Groq** — https://console.groq.com/ → API Keys → create (no card; free tier). Used to
+  classify new posts (`openai/gpt-oss-20b` primary, `gpt-oss-120b` fallback). *(Gemini was
+  the original choice but its free tier returned `limit: 0` for this account — see
+  [ARCHITECTURE.md](ARCHITECTURE.md).)*
 
 Put them in `infra/secrets.env` (gitignored):
 
