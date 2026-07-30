@@ -241,8 +241,13 @@ def _gen_prompt(ticker, name, exch, price_str, facts):
     )
 
 
+class _JsonGenFailed(Exception):
+    """Groq returned 400 'Failed to generate JSON' — retry on the bigger model."""
+
+
 def _groq_json(api_key, prompt, temperature=0.4, max_tokens=6000):
-    """One Groq JSON-mode call, primary model then fallback on 429. Returns parsed JSON."""
+    """One Groq JSON-mode call; falls back to the bigger model on a 429 or a JSON-gen
+    failure. Returns parsed JSON."""
     def _call(model):
         body = json.dumps({
             "model": model,
@@ -264,6 +269,10 @@ def _groq_json(api_key, prompt, temperature=0.4, max_tokens=6000):
                 pass
             if e.code == 429:
                 raise scraper.RateLimited(f"429 {detail[:300]}")
+            # A 400 "Failed to generate JSON" is the small model producing malformed output —
+            # signal the caller to retry on the bigger model, which handles JSON mode better.
+            if e.code == 400 and "generate json" in detail.lower():
+                raise _JsonGenFailed(f"400 {detail[:200]}")
             raise RuntimeError(f"{e.code} {e.reason} {detail[:300]}")
         content = (resp.get("choices") or [{}])[0].get("message", {}).get("content", "")
         if not content:
@@ -272,14 +281,15 @@ def _groq_json(api_key, prompt, temperature=0.4, max_tokens=6000):
 
     try:
         return _call(scraper.GROQ_MODEL)
-    except scraper.RateLimited:
+    except (scraper.RateLimited, _JsonGenFailed):
         return _call(scraper.GROQ_FALLBACK_MODEL)
 
 
 def _generate_with_groq(ssm, ticker, name, exch, price_str, facts):
     api_key = scraper.get_secret(ssm, scraper.GROQ_PARAM)
-    # max_tokens kept well under Groq's 8000 tokens/min free-tier cap (prompt ~1.5k + this).
-    return _groq_json(api_key, _gen_prompt(ticker, name, exch, price_str, facts), max_tokens=4200)
+    # Prompt is ~1.2k tokens, so 5000 max_tokens (≈6.2k total) stays under the 8000/min cap
+    # while giving the 11-stage output enough room not to get truncated into invalid JSON.
+    return _groq_json(api_key, _gen_prompt(ticker, name, exch, price_str, facts), max_tokens=5000)
 
 
 def _verify_prompt(draft, facts, price_str, issues):
@@ -347,6 +357,17 @@ def _apply_patch(draft, patch):
 def _normalize(gen, ticker, name, exch, price_str, market_cap_hint=None):
     """Coerce the model output into the exact deepDives schema, forcing the header fields
     we looked up (never trust the model for price/name/ticker) and validating the stages."""
+    # Groq occasionally returns a bare JSON array instead of the object we asked for —
+    # recover the most likely intent rather than crashing on gen.get(...).
+    if isinstance(gen, list):
+        if gen and isinstance(gen[0], dict) and "stages" in gen[0]:
+            gen = gen[0]                          # [ {sector, stages, ...} ]
+        elif gen and isinstance(gen[0], dict) and "n" in gen[0]:
+            gen = {"stages": gen}                 # the stages array itself
+        else:
+            gen = {}
+    if not isinstance(gen, dict):
+        gen = {}
     stages_in = gen.get("stages") or []
     by_n = {}
     for s in stages_in:
