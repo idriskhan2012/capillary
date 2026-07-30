@@ -66,6 +66,18 @@ cp infra/secrets.env.example infra/secrets.env
 # edit infra/secrets.env and paste both keys
 ```
 
+**Deep-dive generator passphrase (optional in secrets.env).** The live "Generate a Deep
+Dive" button POSTs to a passphrase-gated Lambda. Set the passphrase either by adding
+`DEEPDIVE_PASSPHRASE=<something>` to `infra/secrets.env` (deploy pushes it to SSM), or once
+directly in SSM:
+
+```bash
+aws ssm put-parameter --name /capillary/deepdive-passphrase --type SecureString \
+  --value '<your-passphrase>' --overwrite --region ap-south-1
+```
+
+If it's already in SSM, `deploy.sh` leaves it alone (you don't need it in secrets.env).
+
 ## Step 4 — Deploy
 
 ```bash
@@ -101,6 +113,22 @@ AWS_PROFILE=capillary ./infra/promote.sh approve <slug>            # wire it in 
 AWS_PROFILE=capillary ./infra/promote.sh approve <slug> --model "The Two-Engine Framework"  # if the model tag needs fixing
 AWS_PROFILE=capillary ./infra/promote.sh reject  <slug>            # discard a draft
 ```
+
+## Reviewing an AI-generated Deep Dive
+
+The live "Generate a Deep Dive" button asks Groq for a full 11-stage teardown and writes it
+to `pending_deepdives.json` (a review queue — never published straight to the site). Review
+and publish it the same way as post drafts:
+
+```bash
+AWS_PROFILE=capillary ./infra/promote.sh deepdive-list                 # see generated drafts
+AWS_PROFILE=capillary ./infra/promote.sh deepdive-approve <TICKER>     # add to deepDives[] + go live
+AWS_PROFILE=capillary ./infra/promote.sh deepdive-reject  <TICKER>     # discard a draft
+```
+
+`deepdive-approve` upserts the draft into `data.json["deepDives"]` (stripping internal
+fields), re-uploads `data.json`, and invalidates CloudFront. Because a Groq free-tier draft
+is shallower than a hand-authored dive, read it before approving.
 
 `approve` adds the stock to `data.json`, **tags the ticker onto its mental model**
 (`models[].tickers` — the reverse link that drives the model's ticker chips and the stock

@@ -26,6 +26,10 @@ Parameters:
   GroqModel:
     Type: String
     Default: openai/gpt-oss-20b
+  DeepDivePassphraseParamName:
+    Type: String
+    Default: /capillary/deepdive-passphrase
+    Description: SSM SecureString holding the shared passphrase that gates the deep-dive generator.
 
 Resources:
 
@@ -83,6 +87,11 @@ Resources:
             ViewerProtocolPolicy: redirect-to-https
             AllowedMethods: [GET, HEAD]
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # Managed-CachingDisabled
+          - PathPattern: /config.js
+            TargetOriginId: s3-origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD]
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # Managed-CachingDisabled (runtime config)
 
   SiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -172,6 +181,105 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt ScheduleRule.Arn
 
+  # --- Deep Dive generator (on-demand, behind an HTTP API) -----------------
+  # A live "Add a Deep Dive" button on the site POSTs a ticker here. The Lambda
+  # checks a passphrase, looks up the price/name, asks Groq for an 11-stage
+  # analysis, and writes it to pending_deepdives.json (a review queue — NOT live).
+  GeneratorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: s3-data-rw
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [s3:GetObject, s3:PutObject]
+                Resource: !Sub "${SiteBucket.Arn}/*"
+        - PolicyName: read-secrets
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: ssm:GetParameter
+                Resource:
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${GroqParamName}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${TwelveDataParamName}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${DeepDivePassphraseParamName}"
+              - Effect: Allow
+                Action: kms:Decrypt
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    kms:ViaService: !Sub "ssm.${AWS::Region}.amazonaws.com"
+
+  GeneratorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-deepdive-generator"
+      Runtime: python3.12
+      Handler: deepdive.lambda_handler
+      Role: !GetAtt GeneratorRole.Arn
+      Timeout: 120
+      MemorySize: 256
+      Code: ../lambda
+      Environment:
+        Variables:
+          DATA_BUCKET: !Ref SiteBucket
+          GROQ_PARAM: !Ref GroqParamName
+          TWELVEDATA_PARAM: !Ref TwelveDataParamName
+          GROQ_MODEL: !Ref GroqModel
+          DEEPDIVE_PASSPHRASE_PARAM: !Ref DeepDivePassphraseParamName
+
+  DeepDiveApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub "${ProjectName}-deepdive-api"
+      ProtocolType: HTTP
+      CorsConfiguration:
+        AllowOrigins: ["*"]
+        AllowMethods: [POST, OPTIONS]
+        AllowHeaders: [content-type]
+        MaxAge: 300
+
+  DeepDiveIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref DeepDiveApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt GeneratorFunction.Arn
+      PayloadFormatVersion: "2.0"
+
+  DeepDiveRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref DeepDiveApi
+      RouteKey: "POST /deepdive"
+      Target: !Sub "integrations/${DeepDiveIntegration}"
+
+  DeepDiveStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref DeepDiveApi
+      StageName: "$default"
+      AutoDeploy: true
+
+  DeepDiveInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref GeneratorFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${DeepDiveApi}/*/*/deepdive"
+
 Outputs:
   SiteURL:
     Description: Public HTTPS URL of the tracker.
@@ -183,3 +291,6 @@ Outputs:
     Value: !Ref SiteBucket
   ScraperFunctionName:
     Value: !Ref ScraperFunction
+  DeepDiveApiUrl:
+    Description: Invoke URL for the deep-dive generator (POST here from the site).
+    Value: !Sub "https://${DeepDiveApi}.execute-api.${AWS::Region}.amazonaws.com/deepdive"

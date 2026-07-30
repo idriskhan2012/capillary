@@ -49,8 +49,28 @@ case "$CMD" in
     python3 infra/promote.py reject --pending "${TMP}/pending_review.json" --slug "$SLUG"
     ul pending_review.json
     ;;
+  deepdive-list)
+    if ! dl pending_deepdives.json 2>/dev/null; then echo "No pending_deepdives.json yet (none generated)."; exit 0; fi
+    python3 infra/promote.py deepdive-list --pending "${TMP}/pending_deepdives.json"
+    ;;
+  deepdive-approve)
+    TICKER="${1:?usage: promote.sh deepdive-approve <ticker>}"
+    dl data.json; dl pending_deepdives.json
+    python3 infra/promote.py deepdive-approve --data "${TMP}/data.json" --pending "${TMP}/pending_deepdives.json" --ticker "$TICKER"
+    echo "Uploading updated data.json + pending_deepdives.json..."
+    ul data.json; ul pending_deepdives.json
+    aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/data.json" --region "$REGION" >/dev/null || true
+    echo "Live. Refresh the site to see it in Deep Dives."
+    ;;
+  deepdive-reject)
+    TICKER="${1:?usage: promote.sh deepdive-reject <ticker>}"
+    dl pending_deepdives.json
+    python3 infra/promote.py deepdive-reject --pending "${TMP}/pending_deepdives.json" --ticker "$TICKER"
+    ul pending_deepdives.json
+    ;;
   *)
-    echo "usage: promote.sh {list | approve <slug> [--model \"Name\"] | reject <slug>}"; exit 1 ;;
+    echo "usage: promote.sh {list | approve <slug> [--model \"Name\"] | reject <slug>"
+    echo "               | deepdive-list | deepdive-approve <ticker> | deepdive-reject <ticker>}"; exit 1 ;;
 esac
 
 rm -rf "$TMP"

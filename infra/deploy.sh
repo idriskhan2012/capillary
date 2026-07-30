@@ -31,6 +31,8 @@ fi
 set -a; source infra/secrets.env; set +a
 : "${GROQ_API_KEY:?set GROQ_API_KEY in infra/secrets.env}"
 : "${TWELVEDATA_API_KEY:?set TWELVEDATA_API_KEY in infra/secrets.env}"
+# DEEPDIVE_PASSPHRASE gates the deep-dive generator button. Optional in secrets.env:
+# if set here it's (re)stored in SSM; if not, we keep whatever's already in SSM.
 
 ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
 echo "Deploying to account ${ACCOUNT_ID}, region ${REGION}"
@@ -39,11 +41,19 @@ SITE_BUCKET="${SITE_BUCKET:-${PROJECT}-site-${ACCOUNT_ID}}"
 ARTIFACTS_BUCKET="${PROJECT}-deploy-artifacts-${ACCOUNT_ID}-${REGION}"
 GROQ_PARAM="/capillary/groq-api-key"
 TWELVEDATA_PARAM="/capillary/twelvedata-api-key"
+DEEPDIVE_PASSPHRASE_PARAM="/capillary/deepdive-passphrase"
 
 # --- 1. secrets -> SSM ---------------------------------------------------
-echo "Storing API keys in SSM Parameter Store (SecureString)..."
+echo "Storing API keys + passphrase in SSM Parameter Store (SecureString)..."
 aws ssm put-parameter --name "$GROQ_PARAM"       --type SecureString --value "$GROQ_API_KEY"       --overwrite --region "$REGION" >/dev/null
 aws ssm put-parameter --name "$TWELVEDATA_PARAM" --type SecureString --value "$TWELVEDATA_API_KEY" --overwrite --region "$REGION" >/dev/null
+if [[ -n "${DEEPDIVE_PASSPHRASE:-}" ]]; then
+  aws ssm put-parameter --name "$DEEPDIVE_PASSPHRASE_PARAM" --type SecureString --value "$DEEPDIVE_PASSPHRASE" --overwrite --region "$REGION" >/dev/null
+elif ! aws ssm get-parameter --name "$DEEPDIVE_PASSPHRASE_PARAM" --region "$REGION" >/dev/null 2>&1; then
+  echo "ERROR: DEEPDIVE_PASSPHRASE not in secrets.env and no existing SSM value at ${DEEPDIVE_PASSPHRASE_PARAM}." >&2
+  echo "       Set it once: aws ssm put-parameter --name ${DEEPDIVE_PASSPHRASE_PARAM} --type SecureString --value '<passphrase>' --overwrite" >&2
+  exit 1
+fi
 
 # --- 2. artifacts bucket (for Lambda zips) -------------------------------
 if ! aws s3api head-bucket --bucket "$ARTIFACTS_BUCKET" --region "$REGION" 2>/dev/null; then
@@ -79,14 +89,27 @@ aws cloudformation deploy \
 BUCKET="$(get_output SiteBucketName)"
 DIST_ID="$(get_output DistributionId)"
 SITE_URL="$(get_output SiteURL)"
+DEEPDIVE_API_URL="$(get_output DeepDiveApiUrl)"
 
 # --- 4. upload site ------------------------------------------------------
 echo "Uploading site content to s3://${BUCKET}..."
 # Push everything except the live data/log files so we never clobber scraper output.
+# config.js is generated fresh below (with the live API URL), so exclude the local
+# placeholder from the sync too.
 # no-cache so browsers always revalidate index.html (cheap 304s via ETag) —
 # otherwise a stale cached index.html hides new UI until the browser cache expires.
 aws s3 sync public/ "s3://${BUCKET}/" --exclude "data.json" --exclude "logs.json" \
-  --cache-control "no-cache" --region "$REGION"
+  --exclude "config.js" --cache-control "no-cache" --region "$REGION"
+
+# Runtime config for the frontend (the deep-dive generator endpoint). Written straight
+# to S3 so the git working tree stays clean — the committed public/config.js is just a
+# null placeholder for local dev.
+echo "Writing config.js with the deep-dive API URL..."
+CONFIG_JS="$(mktemp)"
+printf 'window.CAPILLARY_CONFIG = { deepDiveApiUrl: "%s" };\n' "$DEEPDIVE_API_URL" > "$CONFIG_JS"
+aws s3 cp "$CONFIG_JS" "s3://${BUCKET}/config.js" --content-type application/javascript \
+  --cache-control no-cache --region "$REGION"
+rm -f "$CONFIG_JS"
 
 # Seed data.json only if it isn't already there (first deploy), unless forced.
 if [[ "${FORCE_DATA:-0}" == "1" ]] || ! aws s3api head-object --bucket "$BUCKET" --key data.json --region "$REGION" >/dev/null 2>&1; then
@@ -102,7 +125,8 @@ aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*" --r
 
 echo ""
 echo "======================================================================"
-echo "  Live URL:  ${SITE_URL}"
+echo "  Live URL:      ${SITE_URL}"
+echo "  Deep-dive API: ${DEEPDIVE_API_URL}"
 echo "  (first deploy: allow a few minutes for CloudFront to finish)"
 echo "======================================================================"
 echo "Run the scraper once now with:"

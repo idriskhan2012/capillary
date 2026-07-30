@@ -605,6 +605,10 @@
       Your own extended analyses — stocks outside the original Substack tracker, run through the same 11-stage framework in full, each with an explicit Exit Trigger so a future you doesn't have to re-derive one from scratch.
     </p>
     <div id="deepDivesListView">
+      <div style="margin:6px 0 18px;">
+        <button class="btn-primary" id="addDeepDiveBtn" onclick="openDeepDiveForm()" style="width:auto;padding:9px 18px;">+ Generate a Deep Dive</button>
+        <span id="addDeepDiveHint" style="display:none;margin-left:12px;font-size:12.5px;color:var(--muted);"></span>
+      </div>
       <div class="grid" id="deepDiveGrid"></div>
     </div>
     <div id="deepDiveDetailView" style="display:none;"></div>
@@ -618,6 +622,7 @@
 
 <div class="modal-bg" id="modalBg"><div class="modal" id="modalBody"></div></div>
 
+<script src="./config.js"></script>
 <script>
 let stocks=[], categories=[], models=[], stockPosts={}, modelPost={}, deepDives=[];
 
@@ -869,6 +874,7 @@ function renderDeepDiveList(){
         </div>
         <div class="badge ${d.sentiment}">${d.sentiment==='bull'?'Bullish':d.sentiment==='bear'?'Bearish':'Neutral'}</div>
       </div>
+      ${d._draft ? `<div style="margin:8px 0 -2px;font-size:11px;font-weight:600;color:var(--neutral);text-transform:uppercase;letter-spacing:.4px;">● Generated draft · pending review</div>` : ''}
       <div class="model-tag">${d.valuation}</div>
       <div class="price-row">
         <div class="price-block"><div class="lbl">Price</div><div class="val">${d.price}</div></div>
@@ -928,6 +934,95 @@ function renderDeepDiveDetailHTML(ticker){
       </div>
     </div>
   `;
+}
+
+/* ===== Generate a Deep Dive (live button -> HTTP API -> Groq -> review queue).
+   The endpoint is passphrase-gated and writes to a review queue, never straight
+   live — a generated draft is previewed client-side here, then promoted with
+   infra/promote.sh deepdive-approve. ===== */
+function deepDiveApiUrl(){
+  return (window.CAPILLARY_CONFIG && window.CAPILLARY_CONFIG.deepDiveApiUrl) || null;
+}
+
+function openDeepDiveForm(){
+  const modal = document.getElementById('modalBody');
+  const configured = !!deepDiveApiUrl();
+  modal.innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="eyebrow">AI-generated</div>
+    <h2>Generate a Deep Dive</h2>
+    <div class="sub">Enter a ticker — the price &amp; company name are looked up automatically, then Groq runs the full 11-stage framework. The draft goes to a review queue (not published) and is previewed here; approve it with <code>promote.sh deepdive-approve</code> to publish.</div>
+    ${configured ? `
+    <div class="form-grid">
+      <div class="form-field"><label>Ticker *</label><input id="dd-ticker" placeholder="e.g. NVDA" autocomplete="off" /></div>
+      <div class="form-field">
+        <label>Exchange</label>
+        <select id="dd-exch">
+          <option value="NASDAQ">NASDAQ</option>
+          <option value="NYSE">NYSE</option>
+          <option value="NSE">NSE (India)</option>
+          <option value="BSE">BSE (India)</option>
+        </select>
+      </div>
+      <div class="form-field full"><label>Passphrase *</label><input id="dd-pass" type="password" placeholder="The generator passphrase" autocomplete="off" /></div>
+    </div>
+    <div class="form-actions" style="margin-top:16px;">
+      <button class="btn-primary" id="dd-submit" onclick="submitDeepDive()">Generate</button>
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+    <div id="dd-status" style="margin-top:14px;font-size:13.5px;line-height:1.6;"></div>
+    ` : `
+    <div id="dd-status" style="margin-top:6px;font-size:13.5px;line-height:1.6;color:var(--muted);">
+      The generator isn't available in this local preview (no API endpoint configured).
+      It works on the deployed site, where <code>config.js</code> carries the live API URL.
+    </div>`}
+  `;
+  document.getElementById('modalBg').classList.add('open');
+  document.getElementById('modalBg').scrollTop = 0;
+  if(configured){ const t=document.getElementById('dd-ticker'); if(t) t.focus(); }
+}
+
+async function submitDeepDive(){
+  const url = deepDiveApiUrl();
+  if(!url) return;
+  const ticker = (document.getElementById('dd-ticker').value||'').trim().toUpperCase();
+  const exch = document.getElementById('dd-exch').value;
+  const passphrase = document.getElementById('dd-pass').value||'';
+  const statusEl = document.getElementById('dd-status');
+  const btn = document.getElementById('dd-submit');
+  if(!ticker){ statusEl.innerHTML = '<span style="color:var(--bear);">Enter a ticker.</span>'; return; }
+  if(!passphrase){ statusEl.innerHTML = '<span style="color:var(--bear);">Enter the passphrase.</span>'; return; }
+
+  btn.disabled = true; btn.textContent = 'Generating…';
+  statusEl.innerHTML = '<span style="color:var(--muted);">Looking up '+ticker+' and running the 11-stage framework — this can take 20–40s…</span>';
+  try{
+    const res = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ticker, exch, passphrase})
+    });
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok){
+      statusEl.innerHTML = '<span style="color:var(--bear);">'+(data.error||('Failed ('+res.status+').'))+'</span>';
+      btn.disabled = false; btn.textContent = 'Generate';
+      return;
+    }
+    // Preview client-side: inject the draft into the in-memory list (not persisted —
+    // it lives in the review queue until approved). Refreshing drops it, by design.
+    const draft = data.draft; draft._draft = true;
+    deepDives = deepDives.filter(d=>d.ticker!==draft.ticker);
+    deepDives.push(draft);
+    renderDeepDiveList();
+    updateCounts();
+    statusEl.innerHTML = '<span style="color:var(--bull);font-weight:600;">Done — draft queued for review.</span><br>'
+      + '<span style="color:var(--muted);">Previewing below. To publish: <code>promote.sh deepdive-approve '+draft.ticker+'</code></span>'
+      + '<div style="margin-top:12px;"><button class="btn-primary" onclick="closeModal();location.hash=\'#deepdive-'+encodeURIComponent(draft.ticker)+'\';">Preview the deep dive →</button></div>';
+    btn.textContent = 'Generate another';
+    btn.disabled = false;
+  }catch(e){
+    statusEl.innerHTML = '<span style="color:var(--bear);">Network error: '+e.message+'</span>';
+    btn.disabled = false; btn.textContent = 'Generate';
+  }
 }
 
 /* ===== Router: single source of truth for what's on screen, driven entirely
