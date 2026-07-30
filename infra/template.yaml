@@ -233,7 +233,7 @@ Resources:
       Runtime: python3.12
       Handler: deepdive.lambda_handler
       Role: !GetAtt GeneratorRole.Arn
-      Timeout: 120
+      Timeout: 240
       MemorySize: 256
       Code: ../lambda
       Environment:

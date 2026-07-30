@@ -911,10 +911,16 @@ function renderDeepDiveDetailHTML(ticker){
       </div>`;
   }).join('');
 
+  const warns = (d._warnings && d._warnings.length) ? `
+        <div style="background:rgba(201,84,26,.06);border:1px solid var(--neutral);border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--neutral);margin-bottom:6px;">⚠ Automated checks flagged ${d._warnings.length}</div>
+          <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.55;color:var(--text);">${d._warnings.map(w=>`<li>${w}</li>`).join('')}</ul>
+        </div>` : '';
   const reviewBar = d._draft ? `
       <div class="detail-section exit-trigger" style="margin-bottom:24px;">
         <div class="h">● Generated draft — pending review</div>
         <p style="margin-bottom:12px;">This is an AI-generated draft in the review queue, not yet published. Read it, then approve to publish it to Deep Dives, or reject to discard.</p>
+        ${warns}
         <div class="form-field" style="max-width:320px;margin-bottom:12px;">
           <label>Passphrase</label>
           <input id="dd-review-pass" type="password" placeholder="The generator passphrase" autocomplete="off" />
@@ -1010,7 +1016,7 @@ async function submitDeepDive(){
   if(!passphrase){ statusEl.innerHTML = '<span style="color:var(--bear);">Enter the passphrase.</span>'; return; }
 
   btn.disabled = true; btn.textContent = 'Generating…';
-  statusEl.innerHTML = '<span style="color:var(--muted);">Looking up '+ticker+' and running the 11-stage framework — this can take 20–40s…</span>';
+  statusEl.innerHTML = '<span style="color:var(--muted);">Looking up '+ticker+', pulling live fundamentals, running the 11-stage framework, then a fact-check pass — this can take up to a minute…</span>';
   try{
     const res = await fetch(url, {
       method:'POST',
@@ -1019,7 +1025,14 @@ async function submitDeepDive(){
     });
     const data = await res.json().catch(()=>({}));
     if(!res.ok){
-      statusEl.innerHTML = '<span style="color:var(--bear);">'+(data.error||('Failed ('+res.status+').'))+'</span>';
+      // API Gateway caps requests at 30s. A slow generate can hit that even though the
+      // Lambda keeps running and still saves the draft — so treat a gateway timeout as
+      // "still processing" rather than a hard failure.
+      if(res.status===504 || res.status===503){
+        statusEl.innerHTML = '<span style="color:var(--neutral);">Still generating on the server (it passed the 30s web limit). Give it a minute, then reload the Deep Dives tab — it\'ll appear in the review queue if it finished.</span>';
+      } else {
+        statusEl.innerHTML = '<span style="color:var(--bear);">'+(data.error||('Failed ('+res.status+').'))+'</span>';
+      }
       btn.disabled = false; btn.textContent = 'Generate';
       return;
     }
@@ -1036,7 +1049,7 @@ async function submitDeepDive(){
     btn.textContent = 'Generate another';
     btn.disabled = false;
   }catch(e){
-    statusEl.innerHTML = '<span style="color:var(--bear);">Network error: '+e.message+'</span>';
+    statusEl.innerHTML = '<span style="color:var(--neutral);">Connection dropped (a slow generate can exceed the 30s web limit). It may still be finishing — reload the Deep Dives tab in a minute to check the review queue.</span>';
     btn.disabled = false; btn.textContent = 'Generate';
   }
 }
