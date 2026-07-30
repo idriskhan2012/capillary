@@ -20,6 +20,7 @@ duplicated price/Groq code. See ../CLAUDE.md and ../docs/ARCHITECTURE.md.
 """
 import json
 import os
+import re
 import http.cookiejar
 import urllib.error
 import urllib.parse
@@ -190,27 +191,31 @@ def _stage_spec():
     return "\n".join(lines)
 
 
-def _gen_prompt(ticker, name, exch, price_str, facts, exemplar):
+# A compact (single-stage) example of the expected depth + checkpoint shape. Kept tiny on
+# purpose — Groq's free tier caps a request at 8000 tokens/min, so a full worked example
+# won't fit alongside the framework spec. The stage DEFINITIONS carry the framework teaching.
+_MINI_EXAMPLE = (
+    '{"n":4,"t":"Stress-Test The Moat","m":[],'
+    '"b":"The moat is the software ecosystem lock-in, not the hardware lead. The credible '
+    'attack isn\'t a better product — it\'s cheaper total-cost-of-ownership from in-house '
+    'silicon at the top customers, going around the moat rather than through it. Switching '
+    'costs still bind the installed base, so the attack dents share of new workloads more '
+    'than it breaks the franchise.",'
+    '"cp":{"q":"Does the moat survive the real attack (procurement economics, not features)?",'
+    '"outs":[["bull","HOLDS","Ecosystem lock-in intact for the core workload"],'
+    '["bear","CRACK","Losing share of the fastest-growing segment"]]}}'
+)
+
+
+def _gen_prompt(ticker, name, exch, price_str, facts):
     cp_list = ", ".join(str(n) for n in sorted(CHECKPOINT_STAGES))
     facts_block = _facts_block(facts)
     grounding = (
-        "\n\nAUTHORITATIVE FIGURES (these are REAL, fetched live — you MUST use these exact "
-        "numbers and MUST NOT invent different ones for market cap, margins, P/E, or revenue):\n"
+        "\n\nAUTHORITATIVE FIGURES (REAL, fetched live — use these EXACT numbers; do NOT invent "
+        "different ones for market cap, margins, P/E, or revenue):\n"
         f"{facts_block}\n"
-        "If a figure you'd normally cite isn't listed above, describe it qualitatively rather "
-        "than inventing a number.\n"
+        "If a figure isn't listed above, describe it qualitatively rather than inventing a number.\n"
     ) if facts_block else "\n\n(No live fundamentals available — avoid citing specific financial figures you cannot verify.)\n"
-
-    example = ""
-    if exemplar:
-        example = (
-            "\n\nHERE IS ONE WORKED EXAMPLE in exactly the right depth, specificity, and format "
-            "(a different company — match its rigor, do NOT copy its content):\n"
-            + json.dumps({"sector": exemplar.get("sector"), "sentiment": exemplar.get("sentiment"),
-                          "valuation": exemplar.get("valuation"), "exitTrigger": exemplar.get("exitTrigger"),
-                          "stages": exemplar.get("stages")}, ensure_ascii=False)
-            + "\n"
-        )
 
     return (
         f"You are a rigorous equity analyst applying a specific 11-stage framework to "
@@ -219,21 +224,20 @@ def _gen_prompt(ticker, name, exch, price_str, facts, exemplar):
         "\nProduce a JSON object ONLY (no prose) with keys: sector, sentiment, valuation, "
         "exitTrigger, stages.\n"
         "  sector      : short 'Region · Industry' label (use the sector/industry above if given).\n"
-        "  sentiment   : 'bull', 'bear', or 'neutral' — your overall stance. It MUST be internally "
-        "consistent: if bearish, any price target you mention is BELOW the current price; if bullish, ABOVE.\n"
+        "  sentiment   : 'bull', 'bear', or 'neutral'. MUST be internally consistent: if bearish, any "
+        "price target you mention is BELOW the current price; if bullish, ABOVE.\n"
         "  valuation   : one sentence grounded in the authoritative multiples above.\n"
         "  exitTrigger : the ONE specific, observable BUSINESS event that would prove the call wrong "
         "(e.g. 'gross margin falls below X for two quarters', 'the top customer leaves'). "
-        "It must NOT be a share-price level — 'the price rises above $X' is NOT an acceptable exit trigger.\n"
-        "  stages      : EXACTLY 11 objects, in this exact order and applying each stage's DEFINITION:\n"
+        "It must NOT be a share-price level — 'the price rises above $X' is NOT acceptable.\n"
+        "  stages      : EXACTLY 11 objects, in this order, each applying its DEFINITION:\n"
         f"{_stage_spec()}\n"
-        "Each stage object: n (1-11 int), t (exact title), m ([]), b (a substantive 3-6 sentence "
-        "analysis that actually applies THIS stage's definition to THIS company using the real "
-        f"figures). cp ONLY on stages {cp_list}: {{q, outs}} where outs is 1-2 arrays "
-        "[badgeClass('bull'|'bear'|'neutral'), label('PASS'|'HOLDS'|'CRACK'|'WATCH'|...), description]. "
-        "Other stages have NO cp key."
-        f"{example}"
-        "\nReturn ONLY the JSON object."
+        "Each stage: n (1-11 int), t (exact title), m ([]), b (3-5 sentence analysis that applies "
+        f"THIS stage's definition to THIS company using the real figures). cp ONLY on stages {cp_list}: "
+        "{q, outs} where outs is 1-2 arrays [badgeClass('bull'|'bear'|'neutral'), "
+        "label('PASS'|'HOLDS'|'CRACK'|'WATCH'), description]. Other stages have NO cp key.\n"
+        f"Example of ONE stage at the right depth (different company — match the rigor, don't copy): {_MINI_EXAMPLE}\n"
+        "Return ONLY the JSON object."
     )
 
 
@@ -272,34 +276,72 @@ def _groq_json(api_key, prompt, temperature=0.4, max_tokens=6000):
         return _call(scraper.GROQ_FALLBACK_MODEL)
 
 
-def _generate_with_groq(ssm, ticker, name, exch, price_str, facts, exemplar):
+def _generate_with_groq(ssm, ticker, name, exch, price_str, facts):
     api_key = scraper.get_secret(ssm, scraper.GROQ_PARAM)
-    return _groq_json(api_key, _gen_prompt(ticker, name, exch, price_str, facts, exemplar))
+    # max_tokens kept well under Groq's 8000 tokens/min free-tier cap (prompt ~1.5k + this).
+    return _groq_json(api_key, _gen_prompt(ticker, name, exch, price_str, facts), max_tokens=4200)
 
 
-def _verify_prompt(draft, facts, price_str):
+def _verify_prompt(draft, facts, price_str, issues):
+    """Compact, PATCH-style verify — sends only the fields that can be wrong plus the flagged
+    stage bodies, and asks for a small correction object (not the whole draft). Keeps the call
+    tiny enough to fit the free-tier per-minute token budget."""
     facts_block = _facts_block(facts) or "(none available)"
+    # bodies of the stages that the guardrails flagged (plus 8 & 9 where targets live)
+    want = set([8, 9])
+    for w in issues:
+        m = re.search(r"Stage (\d+)", w)
+        if m:
+            want.add(int(m.group(1)))
+    stage_bodies = {s["n"]: s["b"] for s in draft.get("stages", []) if s.get("n") in want}
     return (
-        "You are a fact-checker/editor reviewing an AI-generated equity deep-dive JSON. "
-        "Fix ONLY these problems and return the corrected FULL JSON object (same schema, all "
-        "11 stages), nothing else:\n"
-        f"1. Any number that contradicts these authoritative live figures — make it match them:\n{facts_block}\n"
-        f"   (current share price is {price_str}.)\n"
-        "2. Internal contradictions: if 'sentiment' is 'bear', any price target mentioned must be "
-        "BELOW the current price; if 'bull', ABOVE. Fix the wording/number so direction matches.\n"
-        "3. 'exitTrigger' must be an observable BUSINESS event, NOT a share-price level. If it "
-        "references a price threshold, rewrite it as the underlying business event.\n"
-        "4. Any stage whose text doesn't actually apply that stage's purpose — tighten it.\n"
-        "Keep everything else intact (titles, order, checkpoints, structure). Return ONLY the JSON.\n\n"
-        "DRAFT TO CORRECT:\n" + json.dumps(draft, ensure_ascii=False)
+        "You are fact-checking an equity deep-dive. Current share price: " + price_str + ".\n"
+        "Authoritative live figures (the analysis must not contradict these):\n" + facts_block + "\n\n"
+        "Issues detected:\n" + ("\n".join("- " + i for i in issues) or "- (general consistency check)") + "\n\n"
+        "Current values:\n"
+        f"  sentiment: {draft.get('sentiment')}\n"
+        f"  valuation: {draft.get('valuation')}\n"
+        f"  exitTrigger: {draft.get('exitTrigger')}\n"
+        f"  flagged stage bodies: {json.dumps(stage_bodies, ensure_ascii=False)}\n\n"
+        "Return a JSON object with ONLY the fields that need correcting (omit anything already fine):\n"
+        "  sentiment   : corrected stance if inconsistent.\n"
+        "  valuation   : corrected sentence if it contradicts the figures.\n"
+        "  exitTrigger : rewritten as an observable BUSINESS event if it was a price level.\n"
+        "  stageFixes  : array of {n, b} — corrected body ONLY for stages that were wrong "
+        "(fix upside/downside wording so it matches the target vs the current price).\n"
+        "Return ONLY the JSON object."
     )
 
 
-def _verify_with_groq(ssm, draft, facts, price_str):
-    """Second pass: fix contradictions against the authoritative figures. Best-effort — on any
-    failure the caller keeps the unverified draft rather than losing it."""
+def _verify_with_groq(ssm, draft, facts, price_str, issues):
+    """Best-effort compact patch. Returns {sentiment?, valuation?, exitTrigger?, stageFixes?}."""
     api_key = scraper.get_secret(ssm, scraper.GROQ_PARAM)
-    return _groq_json(api_key, _verify_prompt(draft, facts, price_str), temperature=0.1)
+    return _groq_json(api_key, _verify_prompt(draft, facts, price_str, issues),
+                      temperature=0.1, max_tokens=1500)
+
+
+def _apply_patch(draft, patch):
+    """Merge a verify patch into the draft in place."""
+    if not isinstance(patch, dict):
+        return draft
+    if patch.get("sentiment") in ("bull", "bear", "neutral"):
+        draft["sentiment"] = patch["sentiment"]
+    if isinstance(patch.get("valuation"), str) and patch["valuation"].strip():
+        draft["valuation"] = patch["valuation"].strip()
+    if isinstance(patch.get("exitTrigger"), str) and patch["exitTrigger"].strip():
+        draft["exitTrigger"] = patch["exitTrigger"].strip()
+    for fix in (patch.get("stageFixes") or []):
+        try:
+            n = int(fix.get("n"))
+        except (TypeError, ValueError):
+            continue
+        b = (fix.get("b") or "").strip()
+        if not b:
+            continue
+        for s in draft.get("stages", []):
+            if s.get("n") == n:
+                s["b"] = b
+    return draft
 
 
 def _normalize(gen, ticker, name, exch, price_str, market_cap_hint=None):
@@ -368,7 +410,6 @@ def _authoritative_marketcap(facts, price):
 def _guardrails(draft, facts, price):
     """Deterministic sanity checks surfaced to the reviewer. Returns a list of warning strings.
     These flag likely errors; they don't block — the human decides at approve time."""
-    import re
     warnings = []
 
     # 1. exit trigger should be a business event, not a price level
@@ -461,18 +502,10 @@ def _do_generate(s3, ssm, req):
         facts = {}
     market_cap = _authoritative_marketcap(facts, meta["price"])
 
-    # FRAMEWORK GROUNDING: use an existing published dive as a worked example (few-shot).
-    exemplar = None
+    # generate (framework grounding via stage definitions + a compact inline example — a full
+    # few-shot exemplar won't fit the free-tier 8000 tokens/min cap alongside the spec)
     try:
-        data = scraper.load_data(s3)
-        dives = data.get("deepDives") or []
-        exemplar = next((d for d in dives if d.get("ticker") != ticker), dives[0] if dives else None)
-    except Exception:
-        exemplar = None
-
-    # generate
-    try:
-        gen = _generate_with_groq(ssm, ticker, meta["name"], exch, price_str, facts, exemplar)
+        gen = _generate_with_groq(ssm, ticker, meta["name"], exch, price_str, facts)
         draft = _normalize(gen, ticker, meta["name"], exch, price_str, market_cap_hint=market_cap)
     except scraper.RateLimited:
         return _resp(429, {"error": "Groq is rate-limited right now — try again in a minute."})
@@ -485,16 +518,21 @@ def _do_generate(s3, ssm, req):
             pass
         return _resp(502, {"error": f"Generation failed: {e}"})
 
-    # VERIFICATION PASS: a second call fixes contradictions against the real figures.
-    # Best-effort: if it fails, keep the first draft rather than losing everything.
-    try:
-        verified = _verify_with_groq(ssm, draft, facts, price_str)
-        draft = _normalize(verified, ticker, meta["name"], exch, price_str, market_cap_hint=market_cap)
-    except Exception:
-        pass
+    # GUARDRAILS first (deterministic, free).
+    issues = _guardrails(draft, facts, meta["price"])
 
-    # GUARDRAILS: deterministic checks surfaced to the reviewer.
-    draft["_warnings"] = _guardrails(draft, facts, meta["price"])
+    # VERIFICATION PASS — only if guardrails flagged something, to stay inside the free-tier
+    # per-minute token budget (two big calls in one minute would exceed it). Compact patch,
+    # best-effort: on any failure keep the first draft.
+    if issues:
+        try:
+            patch = _verify_with_groq(ssm, draft, facts, price_str, issues)
+            draft = _apply_patch(draft, patch)
+            issues = _guardrails(draft, facts, meta["price"])   # re-check after the fix
+        except Exception:
+            pass
+
+    draft["_warnings"] = issues
 
     # save to review queue (NOT live)
     try:
