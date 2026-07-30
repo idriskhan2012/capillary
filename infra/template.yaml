@@ -92,6 +92,11 @@ Resources:
             ViewerProtocolPolicy: redirect-to-https
             AllowedMethods: [GET, HEAD]
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # Managed-CachingDisabled (runtime config)
+          - PathPattern: /pending_deepdives.json
+            TargetOriginId: s3-origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD]
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # Managed-CachingDisabled (review queue, always fresh)
 
   SiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -265,6 +270,20 @@ Resources:
       RouteKey: "POST /deepdive"
       Target: !Sub "integrations/${DeepDiveIntegration}"
 
+  DeepDiveApproveRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref DeepDiveApi
+      RouteKey: "POST /deepdive/approve"
+      Target: !Sub "integrations/${DeepDiveIntegration}"
+
+  DeepDiveRejectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref DeepDiveApi
+      RouteKey: "POST /deepdive/reject"
+      Target: !Sub "integrations/${DeepDiveIntegration}"
+
   DeepDiveStage:
     Type: AWS::ApiGatewayV2::Stage
     Properties:
@@ -278,7 +297,7 @@ Resources:
       FunctionName: !Ref GeneratorFunction
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${DeepDiveApi}/*/*/deepdive"
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${DeepDiveApi}/*"
 
 Outputs:
   SiteURL:

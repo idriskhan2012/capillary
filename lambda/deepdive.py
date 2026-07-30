@@ -205,65 +205,45 @@ def _normalize(gen, ticker, name, exch, price_str, market_cap_hint=None):
     }
 
 
-def _append_pending(s3, draft):
+def _read_pending(s3):
     try:
         obj = s3.get_object(Bucket=scraper.S3_BUCKET, Key=PENDING_DEEPDIVES_KEY)
         pending = json.loads(obj["Body"].read())
-        if not isinstance(pending, list):
-            pending = []
+        return pending if isinstance(pending, list) else []
     except Exception:
-        pending = []
-    # replace any existing draft for the same ticker so re-runs don't pile up
-    pending = [d for d in pending if d.get("ticker") != draft["ticker"]]
-    draft = dict(draft)
-    draft["_generated_at"] = datetime.now(timezone.utc).isoformat()
-    pending.append(draft)
+        return []
+
+
+def _write_pending(s3, pending):
     s3.put_object(
         Bucket=scraper.S3_BUCKET, Key=PENDING_DEEPDIVES_KEY,
         Body=json.dumps(pending, indent=2).encode("utf-8"),
         ContentType="application/json", CacheControl="no-cache",
     )
+
+
+def _append_pending(s3, draft):
+    pending = _read_pending(s3)
+    # replace any existing draft for the same ticker so re-runs don't pile up
+    pending = [d for d in pending if d.get("ticker") != draft["ticker"]]
+    draft = dict(draft)
+    draft["_generated_at"] = datetime.now(timezone.utc).isoformat()
+    pending.append(draft)
+    _write_pending(s3, pending)
     return draft
 
 
-def lambda_handler(event, context):
-    import boto3
+# --- action handlers -------------------------------------------------------
 
-    method = (event.get("requestContext", {}).get("http", {}) or {}).get("method", "")
-    if method == "OPTIONS":
-        return _resp(200, {"ok": True})
-
-    s3 = boto3.client("s3")
-    ssm = boto3.client("ssm")
-
-    # --- parse body ---
-    try:
-        raw = event.get("body") or "{}"
-        if event.get("isBase64Encoded"):
-            import base64
-            raw = base64.b64decode(raw).decode("utf-8")
-        req = json.loads(raw)
-    except Exception:
-        return _resp(400, {"error": "Invalid request body."})
-
+def _do_generate(s3, ssm, req):
     ticker = (req.get("ticker") or "").strip().upper()
     exch = (req.get("exch") or "NASDAQ").strip().upper()
-    passphrase = req.get("passphrase") or ""
-
     if not ticker:
         return _resp(400, {"error": "A ticker is required."})
     if exch not in VALID_EXCH:
         return _resp(400, {"error": f"exch must be one of {sorted(VALID_EXCH)}."})
 
-    # --- passphrase gate ---
-    try:
-        expected = scraper.get_secret(ssm, DEEPDIVE_PASSPHRASE_PARAM)
-    except Exception as e:
-        return _resp(500, {"error": "Endpoint not configured (no passphrase set)."})
-    if not passphrase or passphrase != expected:
-        return _resp(401, {"error": "Wrong or missing passphrase."})
-
-    # --- API lookup (price + name), no manual entry ---
+    # API lookup (price + name) — no manual entry
     try:
         meta = _lookup_meta(ticker, exch)
     except Exception as e:
@@ -272,11 +252,11 @@ def lambda_handler(event, context):
         return _resp(404, {"error": f"Could not resolve {ticker} on {exch}. Check the symbol/exchange."})
     price_str = _fmt_price(meta["price"], meta["currency"])
 
-    # --- generate with Groq ---
+    # generate with Groq
     try:
         gen = _generate_with_groq(ssm, ticker, meta["name"], exch, price_str)
         draft = _normalize(gen, ticker, meta["name"], exch, price_str)
-    except scraper.RateLimited as e:
+    except scraper.RateLimited:
         return _resp(429, {"error": "Groq is rate-limited right now — try again in a minute."})
     except Exception as e:
         try:
@@ -287,16 +267,105 @@ def lambda_handler(event, context):
             pass
         return _resp(502, {"error": f"Generation failed: {e}"})
 
-    # --- save to review queue (NOT live) ---
+    # save to review queue (NOT live)
     try:
         saved = _append_pending(s3, draft)
     except Exception as e:
         return _resp(500, {"error": f"Could not save draft: {e}"})
 
     return _resp(200, {
-        "ok": True,
-        "queued": True,
+        "ok": True, "queued": True,
         "message": f"Generated a deep dive for {meta['name']} ({ticker}). "
-                   "It's in the review queue — approve it with promote.sh to publish.",
+                   "It's in the review queue — approve it to publish.",
         "draft": saved,
     })
+
+
+def _do_approve(s3, req):
+    """Move a queued draft into data.json["deepDives"] (live). data.json is served
+    CachingDisabled at CloudFront, so no invalidation is needed — the next fetch is fresh."""
+    ticker = (req.get("ticker") or "").strip().upper()
+    if not ticker:
+        return _resp(400, {"error": "A ticker is required."})
+
+    pending = _read_pending(s3)
+    draft = next((d for d in pending if (d.get("ticker") or "").upper() == ticker), None)
+    if not draft:
+        return _resp(404, {"error": f"No queued draft for {ticker}."})
+    if len(draft.get("stages", [])) != 11:
+        return _resp(422, {"error": f"Draft has {len(draft.get('stages', []))} stages, expected 11."})
+
+    dd = {k: draft.get(k) for k in DEEPDIVE_FIELDS}   # strip internal _-keys
+    dd["ticker"] = ticker
+
+    try:
+        data = scraper.load_data(s3)
+    except Exception as e:
+        return _resp(500, {"error": f"Could not load data.json: {e}"})
+    data.setdefault("deepDives", [])
+    data["deepDives"] = [x for x in data["deepDives"] if (x.get("ticker") or "").upper() != ticker]
+    data["deepDives"].append(dd)
+
+    try:
+        scraper.save_data(s3, data)
+        _write_pending(s3, [d for d in pending if (d.get("ticker") or "").upper() != ticker])
+    except Exception as e:
+        return _resp(500, {"error": f"Could not publish: {e}"})
+
+    return _resp(200, {"ok": True, "published": True, "ticker": ticker,
+                       "message": f"{ticker} published to Deep Dives."})
+
+
+def _do_reject(s3, req):
+    ticker = (req.get("ticker") or "").strip().upper()
+    if not ticker:
+        return _resp(400, {"error": "A ticker is required."})
+    pending = _read_pending(s3)
+    if not any((d.get("ticker") or "").upper() == ticker for d in pending):
+        return _resp(404, {"error": f"No queued draft for {ticker}."})
+    _write_pending(s3, [d for d in pending if (d.get("ticker") or "").upper() != ticker])
+    return _resp(200, {"ok": True, "rejected": True, "ticker": ticker,
+                       "message": f"{ticker} draft discarded."})
+
+
+# Only these fields get published (the deepDives schema) — internal _-keys are dropped.
+DEEPDIVE_FIELDS = ["ticker", "name", "exch", "sector", "sentiment", "price",
+                   "marketCap", "valuation", "exitTrigger", "stages"]
+
+
+def lambda_handler(event, context):
+    import boto3
+
+    http = (event.get("requestContext", {}).get("http", {}) or {})
+    method = http.get("method", "")
+    if method == "OPTIONS":
+        return _resp(200, {"ok": True})
+
+    path = (event.get("rawPath") or http.get("path") or "").rstrip("/")
+
+    s3 = boto3.client("s3")
+    ssm = boto3.client("ssm")
+
+    # parse body
+    try:
+        raw = event.get("body") or "{}"
+        if event.get("isBase64Encoded"):
+            import base64
+            raw = base64.b64decode(raw).decode("utf-8")
+        req = json.loads(raw)
+    except Exception:
+        return _resp(400, {"error": "Invalid request body."})
+
+    # passphrase gate (shared by every action)
+    try:
+        expected = scraper.get_secret(ssm, DEEPDIVE_PASSPHRASE_PARAM)
+    except Exception:
+        return _resp(500, {"error": "Endpoint not configured (no passphrase set)."})
+    if not req.get("passphrase") or req.get("passphrase") != expected:
+        return _resp(401, {"error": "Wrong or missing passphrase."})
+
+    if path.endswith("/approve"):
+        return _do_approve(s3, req)
+    if path.endswith("/reject"):
+        return _do_reject(s3, req)
+    return _do_generate(s3, ssm, req)

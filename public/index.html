@@ -911,6 +911,21 @@ function renderDeepDiveDetailHTML(ticker){
       </div>`;
   }).join('');
 
+  const reviewBar = d._draft ? `
+      <div class="detail-section exit-trigger" style="margin-bottom:24px;">
+        <div class="h">● Generated draft — pending review</div>
+        <p style="margin-bottom:12px;">This is an AI-generated draft in the review queue, not yet published. Read it, then approve to publish it to Deep Dives, or reject to discard.</p>
+        <div class="form-field" style="max-width:320px;margin-bottom:12px;">
+          <label>Passphrase</label>
+          <input id="dd-review-pass" type="password" placeholder="The generator passphrase" autocomplete="off" />
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" style="width:auto;padding:9px 18px;" onclick="approveDeepDive('${d.ticker.replace(/'/g,"\\'")}')">Approve &amp; Publish</button>
+          <button class="btn-secondary" onclick="rejectDeepDive('${d.ticker.replace(/'/g,"\\'")}')">Reject</button>
+        </div>
+        <div id="dd-review-status" style="margin-top:10px;font-size:13px;line-height:1.5;"></div>
+      </div>` : '';
+
   return `
     <div class="detail-page" style="max-width:900px;">
       <a class="detail-back" href="#deepdives">&larr; Back to Deep Dives</a>
@@ -920,6 +935,7 @@ function renderDeepDiveDetailHTML(ticker){
       <div class="detail-badges">
         <span class="badge ${d.sentiment}">${d.sentiment==='bull'?'Bullish':d.sentiment==='bear'?'Bearish':'Neutral'}</span>
       </div>
+      ${reviewBar}
       <div class="detail-stats">
         <div class="detail-stat"><div class="lbl">Price</div><div class="val">${d.price}</div></div>
         <div class="detail-stat"><div class="lbl">Market Cap</div><div class="val">${d.marketCap}</div></div>
@@ -1015,14 +1031,52 @@ async function submitDeepDive(){
     renderDeepDiveList();
     updateCounts();
     statusEl.innerHTML = '<span style="color:var(--bull);font-weight:600;">Done — draft queued for review.</span><br>'
-      + '<span style="color:var(--muted);">Previewing below. To publish: <code>promote.sh deepdive-approve '+draft.ticker+'</code></span>'
-      + '<div style="margin-top:12px;"><button class="btn-primary" onclick="closeModal();location.hash=\'#deepdive-'+encodeURIComponent(draft.ticker)+'\';">Preview the deep dive →</button></div>';
+      + '<span style="color:var(--muted);">Open the preview to read it, then Approve &amp; Publish right there.</span>'
+      + '<div style="margin-top:12px;"><button class="btn-primary" style="width:auto;padding:9px 18px;" onclick="closeModal();location.hash=\'#deepdive-'+encodeURIComponent(draft.ticker)+'\';">Review the deep dive →</button></div>';
     btn.textContent = 'Generate another';
     btn.disabled = false;
   }catch(e){
     statusEl.innerHTML = '<span style="color:var(--bear);">Network error: '+e.message+'</span>';
     btn.disabled = false; btn.textContent = 'Generate';
   }
+}
+
+async function approveDeepDive(ticker){
+  const url = deepDiveApiUrl();
+  const statusEl = document.getElementById('dd-review-status');
+  if(!url){ if(statusEl) statusEl.innerHTML='<span style="color:var(--bear);">Not available in local preview.</span>'; return; }
+  const passEl = document.getElementById('dd-review-pass');
+  const passphrase = (passEl && passEl.value) || '';
+  if(!passphrase){ statusEl.innerHTML='<span style="color:var(--bear);">Enter the passphrase to publish.</span>'; return; }
+  statusEl.innerHTML='<span style="color:var(--muted);">Publishing…</span>';
+  try{
+    const res = await fetch(url+'/approve', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ticker, passphrase})});
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok){ statusEl.innerHTML='<span style="color:var(--bear);">'+(data.error||('Failed ('+res.status+').'))+'</span>'; return; }
+    const d = deepDives.find(x=>x.ticker===ticker); if(d) delete d._draft;   // now live
+    renderDeepDiveList();
+    statusEl.innerHTML='<span style="color:var(--bull);font-weight:600;">✓ Published to Deep Dives.</span> '
+      + '<a href="#deepdives" style="color:var(--accent);">Back to the list →</a>';
+    const bar = statusEl.closest('.detail-section'); if(bar) bar.querySelectorAll('button,input').forEach(el=>el.disabled=true);
+  }catch(e){ statusEl.innerHTML='<span style="color:var(--bear);">Network error: '+e.message+'</span>'; }
+}
+
+async function rejectDeepDive(ticker){
+  const url = deepDiveApiUrl();
+  const statusEl = document.getElementById('dd-review-status');
+  if(!url){ if(statusEl) statusEl.innerHTML='<span style="color:var(--bear);">Not available in local preview.</span>'; return; }
+  const passEl = document.getElementById('dd-review-pass');
+  const passphrase = (passEl && passEl.value) || '';
+  if(!passphrase){ statusEl.innerHTML='<span style="color:var(--bear);">Enter the passphrase to reject.</span>'; return; }
+  statusEl.innerHTML='<span style="color:var(--muted);">Discarding…</span>';
+  try{
+    const res = await fetch(url+'/reject', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ticker, passphrase})});
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok){ statusEl.innerHTML='<span style="color:var(--bear);">'+(data.error||('Failed ('+res.status+').'))+'</span>'; return; }
+    deepDives = deepDives.filter(x=>x.ticker!==ticker);
+    renderDeepDiveList();
+    location.hash = '#deepdives';
+  }catch(e){ statusEl.innerHTML='<span style="color:var(--bear);">Network error: '+e.message+'</span>'; }
 }
 
 /* ===== Router: single source of truth for what's on screen, driven entirely
@@ -1270,8 +1324,28 @@ initTheme();
     document.getElementById('grid').innerHTML='<p style="color:var(--bear);padding:20px 0;line-height:1.6;">Could not load data.json — serve over http (e.g. python3 -m http.server).</p>';
     return;
   }
+  await loadPendingDeepDives();
   buildFilters(); buildCatNav(); renderModels(); renderStocks('all'); renderDeepDiveList(); updateCounts(); route();
 })();
+
+/* Pull any generated-but-unpublished deep dives from the review queue and fold them into
+   the in-memory deepDives list, badged as drafts, so they can be reviewed + approved from
+   the UI. They're not in data.json (not published), so this is the only place they appear. */
+async function loadPendingDeepDives(){
+  try{
+    const res = await fetch('./pending_deepdives.json', {cache:'no-store'});
+    if(!res.ok) return;
+    const queue = await res.json();
+    if(!Array.isArray(queue)) return;
+    const liveTickers = new Set(deepDives.map(d=>d.ticker));
+    queue.forEach(d=>{
+      if(liveTickers.has(d.ticker)) return;   // already published — ignore the stale queue copy
+      d._draft = true;
+      deepDives = deepDives.filter(x=>x.ticker!==d.ticker);
+      deepDives.push(d);
+    });
+  }catch(e){ /* no queue yet, or local preview — fine */ }
+}
 </script>
 </body>
 </html>
