@@ -230,6 +230,11 @@
     background:rgba(201,84,26,.06);border:1px solid rgba(201,84,26,.2);border-radius:10px;padding:20px 22px;margin-bottom:32px;
   }
   .detail-section.analogy .h{color:var(--accent);border-bottom:none;padding-bottom:0;margin-bottom:8px;}
+  .detail-section.exit-trigger{
+    background:var(--neutral-dim);border:1px solid var(--neutral);border-radius:10px;padding:20px 22px;margin-bottom:32px;
+  }
+  .detail-section.exit-trigger .h{color:var(--neutral);border-bottom:none;padding-bottom:0;margin-bottom:8px;}
+  .detail-section.exit-trigger p{color:var(--text);font-weight:500;}
   .detail-links a{
     display:block;font-family:'Inter',sans-serif;font-size:14.5px;color:var(--accent);text-decoration:none;
     padding:10px 0;border-bottom:1px solid var(--line);
@@ -305,6 +310,7 @@
       <a href="#stocks" data-route="stocks">Stock Tracker <span class="topbar-count">18</span></a>
       <a href="#models" data-route="models">Mental Models Guide <span class="topbar-count">20</span></a>
       <a href="#framework" data-route="framework">Decision Framework <span class="topbar-count">11</span></a>
+      <a href="#deepdives" data-route="deepdives">Deep Dives <span class="topbar-count">2</span></a>
     </div>
     <button id="themeToggleBtn" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:8px 16px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;">Dark mode</button>
   </div>
@@ -349,6 +355,12 @@
         <h3>All 20 models, one process</h3>
         <p>A synthesized 11-stage sequence — screen, analyze, size, maintain — showing how the models actually chain together.</p>
         <div class="home-card-cta">Walk through 11 stages &rarr;</div>
+      </a>
+      <a class="home-card" href="#deepdives">
+        <div class="home-card-eyebrow">Deep Dives</div>
+        <h3>Full 11-stage teardowns</h3>
+        <p>Your own extended analyses — stocks outside the Substack tracker, each run through the entire framework with an explicit exit trigger.</p>
+        <div class="home-card-cta">Browse 2 deep dives &rarr;</div>
       </a>
     </div>
   </div>
@@ -588,6 +600,16 @@
     </div>
   </div>
 
+  <div class="panel" id="panel-deepdives">
+    <p style="color:var(--muted);font-size:13.5px;max-width:720px;line-height:1.6;margin:18px 0 4px;">
+      Your own extended analyses — stocks outside the original Substack tracker, run through the same 11-stage framework in full, each with an explicit Exit Trigger so a future you doesn't have to re-derive one from scratch.
+    </p>
+    <div id="deepDivesListView">
+      <div class="grid" id="deepDiveGrid"></div>
+    </div>
+    <div id="deepDiveDetailView" style="display:none;"></div>
+  </div>
+
   <footer>
     Prices pulled live at build time from public market data. Author entry prices, post-date prices, and model explanations are taken directly from the newsletter's text (paraphrased in plain language where noted). Original deep-dive links in the posts point to a private/unindexed subreddit not reachable here — this guide is built entirely from what the author explains inline before applying each model. Reading companion, not financial advice.
     <span style="opacity:.55;"> · <a href="#" id="diagLink" onclick="event.preventDefault();openLogsModal();" style="color:var(--muted);text-decoration:underline;">System diagnostics</a></span>
@@ -597,7 +619,7 @@
 <div class="modal-bg" id="modalBg"><div class="modal" id="modalBody"></div></div>
 
 <script>
-let stocks=[], categories=[], models=[], stockPosts={}, modelPost={};
+let stocks=[], categories=[], models=[], stockPosts={}, modelPost={}, deepDives=[];
 
 
 
@@ -777,6 +799,11 @@ function renderStockDetailHTML(ticker){
         <div class="h">The Thesis</div>
         <p>${s.thesis||'No notes added yet.'}</p>
       </div>
+      ${s.exitTrigger ? `
+      <div class="detail-section exit-trigger">
+        <div class="h">Exit Trigger — What Would Change This Call</div>
+        <p>${s.exitTrigger}</p>
+      </div>` : ''}
       <div class="detail-section">
         <div class="h">Current Outlook</div>
         <p>${s.outlook||'—'}</p>
@@ -827,6 +854,82 @@ function renderModelDetailHTML(name){
   `;
 }
 
+/* ===== Deep Dives: extended stock analyses kept structurally separate from the
+   Substack-sourced `stocks` array (loaded from data.json["deepDives"]). Each has
+   the full 11-stage framework applied plus an explicit exit trigger. ===== */
+function renderDeepDiveList(){
+  const grid = document.getElementById('deepDiveGrid');
+  if(!grid) return;
+  grid.innerHTML = deepDives.map(d => `
+    <div class="card" onclick="location.hash='#deepdive-${encodeURIComponent(d.ticker)}'">
+      <div class="card-top">
+        <div class="ticker-block">
+          <div class="ticker">${d.ticker} <span style="color:var(--muted);font-weight:400;font-size:11px;">${d.exch}</span></div>
+          <div class="name">${d.name}</div>
+        </div>
+        <div class="badge ${d.sentiment}">${d.sentiment==='bull'?'Bullish':d.sentiment==='bear'?'Bearish':'Neutral'}</div>
+      </div>
+      <div class="model-tag">${d.valuation}</div>
+      <div class="price-row">
+        <div class="price-block"><div class="lbl">Price</div><div class="val">${d.price}</div></div>
+        <div class="price-block" style="text-align:right;"><div class="lbl">Market Cap</div><div class="val">${d.marketCap}</div></div>
+      </div>
+      <div class="thesis">${d.sector}</div>
+    </div>
+  `).join('');
+}
+
+function renderDeepDiveDetailHTML(ticker){
+  const d = deepDives.find(x=>x.ticker===ticker);
+  if(!d) return null;
+
+  const stageRows = d.stages.map(s => {
+    const modelChips = (s.m && s.m.length) ? `<div class="chip-row" style="margin-bottom:10px;">${s.m.map(mn=>`<a class="tick-chip" style="border-radius:6px;padding:6px 10px;font-size:12px;text-decoration:none;" href="#model-${encodeURIComponent(mn)}">${mn}</a>`).join('')}</div>` : '';
+    const checkpointHtml = s.cp ? `
+      <div class="tl-checkpoint">
+        <div class="h">Checkpoint</div>
+        <div class="q">${s.cp.q}</div>
+        ${s.cp.outs.map(o=>`<div class="tl-outcome-row"><span class="badge ${o[0]}" style="cursor:default;">${o[1]}</span> ${o[2]}</div>`).join('')}
+      </div>` : '';
+    return `
+      <div class="tl-row">
+        <div class="tl-node">${s.n}</div>
+        <div class="tl-card-wrap">
+          <div class="stage-card" style="cursor:default;">
+            <h3>${s.t}</h3>
+            ${modelChips}
+            <p>${s.b}</p>
+            ${checkpointHtml}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="detail-page" style="max-width:900px;">
+      <a class="detail-back" href="#deepdives">&larr; Back to Deep Dives</a>
+      <div class="detail-eyebrow">${d.sector}</div>
+      <h1 class="detail-title">${d.name}</h1>
+      <div class="detail-sub">${d.ticker} &middot; ${d.exch}</div>
+      <div class="detail-badges">
+        <span class="badge ${d.sentiment}">${d.sentiment==='bull'?'Bullish':d.sentiment==='bear'?'Bearish':'Neutral'}</span>
+      </div>
+      <div class="detail-stats">
+        <div class="detail-stat"><div class="lbl">Price</div><div class="val">${d.price}</div></div>
+        <div class="detail-stat"><div class="lbl">Market Cap</div><div class="val">${d.marketCap}</div></div>
+        <div class="detail-stat" style="grid-column:span 2;"><div class="lbl">Valuation</div><div class="val" style="font-size:14px;font-weight:400;line-height:1.4;">${d.valuation}</div></div>
+      </div>
+      <div class="tl-wrap" style="padding-top:0;">
+        ${stageRows}
+      </div>
+      <div class="detail-section exit-trigger">
+        <div class="h">Exit Trigger — What Would Change This Call</div>
+        <p>${d.exitTrigger}</p>
+      </div>
+    </div>
+  `;
+}
+
 /* ===== Router: single source of truth for what's on screen, driven entirely
    by location.hash. Works on first load, on refresh, and on browser
    back/forward — not just on click, which is what a "real page" needs. ===== */
@@ -837,6 +940,10 @@ function route(){
   document.getElementById('stockDetailView').style.display = 'none';
   document.getElementById('modelsListView').style.display = 'none';
   document.getElementById('modelDetailView').style.display = 'none';
+  const ddList = document.getElementById('deepDivesListView');
+  const ddDetail = document.getElementById('deepDiveDetailView');
+  if(ddList) ddList.style.display = 'none';
+  if(ddDetail) ddDetail.style.display = 'none';
 
   if(hash.startsWith('#stock-')){
     const ticker = decodeURIComponent(hash.slice('#stock-'.length));
@@ -871,6 +978,27 @@ function route(){
       location.hash = '#models';
       return;
     }
+  } else if(hash.startsWith('#deepdive-')){
+    const ticker = decodeURIComponent(hash.slice('#deepdive-'.length));
+    const html = renderDeepDiveDetailHTML(ticker);
+    if(html && ddDetail){
+      switchTab('deepdives');
+      ddDetail.innerHTML = html;
+      ddDetail.style.display = 'block';
+      const d = deepDives.find(x=>x.ticker===ticker);
+      renderBreadcrumbs([
+        {label:'Home', href:'#home'},
+        {label:'Deep Dives', href:'#deepdives'},
+        {label:d.name}
+      ]);
+    } else {
+      location.hash = '#deepdives';
+      return;
+    }
+  } else if(hash === '#deepdives'){
+    switchTab('deepdives');
+    if(ddList) ddList.style.display = 'block';
+    renderBreadcrumbs([{label:'Home', href:'#home'}, {label:'Deep Dives'}]);
   } else if(hash === '#models'){
     switchTab('models');
     document.getElementById('modelsListView').style.display = 'block';
@@ -1029,7 +1157,7 @@ function scrollToStage(id){
 
 function updateCounts(){
   const bull=stocks.filter(s=>s.sentiment==='bull').length, bear=stocks.filter(s=>s.sentiment==='bear').length;
-  const tc=document.querySelectorAll('.topbar-count'); if(tc[0])tc[0].textContent=stocks.length; if(tc[1])tc[1].textContent=models.length;
+  const tc=document.querySelectorAll('.topbar-count'); if(tc[0])tc[0].textContent=stocks.length; if(tc[1])tc[1].textContent=models.length; if(tc[3])tc[3].textContent=deepDives.length;
   const hm=document.querySelectorAll('#panel-home .meta-row .meta-item b');
   if(hm[0]&&window.__postsRead!=null)hm[0].textContent=window.__postsRead; if(hm[1])hm[1].textContent=stocks.length; if(hm[2])hm[2].textContent=models.length;
   const sm=document.querySelectorAll('#stocksListView .meta-row .meta-item b');
@@ -1041,13 +1169,13 @@ initTheme();
     const res=await fetch('./data.json',{cache:'no-store'});
     if(!res.ok) throw new Error('HTTP '+res.status);
     const d=await res.json();
-    stocks=d.stocks||[]; categories=d.categories||[]; models=d.models||[]; stockPosts=d.stockPosts||{}; modelPost=d.modelPost||{};
+    stocks=d.stocks||[]; categories=d.categories||[]; models=d.models||[]; stockPosts=d.stockPosts||{}; modelPost=d.modelPost||{}; deepDives=d.deepDives||[];
     window.__pricesAsOf=d.pricesAsOf||null; window.__postsRead=(typeof d.postsRead==='number')?d.postsRead:null;
   }catch(e){
     document.getElementById('grid').innerHTML='<p style="color:var(--bear);padding:20px 0;line-height:1.6;">Could not load data.json — serve over http (e.g. python3 -m http.server).</p>';
     return;
   }
-  buildFilters(); buildCatNav(); renderModels(); renderStocks('all'); updateCounts(); route();
+  buildFilters(); buildCatNav(); renderModels(); renderStocks('all'); renderDeepDiveList(); updateCounts(); route();
 })();
 </script>
 </body>
