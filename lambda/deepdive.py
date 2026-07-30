@@ -21,6 +21,7 @@ duplicated price/Groq code. See ../CLAUDE.md and ../docs/ARCHITECTURE.md.
 import json
 import os
 import re
+import difflib
 import http.cookiejar
 import urllib.error
 import urllib.parse
@@ -297,12 +298,12 @@ def _verify_prompt(draft, facts, price_str, issues):
     stage bodies, and asks for a small correction object (not the whole draft). Keeps the call
     tiny enough to fit the free-tier per-minute token budget."""
     facts_block = _facts_block(facts) or "(none available)"
-    # bodies of the stages that the guardrails flagged (plus 8 & 9 where targets live)
+    # bodies of the stages that the guardrails flagged (plus 8 & 9 where targets live).
+    # findall so a "Stage 9 and Stage 10 …" duplicate warning pulls in BOTH stages.
     want = set([8, 9])
     for w in issues:
-        m = re.search(r"Stage (\d+)", w)
-        if m:
-            want.add(int(m.group(1)))
+        for n in re.findall(r"[Ss]tage (\d+)", w):
+            want.add(int(n))
     stage_bodies = {s["n"]: s["b"] for s in draft.get("stages", []) if s.get("n") in want}
     return (
         "You are fact-checking an equity deep-dive. Current share price: " + price_str + ".\n"
@@ -318,7 +319,9 @@ def _verify_prompt(draft, facts, price_str, issues):
         "  valuation   : corrected sentence if it contradicts the figures.\n"
         "  exitTrigger : rewritten as an observable BUSINESS event if it was a price level.\n"
         "  stageFixes  : array of {n, b} — corrected body ONLY for stages that were wrong "
-        "(fix upside/downside wording so it matches the target vs the current price).\n"
+        "(fix upside/downside wording so it matches the target vs the current price; if two "
+        "stages were flagged as near-duplicates, rewrite ONE of them so each applies its own "
+        "distinct purpose).\n"
         "Return ONLY the JSON object."
     )
 
@@ -461,7 +464,18 @@ def _guardrails(draft, facts, price):
             if "downside" in low and tgt > price:
                 warnings.append(f"Stage {n}: calls a ${tgt:,.0f} target 'downside' but it's above the current price (${price:,.2f}) — that's upside. Check the direction.")
 
-    # 3. did we ground it at all?
+    # 3. near-duplicate stage bodies (the model sometimes copy-pastes one stage into another)
+    stages = [s for s in draft.get("stages", []) if (s.get("b") or "").strip()]
+    for i in range(len(stages)):
+        for j in range(i + 1, len(stages)):
+            a = " ".join((stages[i]["b"] or "").lower().split())
+            b = " ".join((stages[j]["b"] or "").lower().split())
+            if difflib.SequenceMatcher(None, a, b).ratio() >= 0.8:
+                warnings.append(
+                    f"Stage {stages[i]['n']} and Stage {stages[j]['n']} read as near-duplicates "
+                    "— one should be rewritten so they're distinct.")
+
+    # 4. did we ground it at all?
     if not _facts_block(facts):
         warnings.append("No live fundamentals were available for this ticker — financial figures are the model's own and unverified.")
 
