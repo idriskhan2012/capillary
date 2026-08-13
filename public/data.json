@@ -280,13 +280,43 @@
       "sector": "US · Gaming",
       "sentiment": "bull",
       "modelShort": "Capital Allocator Quality (ROCE vs. ROIIC)",
-      "postDate": null,
+      "postDate": "Aug 11, 2026",
       "postPrice": null,
       "entryNote": "Author initiated a position in Unity Software based on XR and infrastructure potential.",
       "thesis": "The author believes Unity’s XR technology and infrastructure position, combined with a new capital allocator improving ROIC and margins, make it a compelling investment opportunity. The company’s dominance in gaming and expansion into automotive HMI and other sectors provide a strong growth platform.",
       "outlook": "Bullish on Unity Software.",
       "custom": false,
       "current": 44.92
+    },
+    {
+      "ticker": "UBER",
+      "exch": "NYSE",
+      "name": "Uber Technologies Inc.",
+      "sector": "US · Mobility",
+      "sentiment": "bull",
+      "modelShort": "Capital Allocator Quality (ROCE vs. ROIIC)",
+      "postDate": "Aug 11, 2026",
+      "postPrice": null,
+      "current": 75,
+      "entryNote": "Contrarian buy after recent results — a name the market had discarded.",
+      "thesis": "Bought after the market discarded it. Post recent results it trades at ~13–14x free cash flow. The bet rests on an exceptional capital allocator, a real moat, and strong business economics — the same “go where consensus has given up” signature the author used on Unity.",
+      "outlook": "Bullish — contrarian on a discarded name with an exceptional allocator.",
+      "custom": false
+    },
+    {
+      "ticker": "VEEV",
+      "exch": "NYSE",
+      "name": "Veeva Systems Inc.",
+      "sector": "US · Software",
+      "sentiment": "bull",
+      "modelShort": "Capital Allocator Quality (ROCE vs. ROIIC)",
+      "postDate": "Aug 11, 2026",
+      "postPrice": null,
+      "current": 241.24,
+      "entryNote": "Long-held position — owned because the allocator’s intent is legible.",
+      "thesis": "A holding where the capital allocator is the differentiator. The author has clarity on what Veeva’s allocator is building, and explicitly avoids Salesforce despite its scale/threat because of “billions in reckless acquisitions, capital destroyed systematically.” A strong allocator inside a focused business is the edge.",
+      "outlook": "Bullish — backs Veeva’s allocator; avoids Salesforce.",
+      "custom": false
     }
   ],
   "categories": [
@@ -526,7 +556,9 @@
       "name": "Capital Allocator Quality (ROCE vs. ROIIC)",
       "tickers": [
         "KALYANKJIL",
-        "U"
+        "U",
+        "UBER",
+        "VEEV"
       ],
       "oneliner": "Debt, cash-hoarding, and pledges aren't automatically good or bad — the real question is whether management is deploying capital in a way that actually creates value.",
       "full": "The problem it solves: whether debt, a promoter pledge, or cash-hoarding is good or bad — the trigger question being ‘is promoter pledge a red flag?’ His answer: a capital-allocation decision in isolation tells you nothing; you have to ask why it was made and which direction the business moved after. The core tools are ROCE and ROIIC read together — ROCE shows the structural quality of the existing business, ROIIC shows the marginal quality of the new capital being deployed — so leverage is good only when the allocator is good and knows when and how to use it. Add a lifecycle lens: mature compounders self-fund and need no pledge, while a pledge is legitimate earlier when the growth opportunity exceeds internal cash. To apply it, pair ROCE with ROIIC, get inside the allocator’s incentives, and judge which financing tool they picked and why — his worked examples span TransDigm (designed ~5.8x EBITDA leverage funding buybacks and special dividends into a ~27% total-return CAGR), ServiceNow (paying ~$9B for Veza and Armis where year-one ROIIC looks poor but the strategic ROIIC buys longevity and pricing power), Copart (sitting on ~$5B cash yet opening an undrawn multi-currency credit line to borrow in the local currency of each expansion market as a hedge), and Buffett borrowing yen at ~0.5% to collect 3-5% dividends (~6x interest coverage) despite having the cash. What’s easy to get wrong: reading any one variable (pledge, debt, cash) in isolation or screening on the raw number without the structure underneath. His explicit red-flag patterns: capital flowing to the promoter’s personal balance sheet rather than the business, the pledge ratio rising while ROIIC falls, no stated and tracked deleveraging path, and pledged shares sitting at a price where a forced sale triggers a death spiral.",
@@ -688,6 +720,18 @@
       }
     ],
     "U": [
+      {
+        "title": "Walking Through Random Doors",
+        "slug": "walking-through-random-doors"
+      }
+    ],
+    "UBER": [
+      {
+        "title": "Walking Through Random Doors",
+        "slug": "walking-through-random-doors"
+      }
+    ],
+    "VEEV": [
       {
         "title": "Walking Through Random Doors",
         "slug": "walking-through-random-doors"
