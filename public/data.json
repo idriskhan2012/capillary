@@ -274,8 +274,8 @@
       "outlook": "Strongly bullish, actively 'snowballing' — adding every time the business proves out a new layer (new verticals, new customers), independent of price moves."
     },
     {
-      "ticker": "UNITY",
-      "exch": "NASDAQ",
+      "ticker": "U",
+      "exch": "NYSE",
       "name": "Unity Software Inc.",
       "sector": "US · Gaming",
       "sentiment": "bull",
@@ -286,7 +286,7 @@
       "thesis": "The author believes Unity’s XR technology and infrastructure position, combined with a new capital allocator improving ROIC and margins, make it a compelling investment opportunity. The company’s dominance in gaming and expansion into automotive HMI and other sectors provide a strong growth platform.",
       "outlook": "Bullish on Unity Software.",
       "custom": false,
-      "current": null
+      "current": 44.92
     }
   ],
   "categories": [
@@ -526,7 +526,7 @@
       "name": "Capital Allocator Quality (ROCE vs. ROIIC)",
       "tickers": [
         "KALYANKJIL",
-        "UNITY"
+        "U"
       ],
       "oneliner": "Debt, cash-hoarding, and pledges aren't automatically good or bad — the real question is whether management is deploying capital in a way that actually creates value.",
       "full": "The problem it solves: whether debt, a promoter pledge, or cash-hoarding is good or bad — the trigger question being ‘is promoter pledge a red flag?’ His answer: a capital-allocation decision in isolation tells you nothing; you have to ask why it was made and which direction the business moved after. The core tools are ROCE and ROIIC read together — ROCE shows the structural quality of the existing business, ROIIC shows the marginal quality of the new capital being deployed — so leverage is good only when the allocator is good and knows when and how to use it. Add a lifecycle lens: mature compounders self-fund and need no pledge, while a pledge is legitimate earlier when the growth opportunity exceeds internal cash. To apply it, pair ROCE with ROIIC, get inside the allocator’s incentives, and judge which financing tool they picked and why — his worked examples span TransDigm (designed ~5.8x EBITDA leverage funding buybacks and special dividends into a ~27% total-return CAGR), ServiceNow (paying ~$9B for Veza and Armis where year-one ROIIC looks poor but the strategic ROIIC buys longevity and pricing power), Copart (sitting on ~$5B cash yet opening an undrawn multi-currency credit line to borrow in the local currency of each expansion market as a hedge), and Buffett borrowing yen at ~0.5% to collect 3-5% dividends (~6x interest coverage) despite having the cash. What’s easy to get wrong: reading any one variable (pledge, debt, cash) in isolation or screening on the raw number without the structure underneath. His explicit red-flag patterns: capital flowing to the promoter’s personal balance sheet rather than the business, the pledge ratio rising while ROIIC falls, no stated and tracked deleveraging path, and pledged shares sitting at a price where a forced sale triggers a death spiral.",
@@ -687,7 +687,7 @@
         "slug": "the-quiet-math-that-separates-great"
       }
     ],
-    "UNITY": [
+    "U": [
       {
         "title": "Walking Through Random Doors",
         "slug": "walking-through-random-doors"
