@@ -992,6 +992,12 @@ function renderDeepDiveDetailHTML(ticker){
 function deepDiveApiUrl(){
   return (window.CAPILLARY_CONFIG && window.CAPILLARY_CONFIG.deepDiveApiUrl) || null;
 }
+// The config URL ends in "/deepdive"; the review routes live at the API root (/review/*),
+// so strip the trailing "/deepdive" before joining a path like "/review/approve".
+function apiUrl(path){
+  const base = deepDiveApiUrl(); if(!base) return null;
+  return base.replace(/\/deepdive$/, '') + path;
+}
 
 function openDeepDiveForm(){
   const modal = document.getElementById('modalBody');
@@ -1403,7 +1409,7 @@ async function approveStock(slug){
   if(!passphrase){ statusEl.innerHTML='<span style="color:var(--bear);">Enter the passphrase.</span>'; return; }
   statusEl.innerHTML='<span style="color:var(--muted);">Adding '+ticker+' to the tracker…</span>';
   try{
-    const res=await fetch(url+'/review/approve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug,ticker,exch,model,passphrase})});
+    const res=await fetch(apiUrl('/review/approve'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug,ticker,exch,model,passphrase})});
     const data=await res.json().catch(()=>({}));
     if(!res.ok){
       statusEl.innerHTML='<span style="color:var(--bear);">'+(data.error||('Failed ('+res.status+').'))+(data.validModels?' Valid models: '+data.validModels.join(', '):'')+'</span>';
@@ -1422,7 +1428,7 @@ async function rejectStock(slug){
   if(!passphrase){ statusEl.innerHTML='<span style="color:var(--bear);">Enter the passphrase to reject.</span>'; return; }
   statusEl.innerHTML='<span style="color:var(--muted);">Discarding…</span>';
   try{
-    const res=await fetch(url+'/review/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug,passphrase})});
+    const res=await fetch(apiUrl('/review/reject'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug,passphrase})});
     const data=await res.json().catch(()=>({}));
     if(!res.ok){ statusEl.innerHTML='<span style="color:var(--bear);">'+(data.error||('Failed ('+res.status+').'))+'</span>'; return; }
     stocks=stocks.filter(x=>!(x._draft&&x._source_slug===slug)); renderAll();
