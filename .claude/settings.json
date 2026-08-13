@@ -1,0 +1,28 @@
+{
+  "env": {
+    "AWS_PROFILE": "capillary",
+    "CAP_REGION": "ap-south-1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(aws:*)",
+      "Bash(node:*)",
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(sed:*)",
+      "Bash(mktemp:*)",
+      "Bash(cd:*)",
+      "Bash(for:*)",
+      "Bash(echo:*)",
+      "Bash(test:*)",
+      "Bash(git:*)",
+      "Bash(./infra/deploy.sh:*)",
+      "Bash(./infra/promote.sh:*)"
+    ]
+  }
+}

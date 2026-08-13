@@ -97,6 +97,11 @@ Resources:
             ViewerProtocolPolicy: redirect-to-https
             AllowedMethods: [GET, HEAD]
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # Managed-CachingDisabled (review queue, always fresh)
+          - PathPattern: /pending_review.json
+            TargetOriginId: s3-origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD]
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # Managed-CachingDisabled (scraper draft queue, always fresh)
 
   SiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -282,6 +287,20 @@ Resources:
     Properties:
       ApiId: !Ref DeepDiveApi
       RouteKey: "POST /deepdive/reject"
+      Target: !Sub "integrations/${DeepDiveIntegration}"
+
+  ReviewApproveRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref DeepDiveApi
+      RouteKey: "POST /review/approve"
+      Target: !Sub "integrations/${DeepDiveIntegration}"
+
+  ReviewRejectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref DeepDiveApi
+      RouteKey: "POST /review/reject"
       Target: !Sub "integrations/${DeepDiveIntegration}"
 
   DeepDiveStage:

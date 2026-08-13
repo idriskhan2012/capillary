@@ -33,6 +33,11 @@ import scraper  # same package; reuse its helpers + constants
 # Name of the SSM SecureString holding the shared passphrase (set by deploy.sh).
 DEEPDIVE_PASSPHRASE_PARAM = os.environ.get("DEEPDIVE_PASSPHRASE_PARAM", "/capillary/deepdive-passphrase")
 PENDING_DEEPDIVES_KEY = "pending_deepdives.json"
+PENDING_REVIEW_KEY = "pending_review.json"  # scraper-classified stock drafts (not deep dives)
+
+# The stock fields carried from a scraper draft into data.json["stocks"] (mirrors promote.py).
+STOCK_FIELDS = ["ticker", "exch", "name", "sector", "sentiment", "modelShort",
+                "postDate", "postPrice", "entryNote", "thesis", "outlook"]
 
 # The 11 framework stages, in order — must match the Decision Framework / the two
 # hand-authored deep dives so a generated one renders identically.
@@ -635,6 +640,119 @@ DEEPDIVE_FIELDS = ["ticker", "name", "exch", "sector", "sentiment", "price",
                    "marketCap", "valuation", "exitTrigger", "stages"]
 
 
+# --- Scraper stock-draft review (pending_review.json -> data.json["stocks"]) ----------
+# In-browser equivalent of infra/promote.py: approve wires the stock + tags its mental
+# model + adds the post link; reject drops it.
+
+def _norm_model(s):
+    s = (s or "").lower()
+    s = re.sub(r"[^a-z0-9 ]", " ", s)
+    s = re.sub(r"\bthe\b", " ", s)
+    return re.sub(r"\s+", "", s)
+
+
+def _find_model(model_name, models):
+    dn = _norm_model(model_name)
+    if not dn:
+        return None
+    for m in models:                                   # exact normalized match
+        if _norm_model(m.get("name")) == dn:
+            return m
+    cands = [m for m in models                          # substring either direction
+             if _norm_model(m.get("name")) and (_norm_model(m["name"]) in dn or dn in _norm_model(m["name"]))]
+    return cands[0] if len(cands) == 1 else None
+
+
+def _do_review_approve(s3, req):
+    """Promote a scraper stock draft into data.json: add the stock, tag its model, add the
+    post link, drain the queue. Ticker/exchange/model can be overridden (the classifier often
+    gets a ticker like Unity's 'U' wrong)."""
+    slug = (req.get("slug") or "").strip()
+    if not slug:
+        return _resp(400, {"error": "A draft slug is required."})
+
+    pending = _read_review(s3)
+    draft = next((d for d in pending if d.get("_source_slug") == slug), None)
+    if not draft:
+        return _resp(404, {"error": f"No draft with slug {slug!r}."})
+
+    ticker = (req.get("ticker") or draft.get("ticker") or "").strip().upper()
+    if not ticker:
+        return _resp(400, {"error": "A ticker is required (the classifier didn't resolve one)."})
+    exch = (req.get("exch") or draft.get("exch") or "").strip().upper()
+
+    try:
+        data = scraper.load_data(s3)
+    except Exception as e:
+        return _resp(500, {"error": f"Could not load data.json: {e}"})
+
+    # match the mental model BEFORE writing anything, so a bad model name doesn't half-apply
+    model_label = req.get("model") or draft.get("modelShort")
+    model = _find_model(model_label, data.get("models", []))
+    if not model:
+        return _resp(422, {"error": f"Could not match model {model_label!r} to one of the frameworks.",
+                           "validModels": [m.get("name") for m in data.get("models", [])]})
+
+    # build + upsert the stock
+    stock = {k: draft.get(k) for k in STOCK_FIELDS}
+    stock["ticker"] = ticker
+    stock["exch"] = exch or stock.get("exch")
+    stock["custom"] = False
+    # best-effort live price so the card isn't blank until the next scraper run
+    try:
+        stock["current"] = scraper.yahoo_price(ticker, exch)
+    except Exception:
+        stock["current"] = None
+
+    data["stocks"] = [s for s in data.get("stocks", []) if (s.get("ticker") or "").upper() != ticker]
+    data["stocks"].append(stock)
+
+    # tag the ticker onto its mental model (reverse cross-link the UI needs)
+    model.setdefault("tickers", [])
+    if ticker not in model["tickers"]:
+        model["tickers"].append(ticker)
+
+    # "read the original post" link
+    title = draft.get("_source_title") or draft.get("name") or ticker
+    data.setdefault("stockPosts", {})[ticker] = [{"title": title, "slug": slug}]
+
+    try:
+        scraper.save_data(s3, data)
+        _write_review(s3, [d for d in pending if d.get("_source_slug") != slug])
+    except Exception as e:
+        return _resp(500, {"error": f"Could not publish: {e}"})
+
+    return _resp(200, {"ok": True, "published": True, "ticker": ticker,
+                       "model": model.get("name"),
+                       "message": f"{ticker} ({stock.get('name')}) added to the tracker, tagged onto {model.get('name')}."})
+
+
+def _do_review_reject(s3, req):
+    slug = (req.get("slug") or "").strip()
+    if not slug:
+        return _resp(400, {"error": "A draft slug is required."})
+    pending = _read_review(s3)
+    if not any(d.get("_source_slug") == slug for d in pending):
+        return _resp(404, {"error": f"No draft with slug {slug!r}."})
+    _write_review(s3, [d for d in pending if d.get("_source_slug") != slug])
+    return _resp(200, {"ok": True, "rejected": True, "slug": slug, "message": "Draft discarded."})
+
+
+def _read_review(s3):
+    try:
+        obj = s3.get_object(Bucket=scraper.S3_BUCKET, Key=PENDING_REVIEW_KEY)
+        p = json.loads(obj["Body"].read())
+        return p if isinstance(p, list) else []
+    except Exception:
+        return []
+
+
+def _write_review(s3, pending):
+    s3.put_object(Bucket=scraper.S3_BUCKET, Key=PENDING_REVIEW_KEY,
+                  Body=json.dumps(pending, indent=2).encode("utf-8"),
+                  ContentType="application/json", CacheControl="no-cache")
+
+
 def lambda_handler(event, context):
     import boto3
 
@@ -666,6 +784,12 @@ def lambda_handler(event, context):
     if not req.get("passphrase") or req.get("passphrase") != expected:
         return _resp(401, {"error": "Wrong or missing passphrase."})
 
+    # scraper stock-draft review (check the more specific /review/* before the generic ones)
+    if path.endswith("/review/approve"):
+        return _do_review_approve(s3, req)
+    if path.endswith("/review/reject"):
+        return _do_review_reject(s3, req)
+    # deep-dive review
     if path.endswith("/approve"):
         return _do_approve(s3, req)
     if path.endswith("/reject"):

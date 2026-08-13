@@ -702,18 +702,20 @@ const stockFiltersEl = document.getElementById('stockFilters');
 function renderStocks(filter){
   currentFilter = filter;
   grid.innerHTML = '';
-  const all = stocks;
+  // Draft (scraper-classified, pending review) cards first so they're easy to find + approve.
+  const all = stocks.slice().sort((a,b)=> (b._draft?1:0)-(a._draft?1:0));
   all.forEach(s=>{
     if(filter!=='all' && s.sentiment!==filter) return;
     const change = pct(s.postPrice, s.current);
     const card = document.createElement('div');
     card.className = 'card';
     card.style.position = 'relative';
-    card.onclick = ()=>showStockDetail(s.ticker);
+    card.onclick = ()=>showStockDetail(s._draft ? '@'+s._source_slug : s.ticker);
     card.innerHTML = `
+      ${s._draft ? `<div style="margin:-2px 0 8px;font-size:11px;font-weight:600;color:var(--neutral);text-transform:uppercase;letter-spacing:.4px;">● Auto-classified · pending review</div>` : ''}
       <div class="card-top">
         <div class="ticker-block">
-          <div class="ticker">${s.ticker} <span style="color:var(--muted);font-weight:400;font-size:11px;">${s.exch}</span></div>
+          <div class="ticker">${s.ticker||'?'} <span style="color:var(--muted);font-weight:400;font-size:11px;">${s.exch||''}</span></div>
           <div class="name">${s.name}</div>
         </div>
         <div class="badge ${s.sentiment}">${s.sentiment==='bull'?'Bullish':s.sentiment==='bear'?'Bearish':'Neutral'}</div>
@@ -730,8 +732,9 @@ function renderStocks(filter){
   });
 }
 function buildFilters(){
-  const bull=stocks.filter(s=>s.sentiment==='bull').length, bear=stocks.filter(s=>s.sentiment==='bear').length, neu=stocks.filter(s=>s.sentiment==='neutral').length;
-  const defs=[{key:'all',label:'All ('+stocks.length+')'},{key:'bull',label:'Bullish ('+bull+')'},{key:'bear',label:'Bearish / Avoid ('+bear+')'},{key:'neutral',label:'Neutral ('+neu+')'}];
+  const live=stocks.filter(s=>!s._draft);
+  const bull=live.filter(s=>s.sentiment==='bull').length, bear=live.filter(s=>s.sentiment==='bear').length, neu=live.filter(s=>s.sentiment==='neutral').length;
+  const defs=[{key:'all',label:'All ('+live.length+')'},{key:'bull',label:'Bullish ('+bull+')'},{key:'bear',label:'Bearish / Avoid ('+bear+')'},{key:'neutral',label:'Neutral ('+neu+')'}];
   stockFiltersEl.innerHTML='';
   defs.forEach(f=>{
     const b=document.createElement('button');
@@ -779,21 +782,45 @@ function buildCatNav(){
   });
 }
 
+function findStockByRef(ref){
+  if(ref && ref[0]==='@'){ const slug=ref.slice(1); return stocks.find(x=>x._draft && x._source_slug===slug); }
+  return stocks.find(x=>x.ticker===ref);
+}
+
 function renderStockDetailHTML(ticker){
-  const s = stocks.find(x=>x.ticker===ticker);
+  const s = findStockByRef(ticker);
   if(!s) return null;
   const change = pct(s.postPrice, s.current);
   const related = modelsForTicker(s.ticker);
+  const modelOpts = models.map(m=>`<option value="${m.name.replace(/"/g,'&quot;')}"${m.name===s.modelShort?' selected':''}>${m.name}</option>`).join('');
+  const exchOpts = ['NSE','BSE','NASDAQ','NYSE'].map(e=>`<option value="${e}"${e===(s.exch||'').toUpperCase()?' selected':''}>${e}</option>`).join('');
+  const reviewBar = s._draft ? `
+      <div class="detail-section exit-trigger" style="margin-bottom:24px;">
+        <div class="h">● Auto-classified draft — pending review</div>
+        <p style="margin-bottom:12px;">The scraper classified this from the post. Check/fix the ticker, exchange, and mental model, then approve to add it to the tracker (this wires the model cross-link and the post link), or reject to discard.</p>
+        <div class="form-grid">
+          <div class="form-field"><label>Ticker</label><input id="rv-ticker" value="${(s.ticker||'').replace(/"/g,'&quot;')}" autocomplete="off" /></div>
+          <div class="form-field"><label>Exchange</label><select id="rv-exch">${exchOpts}</select></div>
+          <div class="form-field full"><label>Mental model</label><select id="rv-model">${modelOpts}</select></div>
+          <div class="form-field full"><label>Passphrase</label><input id="rv-pass" type="password" placeholder="The generator passphrase" autocomplete="off" /></div>
+        </div>
+        <div class="form-actions" style="margin-top:14px;">
+          <button class="btn-primary" style="width:auto;padding:9px 18px;" onclick="approveStock('${s._source_slug.replace(/'/g,"\\'")}')">Approve &amp; Add to Tracker</button>
+          <button class="btn-secondary" onclick="rejectStock('${s._source_slug.replace(/'/g,"\\'")}')">Reject</button>
+        </div>
+        <div id="rv-status" style="margin-top:10px;font-size:13px;line-height:1.5;"></div>
+      </div>` : '';
 
   return `
     <div class="detail-page">
       <a class="detail-back" href="#stocks">&larr; Back to Stock Tracker</a>
       <div class="detail-eyebrow">${s.sector||''}</div>
       <h1 class="detail-title">${s.name}</h1>
-      <div class="detail-sub">${s.ticker} &middot; ${s.exch}</div>
+      <div class="detail-sub">${s.ticker||'?'} &middot; ${s.exch||''}</div>
       <div class="detail-badges">
         <span class="badge ${s.sentiment}">${s.sentiment==='bull'?'Bullish':s.sentiment==='bear'?'Bearish / Avoid':'Neutral'}</span>
       </div>
+      ${reviewBar}
       <div class="detail-stats">
         <div class="detail-stat"><div class="lbl">Price at post (${s.postDate||'—'})</div><div class="val">${fmtPrice(s.postPrice, s.exch)}</div></div>
         <div class="detail-stat"><div class="lbl">Current price</div><div class="val">${fmtPrice(s.current, s.exch)}</div></div>
@@ -1111,7 +1138,7 @@ function route(){
     const ticker = decodeURIComponent(hash.slice('#stock-'.length));
     const html = renderStockDetailHTML(ticker);
     if(html){
-      const s = stocks.find(x=>x.ticker===ticker);
+      const s = findStockByRef(ticker);
       switchTab('stocks');
       document.getElementById('stockDetailView').innerHTML = html;
       document.getElementById('stockDetailView').style.display = 'block';
@@ -1318,28 +1345,90 @@ function scrollToStage(id){
 }
 
 function updateCounts(){
-  const bull=stocks.filter(s=>s.sentiment==='bull').length, bear=stocks.filter(s=>s.sentiment==='bear').length;
-  const tc=document.querySelectorAll('.topbar-count'); if(tc[0])tc[0].textContent=stocks.length; if(tc[1])tc[1].textContent=models.length; if(tc[3])tc[3].textContent=deepDives.length;
+  const live=stocks.filter(s=>!s._draft);   // drafts (pending review) don't count as tracked
+  const bull=live.filter(s=>s.sentiment==='bull').length, bear=live.filter(s=>s.sentiment==='bear').length;
+  const tc=document.querySelectorAll('.topbar-count'); if(tc[0])tc[0].textContent=live.length; if(tc[1])tc[1].textContent=models.length; if(tc[3])tc[3].textContent=deepDives.length;
   const hm=document.querySelectorAll('#panel-home .meta-row .meta-item b');
-  if(hm[0]&&window.__postsRead!=null)hm[0].textContent=window.__postsRead; if(hm[1])hm[1].textContent=stocks.length; if(hm[2])hm[2].textContent=models.length;
+  if(hm[0]&&window.__postsRead!=null)hm[0].textContent=window.__postsRead; if(hm[1])hm[1].textContent=live.length; if(hm[2])hm[2].textContent=models.length;
   const sm=document.querySelectorAll('#stocksListView .meta-row .meta-item b');
-  if(sm[0]&&window.__postsRead!=null)sm[0].textContent=window.__postsRead; if(sm[1])sm[1].textContent=stocks.length; if(sm[2])sm[2].textContent=bull; if(sm[3])sm[3].textContent=bear; if(sm[4]&&window.__pricesAsOf)sm[4].textContent=window.__pricesAsOf;
+  if(sm[0]&&window.__postsRead!=null)sm[0].textContent=window.__postsRead; if(sm[1])sm[1].textContent=live.length; if(sm[2])sm[2].textContent=bull; if(sm[3])sm[3].textContent=bear; if(sm[4]&&window.__pricesAsOf)sm[4].textContent=window.__pricesAsOf;
 }
 initTheme();
+async function loadAllData(){
+  const res=await fetch('./data.json',{cache:'no-store'});
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  const d=await res.json();
+  stocks=d.stocks||[]; categories=d.categories||[]; models=d.models||[]; stockPosts=d.stockPosts||{}; modelPost=d.modelPost||{}; deepDives=d.deepDives||[];
+  window.__pricesAsOf=d.pricesAsOf||null; window.__postsRead=(typeof d.postsRead==='number')?d.postsRead:null;
+  await loadPendingDeepDives();
+  await loadPendingReview();
+}
+function renderAll(){ buildFilters(); buildCatNav(); renderModels(); renderStocks(currentFilter||'all'); renderDeepDiveList(); updateCounts(); }
 (async function(){
   try{
-    const res=await fetch('./data.json',{cache:'no-store'});
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const d=await res.json();
-    stocks=d.stocks||[]; categories=d.categories||[]; models=d.models||[]; stockPosts=d.stockPosts||{}; modelPost=d.modelPost||{}; deepDives=d.deepDives||[];
-    window.__pricesAsOf=d.pricesAsOf||null; window.__postsRead=(typeof d.postsRead==='number')?d.postsRead:null;
+    await loadAllData();
   }catch(e){
     document.getElementById('grid').innerHTML='<p style="color:var(--bear);padding:20px 0;line-height:1.6;">Could not load data.json — serve over http (e.g. python3 -m http.server).</p>';
     return;
   }
-  await loadPendingDeepDives();
-  buildFilters(); buildCatNav(); renderModels(); renderStocks('all'); renderDeepDiveList(); updateCounts(); route();
+  renderAll(); route();
 })();
+
+/* Fold scraper-classified stock drafts (pending_review.json) into the stocks list, badged
+   as drafts, so they can be reviewed + approved in the browser. Not in data.json (not
+   published), so this is the only place they surface. */
+async function loadPendingReview(){
+  try{
+    const res = await fetch('./pending_review.json', {cache:'no-store'});
+    if(!res.ok) return;
+    const queue = await res.json();
+    if(!Array.isArray(queue)) return;
+    const liveSlugs = new Set(Object.values(stockPosts||{}).flat().map(p=>p&&p.slug).filter(Boolean));
+    queue.forEach(d=>{
+      if(d._source_slug && liveSlugs.has(d._source_slug)) return; // already promoted
+      stocks.push(Object.assign({}, d, {_draft:true}));
+    });
+  }catch(e){ /* no queue / local preview — fine */ }
+}
+
+async function approveStock(slug){
+  const url = deepDiveApiUrl();
+  const statusEl = document.getElementById('rv-status');
+  if(!url){ if(statusEl) statusEl.innerHTML='<span style="color:var(--bear);">Not available in local preview.</span>'; return; }
+  const ticker=(document.getElementById('rv-ticker').value||'').trim().toUpperCase();
+  const exch=document.getElementById('rv-exch').value;
+  const model=document.getElementById('rv-model').value;
+  const passphrase=document.getElementById('rv-pass').value||'';
+  if(!ticker){ statusEl.innerHTML='<span style="color:var(--bear);">Enter a ticker.</span>'; return; }
+  if(!passphrase){ statusEl.innerHTML='<span style="color:var(--bear);">Enter the passphrase.</span>'; return; }
+  statusEl.innerHTML='<span style="color:var(--muted);">Adding '+ticker+' to the tracker…</span>';
+  try{
+    const res=await fetch(url+'/review/approve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug,ticker,exch,model,passphrase})});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok){
+      statusEl.innerHTML='<span style="color:var(--bear);">'+(data.error||('Failed ('+res.status+').'))+(data.validModels?' Valid models: '+data.validModels.join(', '):'')+'</span>';
+      return;
+    }
+    await loadAllData(); renderAll();
+    statusEl.innerHTML='<span style="color:var(--bull);font-weight:600;">✓ '+ticker+' added to the tracker.</span> <a href="#stock-'+encodeURIComponent(ticker)+'" style="color:var(--accent);">View it →</a>';
+  }catch(e){ statusEl.innerHTML='<span style="color:var(--bear);">Network error: '+e.message+'</span>'; }
+}
+
+async function rejectStock(slug){
+  const url = deepDiveApiUrl();
+  const statusEl = document.getElementById('rv-status');
+  if(!url){ if(statusEl) statusEl.innerHTML='<span style="color:var(--bear);">Not available in local preview.</span>'; return; }
+  const passphrase=document.getElementById('rv-pass').value||'';
+  if(!passphrase){ statusEl.innerHTML='<span style="color:var(--bear);">Enter the passphrase to reject.</span>'; return; }
+  statusEl.innerHTML='<span style="color:var(--muted);">Discarding…</span>';
+  try{
+    const res=await fetch(url+'/review/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug,passphrase})});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok){ statusEl.innerHTML='<span style="color:var(--bear);">'+(data.error||('Failed ('+res.status+').'))+'</span>'; return; }
+    stocks=stocks.filter(x=>!(x._draft&&x._source_slug===slug)); renderAll();
+    location.hash='#stocks';
+  }catch(e){ statusEl.innerHTML='<span style="color:var(--bear);">Network error: '+e.message+'</span>'; }
+}
 
 /* Pull any generated-but-unpublished deep dives from the review queue and fold them into
    the in-memory deepDives list, badged as drafts, so they can be reviewed + approved from
