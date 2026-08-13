@@ -1389,9 +1389,20 @@ async function loadPendingReview(){
     if(!res.ok) return;
     const queue = await res.json();
     if(!Array.isArray(queue)) return;
+    // Only surface drafts for stocks NOT already in the tracker. Skip a draft if its ticker
+    // already exists, its exact post is already linked, or its company name already matches a
+    // tracked stock (covers new posts about existing names, e.g. a Caplin Q1-results update).
+    const live = stocks.filter(s=>!s._draft);
+    const trackedTickers = new Set(live.map(s=>(s.ticker||'').toUpperCase()).filter(Boolean));
+    const trackedNames = live.map(s=>(s.name||'').toLowerCase());
     const liveSlugs = new Set(Object.values(stockPosts||{}).flat().map(p=>p&&p.slug).filter(Boolean));
+    const nameKey = n => (n||'').toLowerCase().replace(/\b(inc|ltd|limited|corp|corporation|co|plc|the|software|technologies|energies)\b|[^a-z0-9 ]/g,'').trim().split(/\s+/)[0];
     queue.forEach(d=>{
-      if(d._source_slug && liveSlugs.has(d._source_slug)) return; // already promoted
+      const t=(d.ticker||'').toUpperCase();
+      if(t && trackedTickers.has(t)) return;                       // ticker already tracked
+      if(d._source_slug && liveSlugs.has(d._source_slug)) return;  // this exact post already promoted
+      const k = nameKey(d.name);
+      if(k && k.length>3 && trackedNames.some(n=>nameKey(n)===k)) return;  // same company already tracked
       stocks.push(Object.assign({}, d, {_draft:true}));
     });
   }catch(e){ /* no queue / local preview — fine */ }
