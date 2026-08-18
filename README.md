@@ -1,7 +1,9 @@
-# The Capillary Research Terminal
+# Aletheia — Research Terminal
 
-A personal tracker for every stock call made on [The Capillary](https://thecapillary.substack.com/),
-plus a plain-language field guide to the ~20 mental models the author uses to make those calls.
+*Aletheia* (Greek: *truth, unconcealed*) — a personal tracker for every stock call made on
+[The Capillary](https://thecapillary.substack.com/), plus a plain-language field guide to the
+~20 mental models the author uses to make those calls. (Formerly "The Capillary Research Terminal";
+internal identifiers, the S3 bucket, and the `capillary` AWS profile keep the old name.)
 
 ## Quick start (local)
 
